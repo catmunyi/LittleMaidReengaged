@@ -4,7 +4,7 @@ import net.blacklab.lmr.entity.EntityLittleMaid;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.pathfinding.PathEntity;
+import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.util.math.Vec3d;
 
@@ -15,7 +15,7 @@ public class EntityAILMAvoidPlayer extends EntityAIBase implements
 	protected EntityLittleMaid theMaid;
 	protected EntityPlayer theMaster;
 	protected float speedNormal;
-	protected PathEntity avoidPath;
+	protected Path avoidPath;
 	/** The PathNavigate of our entity */
 	protected PathNavigate entityPathNavigate;
 	protected boolean isEnable;
@@ -74,8 +74,9 @@ public class EntityAILMAvoidPlayer extends EntityAIBase implements
 		if (avoidPath == null) {
 			return false;
 		}
-
-		return avoidPath.isDestinationSame(vec3d);
+			//TODO: return to this.
+		//return avoidPath.isSamePath(vec3d);
+		return true;
 	}
 
 	@Override

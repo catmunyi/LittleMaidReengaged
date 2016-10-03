@@ -10,7 +10,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
-import net.minecraft.pathfinding.PathEntity;
+import net.minecraft.pathfinding.Path;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -26,7 +26,7 @@ public class EntityAILMAttackOnCollide extends EntityAIBase implements IEntityAI
 	protected Entity entityTarget;
 	protected float moveSpeed;
 	protected boolean isReroute;
-	protected PathEntity pathToTarget;
+	protected Path pathToTarget;
 	protected int rerouteTimer;
 	protected double attackRange;
 

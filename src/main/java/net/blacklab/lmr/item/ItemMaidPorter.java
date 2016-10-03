@@ -63,7 +63,7 @@ public class ItemMaidPorter extends Item {
 				}.addMaidExperienceWithoutEvent(experience);
 				lMaid.setLocationAndAngles(pos.getX(), pos.getY()+1, pos.getZ(), 0, 0);
 				worldIn.spawnEntityInWorld(lMaid);
-				lMaid.processInteract(playerIn, EnumHand.MAIN_HAND, new ItemStack(Items.cake));
+				lMaid.processInteract(playerIn, EnumHand.MAIN_HAND, new ItemStack(Items.CAKE));
 				
 				if (!customName.isEmpty()) {
 					lMaid.setCustomNameTag(customName);

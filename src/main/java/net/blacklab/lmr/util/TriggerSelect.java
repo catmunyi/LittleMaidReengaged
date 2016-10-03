@@ -68,7 +68,7 @@ public class TriggerSelect {
 		if (indexstr.isEmpty()) return;
 		String[] s = indexstr.split(",");
 		for (String t : s) {
-			Object o = Item.itemRegistry.getObject(new ResourceLocation(t));
+			Object o = Item.REGISTRY.getObject(new ResourceLocation(t));
 			if(o instanceof Item)
 			{
 				indexlist.add((Item)o);

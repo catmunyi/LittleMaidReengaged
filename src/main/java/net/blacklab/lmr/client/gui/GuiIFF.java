@@ -81,7 +81,7 @@ public class GuiIFF extends GuiScreen {
 		// 表示用EntityListの初期化
 		if (entityMapClass.isEmpty()) {
 			try {
-				Map lmap = EntityList.classToStringMapping;// (Map)ModLoader.getPrivateValue(EntityList.class, null, 1);
+				Map lmap = EntityList.CLASS_TO_NAME;// (Map)ModLoader.getPrivateValue(EntityList.class, null, 1);
 				entityMapClass.putAll(lmap);
 			}
 			catch (Exception e) {
@@ -213,7 +213,7 @@ public class GuiIFF extends GuiScreen {
 				li++;
 			}
 
-			thePlayer.playSound(SoundEvent.soundEventRegistry.getObject(new ResourceLocation("ui.button.click")), 1, 1);
+			thePlayer.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("ui.button.click")), 1, 1);
 		}
 	}
 

@@ -378,7 +378,7 @@ public class GuiMaidInventory extends GuiContainer {
 			var3 = false;
 		}
 
-		Minecraft.getMinecraft().getTextureManager().bindTexture(icons);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(ICONS);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
 		int orgnHealth = MathHelper.ceiling_float_int(entitylittlemaid.getHealth());
@@ -485,7 +485,7 @@ public class GuiMaidInventory extends GuiContainer {
 
 		// Air
 		ldrawy = guiTop + 46;
-		if (entitylittlemaid.isInsideOfMaterial(Material.water)) {
+		if (entitylittlemaid.isInsideOfMaterial(Material.WATER)) {
 			int var23 = entitylittlemaid.getAir();
 			int var35 = MathHelper.ceiling_double_int((var23 - 2) * 10.0D / 300.0D);
 			int var25 = MathHelper.ceiling_double_int(var23 * 10.0D / 300.0D) - var35;
@@ -651,7 +651,7 @@ public class GuiMaidInventory extends GuiContainer {
 				ldye = 0xffff;
 			} else {
 				for (ItemStack lis : mc.thePlayer.inventory.mainInventory) {
-					if (lis != null && lis.getItem() == Items.dye) {
+					if (lis != null && lis.getItem() == Items.DYE) {
 						ldye |= (1 << (15 - lis.getItemDamage()));
 					}
 				}

@@ -38,10 +38,10 @@ public class GuiTextureSlot extends GuiSlot {
 	public int color;
 	public int selectColor;
 	private ItemStack armors[] = new ItemStack[] {
-			new ItemStack(Items.leather_boots),
-			new ItemStack(Items.leather_leggings),
-			new ItemStack(Items.leather_chestplate),
-			new ItemStack(Items.leather_helmet)
+			new ItemStack(Items.LEATHER_BOOTS),
+			new ItemStack(Items.LEATHER_LEGGINGS),
+			new ItemStack(Items.LEATHER_CHESTPLATE),
+			new ItemStack(Items.LEATHER_HELMET)
 	};
 	protected boolean isContract;
 	protected static TextureBox blankBox;

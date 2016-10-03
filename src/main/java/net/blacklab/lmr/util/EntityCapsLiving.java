@@ -238,7 +238,7 @@ public class EntityCapsLiving implements IModelCaps {
 		case caps_heldItems:
 		case caps_currentEquippedItem:
 			for (EntityEquipmentSlot fSlot : EntityEquipmentSlot.values()) {
-				if (fSlot.func_188452_c() == (Integer)pArg[0]) {
+				if (fSlot.getSlotIndex() == (Integer)pArg[0]) { //SlotIndex or Index...
 					owner.setItemStackToSlot(fSlot, (ItemStack) pArg[1]);
 				}
 			}

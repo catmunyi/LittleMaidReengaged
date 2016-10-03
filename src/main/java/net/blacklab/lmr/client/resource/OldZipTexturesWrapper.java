@@ -9,7 +9,7 @@ import java.util.Set;
 import net.blacklab.lmr.util.FileList;
 import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.client.resources.data.IMetadataSection;
-import net.minecraft.client.resources.data.IMetadataSerializer;
+import net.minecraft.client.resources.data.MetadataSerializer;
 import net.minecraft.util.ResourceLocation;
 
 import com.google.common.collect.ImmutableSet;
@@ -34,12 +34,6 @@ public class OldZipTexturesWrapper implements IResourcePack {
 	}
 
 	@Override
-	public IMetadataSection getPackMetadata(IMetadataSerializer arg0,
-			String arg1) throws IOException {
-		return null;
-	}
-
-	@Override
 	public String getPackName() {
 		return "OldTexturesLoader";
 	}
@@ -47,6 +41,11 @@ public class OldZipTexturesWrapper implements IResourcePack {
 	@Override
 	public Set<String> getResourceDomains() {
 		return ImmutableSet.of("minecraft");
+	}
+
+	@Override
+	public <T extends IMetadataSection> T getPackMetadata(MetadataSerializer metadataSerializer, String metadataSectionName) throws IOException {
+		return null;
 	}
 
 	@Override

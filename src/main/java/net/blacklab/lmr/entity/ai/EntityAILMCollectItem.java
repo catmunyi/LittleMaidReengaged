@@ -12,7 +12,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.pathfinding.PathEntity;
+import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.util.math.MathHelper;
 
@@ -99,7 +99,7 @@ public class EntityAILMCollectItem extends EntityAIBase {
 			if (targetItem.isInWater()) {
 				//lnavigater.setAvoidsWater(false);
 			}
-			PathEntity lpath = lnavigater.getPathToXYZ(targetItem.posX, targetItem.posY, targetItem.posZ);
+			Path lpath = lnavigater.getPathToXYZ(targetItem.posX, targetItem.posY, targetItem.posZ);
 			lnavigater.setPath(lpath, moveSpeed);
 		}
 	}

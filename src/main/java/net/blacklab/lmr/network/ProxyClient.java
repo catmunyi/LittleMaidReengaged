@@ -17,7 +17,7 @@ import net.blacklab.lmr.util.IFF;
 import net.blacklab.lmr.util.helper.CommonHelper;
 import net.blacklab.lmr.util.helper.NetworkHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityPickupFX;
+import net.minecraft.client.particle.ParticleItemPickup;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.Entity;
@@ -78,7 +78,7 @@ public class ProxyClient extends ProxyCommon
 		// アイテム回収のエフェクト
 		// TODO:こっちを使うか？
 //		mc.effectRenderer.addEffect(new EntityPickupFX(mc.theWorld, entity, avatar, -0.5F));
-		CommonHelper.mc.effectRenderer.addEffect(new EntityPickupFX(CommonHelper.mc.theWorld, entity, pAvatar, 0.1F));
+		CommonHelper.mc.effectRenderer.addEffect(new ParticleItemPickup(CommonHelper.mc.theWorld, entity, pAvatar, 0.1F));
 	}
 
 	// TODO いらん？

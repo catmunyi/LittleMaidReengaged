@@ -93,8 +93,9 @@ public class CommonHelper {
 		return new GameProfile(UUID.randomUUID(), name);
 	}
 
+	//TODO: check
 	public static void notifyAdmins(ICommandSender sender, ICommand cmd, int p_152374_2_, String s, Object ... p_152374_4_) {
-		CommandBase.notifyOperators(sender, cmd, p_152374_2_, s, p_152374_4_);
+		CommandBase.notifyCommandListener(sender, cmd, p_152374_2_, s, p_152374_4_);
 	}
 
 	public static boolean setPathToTile(EntityLiving pEntity, TileEntity pTarget, boolean flag) {
@@ -144,10 +145,10 @@ public class CommonHelper {
 		
 		if (itemstack1.getItem() instanceof ItemPotion) {
 			if(itemstack1.stackSize <= 0) {
-				par1EntityPlayer.inventory.setInventorySlotContents(par1EntityPlayer.inventory.currentItem, new ItemStack(Items.glass_bottle, par3DecCount));
+				par1EntityPlayer.inventory.setInventorySlotContents(par1EntityPlayer.inventory.currentItem, new ItemStack(Items.GLASS_BOTTLE, par3DecCount));
 				return null;
 			}
-			par1EntityPlayer.inventory.addItemStackToInventory(new ItemStack(Items.glass_bottle, par3DecCount));
+			par1EntityPlayer.inventory.addItemStackToInventory(new ItemStack(Items.GLASS_BOTTLE, par3DecCount));
 		} else {
 			if (itemstack1.stackSize <= 0) {
 				par1EntityPlayer.inventory.setInventorySlotContents(par2Index, null);

@@ -14,7 +14,7 @@ import net.minecraft.tileentity.TileEntityFurnace;
 public class ItemHelper {
 	public static boolean isSugar(Item item){
 		if(item==null) return false;
-		return item==Items.sugar||item instanceof IItemSpecialSugar;
+		return item==Items.SUGAR||item instanceof IItemSpecialSugar;
 	}
 	
 	public static boolean hasSugar(EntityLittleMaid maid){
@@ -42,7 +42,7 @@ public class ItemHelper {
 		if (pItemstack == null)
 			return false;
 		Item li = pItemstack.getItem();
-		return (pItemstack != null && li instanceof ItemBlock && Block.getBlockFromItem(li).getMaterial(Block.getBlockFromItem(li).getDefaultState()) == Material.tnt);
+		return (pItemstack != null && li instanceof ItemBlock && Block.getBlockFromItem(li).getMaterial(Block.getBlockFromItem(li).getDefaultState()) == Material.TNT);
 	}
 
 }

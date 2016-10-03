@@ -12,7 +12,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.monster.EntityCreeper;
-import net.minecraft.pathfinding.PathEntity;
+import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.math.MathHelper;
 
@@ -167,7 +167,7 @@ public class EntityAILMNearestAttackableTarget<T extends EntityLivingBase> exten
 	// 最終位置が攻撃の間合いでなければ失敗
 	protected boolean func_75295_a(Entity par1EntityLiving) {
 		this.fretryCounter = 10 + this.taskOwner.getRNG().nextInt(5);
-		PathEntity var2 = taskOwner.getNavigator().getPathToXYZ(par1EntityLiving.posX, par1EntityLiving.posY, par1EntityLiving.posZ);
+		Path var2 = taskOwner.getNavigator().getPathToXYZ(par1EntityLiving.posX, par1EntityLiving.posY, par1EntityLiving.posZ);
 //		PathEntity var2 = this.taskOwner.getNavigator().getPathToEntityLiving(par1EntityLiving);
 
 		if (var2 == null) {
