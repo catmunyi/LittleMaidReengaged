@@ -176,6 +176,7 @@ public class LittleMaidReengaged {
 		StabilizerManager.init();
 
 		// テクスチャパックの構築
+		new ModelManager(); //ez fix.
 		ModelManager.instance.init();
 		ModelManager.instance.loadTextures();
 		// ロード

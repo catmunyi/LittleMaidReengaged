@@ -1406,13 +1406,14 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 
 
 	//....hmm....
+	/*
 	public boolean canAttackWithItem() {
 		if (getRidingEntity() != null && getRidingEntity() == mstatMasterEntity) {
 			return false;
 		}
 		return super.canBeAttackedWithItem();
 	}
-
+*/
 	@Override
 	public double getMountedYOffset() {
 		// TODO: Changed from 'riddenByEntity'. Is it correct?
@@ -1792,13 +1793,14 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	}
 
 
-	//This function does not exist anymore.
+	/*
 	protected void updateAITick() {
 		// TODO 自動生成されたメソッド・スタブ
 		if(getNavigator().getPath()!=null)
 			prevPathEntity = getNavigator().getPath();
 		super.updateAITasks(); //todo: Check
 	}
+	*/
 
 	@Override
 	public void onEntityUpdate() {
@@ -3923,7 +3925,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		setTextureNames();
 		//LittleMaidReengaged.Debug("ID:%d, TextureModel:%s", getEntityId(), textureData.getTextureName(0));
 		//Todo: FIX
-		((TextureBox)textureData.textureBox[0]).models[0].setCapsValue(IModelCaps.caps_changeModel, maidCaps);
+		//pTextureBox[0].models[0].setCapsValue(IModelCaps.caps_changeModel, maidCaps);
 
 		// スタビの付け替え -- Replacement stablizer?
 //		for (Entry<String, MMM_EquippedStabilizer> le : pEntity.maidStabilizer.entrySet()) {
