@@ -2,7 +2,7 @@
 Again, on the new stage.
 
 ## What's this?
-A MOD of Minecraft; LittleMaidMob for MC1.9/1.9.4/1.10. Cute and little maid girls will be helpful for your life on Minecraft.
+A MOD of Minecraft; LittleMaidMob for MC1.11. Cute and little maid girls will be helpful for your life on Minecraft.
 
 ## Related links
 * [LittleMaidMob(for MC 1.6.2 or more older)](http://forum.minecraftuser.jp/viewtopic.php?t=176) - by MMM
