@@ -30,7 +30,7 @@ public class EntityAILMFleeRain extends EntityAIBase implements IEntityAI {
 			theMaid = (EntityLittleMaid) theCreature;
 		}
 		movespeed = pMoveSpeed;
-		theWorld = par1EntityCreature.worldObj;
+		theWorld = par1EntityCreature.world;
 		isEnable = false;
 		setMutexBits(1);
 	}
@@ -81,10 +81,10 @@ public class EntityAILMFleeRain extends EntityAIBase implements IEntityAI {
 		Random random = theMaid.getRNG();
 		
 		for (int i = 0; i < 10; i++) {
-			int j = MathHelper.floor_double((theMaid.posX + (i-5)));
-			int k = MathHelper.floor_double((theMaid.getEntityBoundingBox().minY +
+			int j = MathHelper.floor((theMaid.posX + (i-5)));
+			int k = MathHelper.floor((theMaid.getEntityBoundingBox().minY +
 					random.nextInt(4)) - 2D);
-			int l = MathHelper.floor_double((theMaid.posZ + (i-5)));
+			int l = MathHelper.floor((theMaid.posZ + (i-5)));
 			
 			//離れすぎている
 			if(theMaid.isFreedom() && !MaidHelper.isTargetReachable(theMaid, new Vec3d(j, k, l), 0)){

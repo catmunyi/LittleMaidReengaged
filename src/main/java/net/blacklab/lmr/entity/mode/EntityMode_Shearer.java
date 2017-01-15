@@ -125,7 +125,7 @@ public class EntityMode_Shearer extends EntityModeBase {
 	@Override
 	public void updateAITick(int pMode) {
 		ItemStack litemstack = owner.maidInventory.getCurrentItem();
-		if (litemstack != null
+		if (!litemstack.isEmpty()
 				&& (owner.getAttackTarget() instanceof EntityCreeper/* || owner.getAttackTarget().getClass().isAssignableFrom(EntityTNTPrimed.class)*/)) {
 			if (pMode == mmode_Ripper) {
 				owner.setMaidMode("TNT-D");
@@ -158,7 +158,7 @@ public class EntityMode_Shearer extends EntityModeBase {
 				if (owner.isMovementBlocked() || timeSinceIgnited > 22) {
 					owner.getLookHelper().setLookPositionWithEntity(owner.getMaidMasterEntity(), 40F, 40F);
 				}
-				LittleMaidReengaged.Debug(String.format("ID:%d(%s)-dom:%d(%d)", owner.getEntityId(), owner.worldObj.isRemote ? "C" : "W", owner.getDominantArm(), owner.maidInventory.currentItem));
+				LittleMaidReengaged.Debug(String.format("ID:%d(%s)-dom:%d(%d)", owner.getEntityId(), owner.world.isRemote ? "C" : "W", owner.getDominantArm(), owner.maidInventory.currentItem));
 
 				if (owner.maidInventory.isItemExplord(owner.maidInventory.currentItem) && timeSinceIgnited++ > 30) {
 					// TODO:自爆威力を対応させたいけど無理ぽ？
@@ -168,8 +168,8 @@ public class EntityMode_Shearer extends EntityModeBase {
 					timeSinceIgnited = -1;
 					owner.setDead();
 					// Mobによる破壊の是非
-					boolean lflag = owner.worldObj.getGameRules().getBoolean("mobGriefing");
-					owner.worldObj.createExplosion(owner, owner.posX, owner.posY, owner.posZ, 3F, lflag);
+					boolean lflag = owner.world.getGameRules().getBoolean("mobGriefing");
+					owner.world.createExplosion(owner, owner.posX, owner.posY, owner.posZ, 3F, lflag);
 				}
 			}
 		}
@@ -178,7 +178,7 @@ public class EntityMode_Shearer extends EntityModeBase {
 	@Override
 	public boolean changeMode(EntityPlayer pentityplayer) {
 		ItemStack litemstack = owner.getHandSlotForModeChange();;
-		if (litemstack != null) {
+		if (!litemstack.isEmpty()) {
 			if (litemstack.getItem() instanceof ItemShears) {
 				owner.setMaidMode("Ripper");
 				if (pentityplayer != null) {
@@ -229,7 +229,7 @@ public class EntityMode_Shearer extends EntityModeBase {
 		case mmode_TNTD :
 			for (li = 0; li < owner.maidInventory.getSizeInventory() - 1; li++) {
 				litemstack = owner.maidInventory.getStackInSlot(li);
-				if (litemstack == null) continue;
+				if (litemstack.isEmpty()) continue;
 
 				// はさみ
 				if (isTriggerItem(pMode, litemstack)) {
@@ -252,7 +252,7 @@ public class EntityMode_Shearer extends EntityModeBase {
 
 	@Override
 	protected boolean isTriggerItem(int pMode, ItemStack par1ItemStack) {
-		if (par1ItemStack == null) {
+		if (par1ItemStack.isEmpty()) {
 			return false;
 		}
 
@@ -295,12 +295,12 @@ public class EntityMode_Shearer extends EntityModeBase {
 				owner.setSwing(20, EnumSound.attack_bloodsuck, false);
 				owner.addMaidExperience(4.5f);
 			} else {
-				owner.maidAvatar.interact(pEntity, owner.getCurrentEquippedItem(), EnumHand.MAIN_HAND);
+				owner.maidAvatar.interactOn(pEntity, EnumHand.MAIN_HAND);
 				owner.setSwing(20, EnumSound.attack, false);
 				owner.addMaidExperience(2.1f);
 			}
-			if (lis.stackSize <= 0) {
-				owner.maidInventory.setInventoryCurrentSlotContents(null);
+			if (lis.getCount() <= 0) {
+				owner.maidInventory.setInventoryCurrentSlotContents(ItemStack.EMPTY);
 				owner.getNextEquipItem();
 			}
 		}

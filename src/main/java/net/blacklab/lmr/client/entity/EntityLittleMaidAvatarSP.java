@@ -93,7 +93,7 @@ public class EntityLittleMaidAvatarSP extends EntityPlayer implements IEntityLit
 	}
 
 	@Override
-	public boolean canCommandSenderUseCommand(int var1, String var2) {
+	public boolean canUseCommand(int var1, String var2) {
 		return false;
 	}
 
@@ -122,7 +122,7 @@ public class EntityLittleMaidAvatarSP extends EntityPlayer implements IEntityLit
 	@Override
 	public void onItemPickup(Entity entity, int i) {
 		// アイテム回収のエフェクト
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			// Client
 			LittleMaidReengaged.proxy.onItemPickup(this, entity, i);
 		} else {
@@ -132,7 +132,7 @@ public class EntityLittleMaidAvatarSP extends EntityPlayer implements IEntityLit
 
 	@Override
 	public void onCriticalHit(Entity par1Entity) {
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			// Client
 			LittleMaidReengaged.proxy.onCriticalHit(this, par1Entity);
 		} else {
@@ -141,7 +141,7 @@ public class EntityLittleMaidAvatarSP extends EntityPlayer implements IEntityLit
 
 	@Override
 	public void onEnchantmentCritical(Entity par1Entity) {
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			LittleMaidReengaged.proxy.onEnchantmentCritical(this, par1Entity);
 		} else {
 		}
@@ -178,7 +178,7 @@ public class EntityLittleMaidAvatarSP extends EntityPlayer implements IEntityLit
 	}
 
 	protected Entity getEntityServer() {
-		return worldObj.isRemote ? null : this;
+		return world.isRemote ? null : this;
 	}
 
 	// Item使用関連
@@ -339,7 +339,7 @@ public class EntityLittleMaidAvatarSP extends EntityPlayer implements IEntityLit
 //	}
 
 	@Override
-	public void addChatMessage(ITextComponent var1) {
+	public void sendMessage(ITextComponent var1) {
 		// チャットメッセージは使わない。
 	}
 
@@ -421,7 +421,7 @@ public class EntityLittleMaidAvatarSP extends EntityPlayer implements IEntityLit
 
 	public void getValueVector(double atx, double aty, double atz, double atl) {
 		// EntityLittleMaidから値をコピー
-		double l = MathHelper.sqrt_double(atl);
+		double l = MathHelper.sqrt(atl);
 		appendX = atx / l;
 		appendY = aty / l;
 		appendZ = atz / l;
@@ -451,7 +451,7 @@ public class EntityLittleMaidAvatarSP extends EntityPlayer implements IEntityLit
 	 */
 	public void getValueVectorFire(double atx, double aty, double atz, double atl) {
 		// EntityLittleMaidから値をコピー
-		double l = MathHelper.sqrt_double(atl);
+		double l = MathHelper.sqrt(atl);
 		appendX = atx / l;
 		appendY = aty / l;
 		appendZ = atz / l;

@@ -20,7 +20,7 @@ public class ProxyCommon
 	{
 		return FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer();
 	}
-	public void playLittleMaidSound(World worldObj, double posX, double posY,
+	public void playLittleMaidSound(World world, double posX, double posY,
 			double posZ, String s, float soundVolume, float lpitch, boolean b) {
 		
 	}

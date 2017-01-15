@@ -53,7 +53,7 @@ public abstract class EntityModeBlockBase extends EntityModeBase {
 	 */
 	protected boolean checkWorldMaid(TileEntity pTile) {
 		// 世界のメイドから
-		for (Object lo : owner.worldObj.loadedEntityList) {
+		for (Object lo : owner.world.loadedEntityList) {
 			if (lo == owner) continue;
 			if (lo instanceof EntityLittleMaid) {
 				EntityLittleMaid lem = (EntityLittleMaid)lo;

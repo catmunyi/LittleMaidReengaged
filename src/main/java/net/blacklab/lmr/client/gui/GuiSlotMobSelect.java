@@ -68,7 +68,7 @@ public class GuiSlotMobSelect extends GuiSlot {
 					var2 + 15, var3 + 12, 0xffffff);
 			return;
 		}
-		entityliving.setWorld(mc.theWorld);
+		entityliving.setWorld(mc.world);
 		
 		// 伽羅の表示
 //		GL11.glEnable(32826 /* GL_RESCALE_NORMAL_EXT */);

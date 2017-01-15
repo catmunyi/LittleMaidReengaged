@@ -45,7 +45,7 @@ public class GuiTextureSlot extends GuiSlot {
 	public GuiTextureSlot(GuiTextureSelect pOwner) {
 		super(pOwner.mc, pOwner.width, pOwner.height, 16, pOwner.height - 64, 36);
 		owner = pOwner;
-		entity = new EntityLittleMaidForTexSelect(owner.mc.theWorld);
+		entity = new EntityLittleMaidForTexSelect(owner.mc.world);
 		color = owner.target.getColor();
 		selectColor = -1;
 		blankBox = new TextureBox();
@@ -230,10 +230,10 @@ public class GuiTextureSlot extends GuiSlot {
 		} else {
 			selected = texsel[0];
 			mode = false;
-			entity.setItemStackToSlot(EntityEquipmentSlot.FEET,  null);
-			entity.setItemStackToSlot(EntityEquipmentSlot.LEGS,  null);
-			entity.setItemStackToSlot(EntityEquipmentSlot.CHEST, null);
-			entity.setItemStackToSlot(EntityEquipmentSlot.HEAD,  null);
+			entity.setItemStackToSlot(EntityEquipmentSlot.FEET,  ItemStack.EMPTY);
+			entity.setItemStackToSlot(EntityEquipmentSlot.LEGS,  ItemStack.EMPTY);
+			entity.setItemStackToSlot(EntityEquipmentSlot.CHEST, ItemStack.EMPTY);
+			entity.setItemStackToSlot(EntityEquipmentSlot.HEAD,  ItemStack.EMPTY);
 		}
 		scrollBy(slotHeight * selected);
 	}

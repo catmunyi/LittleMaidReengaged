@@ -35,11 +35,11 @@ public class EntityAILMCollectItem extends EntityAIBase {
 	public boolean shouldExecute() {
 		if(theMaid.isMaidWaitEx()) return false;
 		if (theMaid.maidInventory.getFirstEmptyStack() > -1) {
-			List llist = theMaid.worldObj.getEntitiesWithinAABB(EntityItem.class, theMaid.getEntityBoundingBox().expand(8F, 2D, 8F));
+			List llist = theMaid.world.getEntitiesWithinAABB(EntityItem.class, theMaid.getEntityBoundingBox().expand(8F, 2D, 8F));
 			if (!llist.isEmpty()) {
 				int li = theMaid.getRNG().nextInt(llist.size());
 				EntityItem ei = (EntityItem)llist.get(li);
-				EntityPlayer ep = theMaid.getMaidMasterEntity() != null ? theMaid.getMaidMasterEntity() : theMaid.worldObj.getClosestPlayerToEntity(theMaid, 16F);
+				EntityPlayer ep = theMaid.getMaidMasterEntity() != null ? theMaid.getMaidMasterEntity() : theMaid.world.getClosestPlayerToEntity(theMaid, 16F);
 
 				NBTTagCompound p = new NBTTagCompound();
 				ei.writeEntityToNBT(p);
@@ -106,8 +106,8 @@ public class EntityAILMCollectItem extends EntityAIBase {
 
 	public boolean canEntityItemBeSeen(Entity entity) {
 		// アイテムの可視判定
-//		return theMaid.worldObj.rayTraceBlocks(new Vec3(theMaid.posX, theMaid.posY + (double)theMaid.getEyeHeight(), theMaid.posZ), new Vec3(entity.posX, entity.posY + ((entity.getEntityBoundingBox().minY - entity.getEntityBoundingBox().minY) / 2), entity.posZ)) == null;
-		return VectorUtil.canMoveThrough(theMaid.getMaidActiveModeClass().owner, 0D, MathHelper.floor_double(entity.posX), MathHelper.floor_double(entity.posY), MathHelper.floor_double(entity.posZ), false, true, false);
+//		return theMaid.world.rayTraceBlocks(new Vec3(theMaid.posX, theMaid.posY + (double)theMaid.getEyeHeight(), theMaid.posZ), new Vec3(entity.posX, entity.posY + ((entity.getEntityBoundingBox().minY - entity.getEntityBoundingBox().minY) / 2), entity.posZ)) == null;
+		return VectorUtil.canMoveThrough(theMaid.getMaidActiveModeClass().owner, 0D, MathHelper.floor(entity.posX), MathHelper.floor(entity.posY), MathHelper.floor(entity.posZ), false, true, false);
 	}
 
 }

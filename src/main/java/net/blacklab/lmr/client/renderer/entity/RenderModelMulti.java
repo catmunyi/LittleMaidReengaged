@@ -40,7 +40,7 @@ public class RenderModelMulti extends RenderLiving {
 		modelFATT.renderParts = par2;
 		modelFATT.renderCount = 0;
 		ItemStack is = ((List<ItemStack>)par1EntityLiving.getArmorInventoryList()).get(par2);
-		if (is != null && is.stackSize > 0) {
+		if (!is.isEmpty() && is.getCount() > 0) {
 			modelFATT.showArmorParts(par2);
 			return is.isItemEnchanted() ? 15 : 1;
 		}

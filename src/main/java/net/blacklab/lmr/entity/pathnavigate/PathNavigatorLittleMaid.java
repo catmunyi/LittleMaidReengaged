@@ -62,7 +62,7 @@ public class PathNavigatorLittleMaid extends PathNavigateGround {
 	protected boolean isDirectPathBetweenPoints(Vec3d posVec31, Vec3d posVec32,
 			int sizeX, int sizeY, int sizeZ) {
 		if (theMaid.isInWater()) {
-			RayTraceResult movingobjectposition = worldObj.rayTraceBlocks(posVec31, new Vec3d(posVec32.xCoord, posVec32.yCoord + (double)theEntity.height * 0.5D, posVec32.zCoord), false, true, false);
+			RayTraceResult movingobjectposition = world.rayTraceBlocks(posVec31, new Vec3d(posVec32.xCoord, posVec32.yCoord + (double)theEntity.height * 0.5D, posVec32.zCoord), false, true, false);
 			return movingobjectposition == null || movingobjectposition.typeOfHit == RayTraceResult.Type.MISS;
 		}
 		return super.isDirectPathBetweenPoints(posVec31, posVec32, sizeX, sizeY, sizeZ);

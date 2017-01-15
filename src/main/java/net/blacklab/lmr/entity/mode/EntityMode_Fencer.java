@@ -102,7 +102,7 @@ public class EntityMode_Fencer extends EntityModeBase {
 	@Override
 	public boolean changeMode(EntityPlayer pentityplayer) {
 		ItemStack litemstack = owner.getHandSlotForModeChange();
-		if (litemstack != null) {
+		if (!litemstack.isEmpty()) {
 			if (isTriggerItem(mmode_Fencer, litemstack)) {
 				owner.setMaidMode("Fencer");
 				if (pentityplayer != null) {
@@ -160,7 +160,7 @@ public class EntityMode_Fencer extends EntityModeBase {
 		case mmode_Fencer :
 			for (li = 0; li < owner.maidInventory.getSizeInventory() - 1; li++) {
 				litemstack = owner.maidInventory.getStackInSlot(li);
-				if (litemstack == null) continue;
+				if (litemstack.isEmpty()) continue;
 
 				// 剣
 				if (isTriggerItem(pMode, litemstack)) {
@@ -183,7 +183,7 @@ public class EntityMode_Fencer extends EntityModeBase {
 		case mmode_Bloodsucker :
 			for (li = 0; li < owner.maidInventory.getSizeInventory(); li++) {
 				litemstack = owner.maidInventory.getStackInSlot(li);
-				if (litemstack == null) continue;
+				if (litemstack.isEmpty()) continue;
 
 				// 斧
 				if (isTriggerItem(pMode, litemstack)) {
@@ -210,7 +210,7 @@ public class EntityMode_Fencer extends EntityModeBase {
 
 	@Override
 	protected boolean isTriggerItem(int pMode, ItemStack par1ItemStack) {
-		if (par1ItemStack == null) {
+		if (par1ItemStack.isEmpty()) {
 			return false;
 		}
 		switch (pMode) {

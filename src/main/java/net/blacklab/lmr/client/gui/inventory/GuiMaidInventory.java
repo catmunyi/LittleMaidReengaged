@@ -274,8 +274,8 @@ public class GuiMaidInventory extends GuiContainer {
 		if (entitylittlemaid.hurtResistantTime < 10) {
 			flag1 = false;
 		}
-		int i1 = MathHelper.ceiling_float_int(entitylittlemaid.func_110138_aP());
-		int j1 = MathHelper.ceiling_float_int(entitylittlemaid.prevHealth);
+		int i1 = MathHelper.ceil(entitylittlemaid.func_110138_aP());
+		int j1 = MathHelper.ceil(entitylittlemaid.prevHealth);
 		rand.setSeed(updateCounter * 0x4c627);
 
 		// AP
@@ -360,7 +360,7 @@ public class GuiMaidInventory extends GuiContainer {
 		if (RenderInfoPart.getRenderingPart() == 0) {
 			float lhealth = entitylittlemaid.getHealth();
 			if (lhealth > 20) {
-				mc.fontRendererObj.drawString(String.format("x%d", MathHelper.floor_float((lhealth-1) / 20)), guiLeft + 95, guiTop + 64, 0x404040);
+				mc.fontRendererObj.drawString(String.format("x%d", MathHelper.floor((lhealth-1) / 20)), guiLeft + 95, guiTop + 64, 0x404040);
 			}
 		}
 
@@ -380,8 +380,8 @@ public class GuiMaidInventory extends GuiContainer {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(ICONS);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-		int orgnHealth = MathHelper.ceiling_float_int(entitylittlemaid.getHealth());
-		int orgnLasthealth = orgnHealth + MathHelper.ceiling_float_int(entitylittlemaid.getLastDamage());
+		int orgnHealth = MathHelper.ceil(entitylittlemaid.getHealth());
+		int orgnLasthealth = orgnHealth + MathHelper.ceil(entitylittlemaid.getLastDamage());
 		this.rand.setSeed(updateCounter * 312871);
 		//		FoodStats var7 = entitylittlemaid.getFoodStats();
 //		int var8 = var7.getFoodLevel();
@@ -389,14 +389,14 @@ public class GuiMaidInventory extends GuiContainer {
 		IAttributeInstance var10 = entitylittlemaid.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
 		float maxHealth = (float) var10.getAttributeValue();
 		float origAbsorption = entitylittlemaid.getAbsorptionAmount();
-		int maxHealthRows = MathHelper.ceiling_float_int((maxHealth + origAbsorption) / 20.0F);
-		int healthRows = MathHelper.ceiling_float_int(orgnHealth / 20f);
+		int maxHealthRows = MathHelper.ceil((maxHealth + origAbsorption) / 20.0F);
+		int healthRows = MathHelper.ceil(orgnHealth / 20f);
 		int var17 = Math.max(10 - (maxHealthRows - 2), 3);
 		float absorption = origAbsorption;
 		int var21 = -1;
 
 		if (entitylittlemaid.isPotionActive(Potion.getPotionById(10))) {
-			var21 = updateCounter % MathHelper.ceiling_float_int(maxHealth + 5.0F);
+			var21 = updateCounter % MathHelper.ceil(maxHealth + 5.0F);
 		}
 
 		int ldrawx;
@@ -428,7 +428,7 @@ public class GuiMaidInventory extends GuiContainer {
 
 		// LP
 		if (RenderInfoPart.getRenderingPart() == 0) {
-			for (int li = maxHealthRows > healthRows ? 9 : MathHelper.ceiling_float_int((maxHealth + origAbsorption - 2)/2f) % 10; li >= 0; --li) {
+			for (int li = maxHealthRows > healthRows ? 9 : MathHelper.ceil((maxHealth + origAbsorption - 2)/2f) % 10; li >= 0; --li) {
 				int var23 = 16;
 				if (entitylittlemaid.isPotionActive(Potion.getPotionById(19))) {
 					var23 += 36;
@@ -436,7 +436,7 @@ public class GuiMaidInventory extends GuiContainer {
 					var23 += 72;
 				}
 
-//				int var25 = MathHelper.ceiling_float_int((li + 1) / 10.0F);
+//				int var25 = MathHelper.ceil((li + 1) / 10.0F);
 				ldrawx = guiLeft + li % 10 * 8 + 7;
 				ldrawy = guiTop + 64;
 
@@ -486,8 +486,8 @@ public class GuiMaidInventory extends GuiContainer {
 		ldrawy = guiTop + 46;
 		if (entitylittlemaid.isInsideOfMaterial(Material.WATER)) {
 			int var23 = entitylittlemaid.getAir();
-			int var35 = MathHelper.ceiling_double_int((var23 - 2) * 10.0D / 300.0D);
-			int var25 = MathHelper.ceiling_double_int(var23 * 10.0D / 300.0D) - var35;
+			int var35 = MathHelper.ceil((var23 - 2) * 10.0D / 300.0D);
+			int var25 = MathHelper.ceil(var23 * 10.0D / 300.0D) - var35;
 
 			for (int var26 = 0; var26 < var35 + var25; ++var26) {
 				ldrawx = guiLeft + var26 * 8 + 86;
@@ -646,11 +646,11 @@ public class GuiMaidInventory extends GuiContainer {
 			break;
 		case 200 :
 			int ldye = 0;
-			if (mc.thePlayer.capabilities.isCreativeMode) {
+			if (mc.player.capabilities.isCreativeMode) {
 				ldye = 0xffff;
 			} else {
-				for (ItemStack lis : mc.thePlayer.inventory.mainInventory) {
-					if (lis != null && lis.getItem() == Items.DYE) {
+				for (ItemStack lis : mc.player.inventory.mainInventory) {
+					if (!lis.isEmpty() && lis.getItem() == Items.DYE) {
 						ldye |= (1 << (15 - lis.getItemDamage()));
 					}
 				}

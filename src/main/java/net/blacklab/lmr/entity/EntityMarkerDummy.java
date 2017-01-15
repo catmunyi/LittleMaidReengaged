@@ -82,7 +82,7 @@ public class EntityMarkerDummy extends Entity {
 		if (!isEnable) return;
 		if (!CommonHelper.isClient) return;
 
-		List<Entity> liste = entity.worldObj.loadedEntityList;
+		List<Entity> liste = entity.world.loadedEntityList;
 		for (Entity entity1 : liste) {
 			if (entity1 instanceof EntityMarkerDummy) {
 				((EntityMarkerDummy)entity1).setOwnerdEntityDead(entity);
@@ -98,11 +98,11 @@ public class EntityMarkerDummy extends Entity {
 		if (!CommonHelper.isClient) return;
 
 		// サーバー側でしか呼ばれないっぽい
-		if (owner.worldObj.isRemote) {
+		if (owner.world.isRemote) {
 			LittleMaidReengaged.Debug("L");
 		}
 
-		EntityMarkerDummy ed = new EntityMarkerDummy(owner.worldObj, color, owner);
+		EntityMarkerDummy ed = new EntityMarkerDummy(owner.world, color, owner);
 		ed.setPosition(posx, posy, posz);
 		appendList.add(ed);
 	}

@@ -129,8 +129,8 @@ public class EntityAILMHurtByTarget extends EntityAIHurtByTarget {
 		if (var3 == null) {
 			return false;
 		}
-		int var4 = var3.xCoord - MathHelper.floor_double(par1EntityLiving.posX);
-		int var5 = var3.zCoord - MathHelper.floor_double(par1EntityLiving.posZ);
+		int var4 = var3.xCoord - MathHelper.floor(par1EntityLiving.posX);
+		int var5 = var3.zCoord - MathHelper.floor(par1EntityLiving.posZ);
 		return var4 * var4 + var5 * var5 <= 2.25D;
 	}
 

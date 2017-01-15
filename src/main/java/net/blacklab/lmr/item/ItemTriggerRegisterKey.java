@@ -29,8 +29,9 @@ public class ItemTriggerRegisterKey extends Item {
 	}
 
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn,
+	public ActionResult<ItemStack> onItemRightClick(World worldIn,
 			EntityPlayer playerIn, EnumHand pHand) {
+		ItemStack itemStackIn = playerIn.getHeldItem(pHand);
 		NBTTagCompound tagCompound = itemStackIn.getTagCompound();
 		if(tagCompound==null) {
 			tagCompound = new NBTTagCompound();
@@ -48,7 +49,7 @@ public class ItemTriggerRegisterKey extends Item {
 		tagCompound.setString(RK_MODE_TAG, modeString);
 
 		if(!worldIn.isRemote)
-			playerIn.addChatComponentMessage(new TextComponentTranslation("littleMaidMob.chat.text.changeregistermode", modeString));
+			playerIn.sendMessage(new TextComponentTranslation("littleMaidMob.chat.text.changeregistermode", modeString));
 
 		return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStackIn);
 	}

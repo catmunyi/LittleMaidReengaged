@@ -107,12 +107,12 @@ public class EntityAILMFollowOwner extends EntityAIBase implements IEntityAI {
 		/*
 		if(entity==null){
 			if(theMaid.isInWater()&&theMaid.swimmingEnabled){
-				int x = MathHelper.floor_double(theOwner.posX);
-				int z = MathHelper.floor_double(theOwner.posZ);
-				int y = MathHelper.floor_double(theOwner.posY);
+				int x = MathHelper.floor(theOwner.posX);
+				int z = MathHelper.floor(theOwner.posZ);
+				int y = MathHelper.floor(theOwner.posY);
 				LMM_LittleMaidMobNX.Debug("TARGET POS %d,%d,%d", x,y,z);
-				if(theMaid.worldObj.getBlockState(new BlockPos(x, y, z)).getBlock().getMaterial()!=Material.water){
-					if(theMaid.worldObj.getBlockState(new BlockPos(x, y-1, z)).getBlock().getMaterial()==Material.water)
+				if(theMaid.world.getBlockState(new BlockPos(x, y, z)).getBlock().getMaterial()!=Material.water){
+					if(theMaid.world.getBlockState(new BlockPos(x, y-1, z)).getBlock().getMaterial()==Material.water)
 						entity = theMaid.getNavigator().getPathToXYZ(theOwner.posX, theOwner.posY-1, theOwner.posZ);
 					else {
 						theMaid.setLocationAndAngles(x, y+1, z, theMaid.rotationYaw, theMaid.rotationPitch);

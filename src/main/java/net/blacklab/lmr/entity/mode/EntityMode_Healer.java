@@ -58,7 +58,7 @@ public class EntityMode_Healer extends EntityModeBase {
 	@Override
 	public boolean changeMode(EntityPlayer pentityplayer) {
 		ItemStack litemstack = owner.getHandSlotForModeChange();
-		if (litemstack != null) {
+		if (!litemstack.isEmpty()) {
 			if (isTriggerItem(mmode_Healer, litemstack)) {
 				owner.setMaidMode("Healer");
 				if (pentityplayer != null) {
@@ -94,7 +94,7 @@ public class EntityMode_Healer extends EntityModeBase {
 			// Healer
 			for (int i = 0; i < owner.maidInventory.getSizeInventory(); i++) {
 				ItemStack is = owner.maidInventory.getStackInSlot(i);
-				if (is == null) continue;
+				if (is.isEmpty()) continue;
 				// 対象は食料かポーション
 				if (isTriggerItem(pMode, is)) {
 					return i;
@@ -107,7 +107,7 @@ public class EntityMode_Healer extends EntityModeBase {
 
 	@Override
 	protected boolean isTriggerItem(int pMode, ItemStack par1ItemStack) {
-		if (par1ItemStack == null) {
+		if (par1ItemStack.isEmpty()) {
 			return false;
 		}
 		return par1ItemStack.getItem() instanceof ItemFood || (par1ItemStack.getItem() instanceof ItemPotion && CommonHelper.hasEffect(par1ItemStack));
@@ -161,15 +161,15 @@ public class EntityMode_Healer extends EntityModeBase {
 					}
 
 					ItemStack itemstack1 = owner.getCurrentEquippedItem();
-					if (itemstack1 != null) {
+					if (!itemstack1.isEmpty()) {
 						if (itemstack1.getItem() instanceof ItemFood) {
 							// 食料を突っ込む
 							if (h < 18) {
 								owner.setSwing(10, EnumSound.healing, true);
-								itemstack1 = ((ItemFood)itemstack1.getItem()).onItemUseFinish(itemstack1, owner.worldObj, lmaster);
-//	                        	owner.worldObj.playSoundAtEntity(lmaster, lmaster.getHurtSound(), 0.5F, (owner.rand.nextFloat() - owner.rand.nextFloat()) * 0.2F + 1.0F);
-								if (itemstack1.stackSize <= 0) {
-									itemstack1 = null;
+								itemstack1 = ((ItemFood)itemstack1.getItem()).onItemUseFinish(itemstack1, owner.world, lmaster);
+//	                        	owner.world.playSoundAtEntity(lmaster, lmaster.getHurtSound(), 0.5F, (owner.rand.nextFloat() - owner.rand.nextFloat()) * 0.2F + 1.0F);
+								if (itemstack1.getCount() <= 0) {
+									itemstack1 = ItemStack.EMPTY;
 								}
 								owner.maidInventory.setInventoryCurrentSlotContents(itemstack1);
 								owner.getNextEquipItem();
@@ -204,7 +204,7 @@ public class EntityMode_Healer extends EntityModeBase {
 							if (lswing) {
 								owner.setSwing(10, EnumSound.healing_potion, true);
 								owner.usePotionTotarget(lmaster);
-//	                        	owner.worldObj.playSoundAtEntity(lmaster, lmaster.getHurtSound(), 0.5F, (owner.rand.nextFloat() - owner.rand.nextFloat()) * 0.2F + 1.0F);
+//	                        	owner.world.playSoundAtEntity(lmaster, lmaster.getHurtSound(), 0.5F, (owner.rand.nextFloat() - owner.rand.nextFloat()) * 0.2F + 1.0F);
 								owner.getNextEquipItem();
 							}
 						}

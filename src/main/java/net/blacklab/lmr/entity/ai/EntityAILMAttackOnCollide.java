@@ -17,7 +17,7 @@ public class EntityAILMAttackOnCollide extends EntityAIBase implements IEntityAI
 
 	protected boolean fEnable;
 
-	protected World worldObj;
+	protected World world;
 	protected EntityLittleMaid theMaid;
 	protected Entity entityTarget;
 	protected float moveSpeed;
@@ -31,7 +31,7 @@ public class EntityAILMAttackOnCollide extends EntityAIBase implements IEntityAI
 
 	public EntityAILMAttackOnCollide(EntityLittleMaid par1EntityLittleMaid, float par2, boolean par3) {
 		theMaid = par1EntityLittleMaid;
-		worldObj = par1EntityLittleMaid.worldObj;
+		world = par1EntityLittleMaid.world;
 		moveSpeed = par2;
 		isReroute = par3;
 		isGuard = false;
@@ -165,8 +165,8 @@ public class EntityAILMAttackOnCollide extends EntityAIBase implements IEntityAI
 				}
 				if (lel == theMaid) {
 					ItemStack li = theMaid.getCurrentEquippedItem();
-					if (li != null && li.getItemUseAction() == EnumAction.BLOCK) {
-						li.useItemRightClick(worldObj, theMaid.maidAvatar, EnumHand.MAIN_HAND);
+					if (!li.isEmpty() && li.getItemUseAction() == EnumAction.BLOCK) {
+						li.useItemRightClick(world, theMaid.maidAvatar, EnumHand.MAIN_HAND);
 						lguard = true;
 					}
 				}

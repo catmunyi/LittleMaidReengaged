@@ -81,7 +81,7 @@ public class TriggerSelect {
 	 */
 	@Deprecated
 	public static boolean checkWeapon(UUID pUsername, String pSelector, ItemStack pItemStack) {
-		if (pItemStack == null) return false;
+		if (pItemStack.isEmpty()) return false;
 		return checkTrigger(pUsername, pSelector, pItemStack.getItem());
 	}
 

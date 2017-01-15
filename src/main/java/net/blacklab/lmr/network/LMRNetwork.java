@@ -137,7 +137,7 @@ public class LMRNetwork
 		LittleMaidReengaged.Debug("MODE: %s", lmode.toString());
 		EntityLittleMaid lemaid = null;
 		if (lmode.withEntity) {
-			lemaid = getLittleMaid(pPayload.data, 1, sender.worldObj);
+			lemaid = getLittleMaid(pPayload.data, 1, sender.world);
 			if (lemaid == null) return;
 			syncPayLoad(lmode, lemaid, Arrays.copyOfRange(pPayload.data, 5, pPayload.data.length));
 		}
@@ -166,9 +166,9 @@ public class LMRNetwork
 			// Synchronizing
 			lemaid.setColor(lcolor2);
 			if (!sender.capabilities.isCreativeMode) {
-				for (int li = 0; li < sender.inventory.mainInventory.length; li++) {
-					ItemStack lis = sender.inventory.mainInventory[li];
-					if (lis != null && lis.getItem() == Items.DYE) {
+				for (int li = 0; li < sender.inventory.mainInventory.size(); li++) {
+					ItemStack lis = sender.inventory.mainInventory.get(li);
+					if (!lis.isEmpty() && lis.getItem() == Items.DYE) {
 						if (lis.getItemDamage() == (15 - lcolor2)) {
 							CommonHelper.decPlayerInventory(sender, li, 1);
 						}
@@ -191,14 +191,14 @@ public class LMRNetwork
 			// IFFGUI open
 			lindex = NetworkHelper.getIntFromPacket(contents, 0);
 			lname = NetworkHelper.getStrFromPacket(contents, 4);
-			lval = IFF.getIFF(CommonHelper.getPlayerUUID(sender), lname, sender.worldObj);
+			lval = IFF.getIFF(CommonHelper.getPlayerUUID(sender), lname, sender.world);
 			LittleMaidReengaged.Debug("getIFF-SV user:%s %s(%d)=%d", CommonHelper.getPlayerUUID(sender), lname, lindex, lval);
 			sendIFFValue(sender, lval, lindex);
 			break;
 		case SERVER_SAVE_IFF :
 			// IFFファイルの保存
 			IFF.saveIFF(CommonHelper.getPlayerUUID(sender));
-//			if (!sender.worldObj.isRemote) {
+//			if (!sender.world.isRemote) {
 //				IFF.saveIFF("");
 //			}
 			break;
@@ -226,7 +226,7 @@ public class LMRNetwork
 			pMaid.setExpBooster(NetworkHelper.getIntFromPacket(contents, 0));
 			break;
 		case SYNC_MODEL :
-			LittleMaidReengaged.Debug("CLIENT=%5s, INDEX:%d, name=%s", pMaid.worldObj.isRemote, contents[0], NetworkHelper.getStrFromPacket(contents, 1));
+			LittleMaidReengaged.Debug("CLIENT=%5s, INDEX:%d, name=%s", pMaid.world.isRemote, contents[0], NetworkHelper.getStrFromPacket(contents, 1));
 			if (contents[0] == 0) {
 				// main
 				pMaid.setTextureNameMain(NetworkHelper.getStrFromPacket(contents, 1));

@@ -67,7 +67,7 @@ public class EventHookLMRE
 				if (arrow.shootingEntity instanceof IEntityLittleMaidAvatar) {
 					IEntityLittleMaidAvatar avatar = (IEntityLittleMaidAvatar) arrow.shootingEntity;
 					/* if (arrow.isDead) {
-						for (Object obj : arrow.worldObj.loadedEntityList) {
+						for (Object obj : arrow.world.loadedEntityList) {
 							if (obj instanceof EntityCreature && !(obj instanceof LMM_EntityLittleMaid)) {
 								EntityCreature ecr = (EntityCreature)obj;
 								if (ecr.getEntityToAttack() == avatar) {
@@ -110,11 +110,11 @@ public class EventHookLMRE
 		}
 	}
 
-	public static boolean deleteDoppelganger(boolean loading, World worldObj, Entity entity) {
+	public static boolean deleteDoppelganger(boolean loading, World world, Entity entity) {
 		// ドッペル対策
 		if (LittleMaidReengaged.cfg_antiDoppelganger/* && maidAnniversary > 0L*/) {
-			for (int i = 0; i < worldObj.loadedEntityList.size(); i++) {
-				Entity entity1 = (Entity)worldObj.loadedEntityList.get(i);
+			for (int i = 0; i < world.loadedEntityList.size(); i++) {
+				Entity entity1 = (Entity)world.loadedEntityList.get(i);
 
 				if (!entity1.isDead && entity1 instanceof EntityLivingBase) {
 					EntityLivingBase elm = (EntityLivingBase)entity1;

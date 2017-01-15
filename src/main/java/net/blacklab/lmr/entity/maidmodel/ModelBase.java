@@ -86,23 +86,24 @@ public abstract class ModelBase extends AbstractModelBase {
 	}
 
 	public static final float mh_sqrt_float(float f) {
-		return MathHelper.sqrt_float(f);
+		return MathHelper.sqrt(f);
 	}
 
 	public static final float mh_sqrt_double(double d) {
-		return MathHelper.sqrt_double(d);
+		return MathHelper.sqrt(d);
 	}
 
 	public static final int mh_floor_float(float f) {
-		return MathHelper.floor_float(f);
+		return MathHelper.floor(f);
 	}
 
 	public static final int mh_floor_double(double d) {
-		return MathHelper.floor_double(d);
+		return MathHelper.floor(d);
 	}
 
-	public static final long mh_floor_double_long(double d) {
-		return MathHelper.floor_double_long(d);
+	public static final long mh_floor_double_long(double value) {
+        long i = (long)value;
+        return value < (double)i ? i - 1L : i;
 	}
 
 	public static final float mh_abs(float f) {
@@ -110,19 +111,19 @@ public abstract class ModelBase extends AbstractModelBase {
 	}
 
 	public static final double mh_abs_max(double d, double d1) {
-		return MathHelper.abs_max(d, d1);
+		return MathHelper.absMax(d, d1);
 	}
 
 	public static final int mh_bucketInt(int i, int j) {
-		return MathHelper.bucketInt(i, j);
+		return i < 0 ? -((-i - 1) / j) - 1 : i / j;
 	}
 
 	public static final boolean mh_stringNullOrLengthZero(String s) {
 		return s==null||s=="";
 	}
 
-	public static final int mh_getRandomIntegerInRange(Random random, int i, int j) {
-		return MathHelper.getRandomIntegerInRange(random, i, j);
+	public static final int mh_getRandomIntegerInRange(Random random, int minimum, int maximum) {
+		return minimum >= maximum ? minimum : random.nextInt(maximum - minimum + 1) + minimum;
 	}
 
 }

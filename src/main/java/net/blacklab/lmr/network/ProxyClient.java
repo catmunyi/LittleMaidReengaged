@@ -60,7 +60,7 @@ public class ProxyClient extends ProxyCommon
 	/* 呼び出し箇所なし
 	public GuiContainer getContainerGUI(EntityClientPlayerMP var1, int var2,
 			int var3, int var4, int var5) {
-		Entity lentity = var1.worldObj.getEntityByID(var3);
+		Entity lentity = var1.world.getEntityByID(var3);
 		if (lentity instanceof LMM_EntityLittleMaid) {
 			LMM_GuiInventory lgui = new LMM_GuiInventory(var1, (LMM_EntityLittleMaid)lentity);
 //			var1.openContainer = lgui.inventorySlots;
@@ -77,7 +77,7 @@ public class ProxyClient extends ProxyCommon
 		// アイテム回収のエフェクト
 		// TODO:こっちを使うか？
 //		mc.effectRenderer.addEffect(new EntityPickupFX(mc.theWorld, entity, avatar, -0.5F));
-		CommonHelper.mc.effectRenderer.addEffect(new ParticleItemPickup(CommonHelper.mc.theWorld, entity, pAvatar, 0.1F));
+		CommonHelper.mc.effectRenderer.addEffect(new ParticleItemPickup(CommonHelper.mc.world, entity, pAvatar, 0.1F));
 	}
 
 	// TODO いらん？
@@ -95,7 +95,7 @@ public class ProxyClient extends ProxyCommon
 
 	public EntityPlayer getClientPlayer()
 	{
-		return Minecraft.getMinecraft().thePlayer;
+		return Minecraft.getMinecraft().player;
 	}
 
 	/* 呼び出し箇所なし
@@ -167,7 +167,7 @@ public class ProxyClient extends ProxyCommon
 		LittleMaidReengaged.Debug("MODE: %s", lmode.toString());
 		EntityLittleMaid lemaid = null;
 		if (lmode.withEntity) {
-			lemaid = LMRNetwork.getLittleMaid(pPayload.data, 1, Minecraft.getMinecraft().theWorld);
+			lemaid = LMRNetwork.getLittleMaid(pPayload.data, 1, Minecraft.getMinecraft().world);
 			if (lemaid == null) return;
 			LMRNetwork.syncPayLoad(lmode, lemaid, Arrays.copyOfRange(pPayload.data, 5, pPayload.data.length));
 		}

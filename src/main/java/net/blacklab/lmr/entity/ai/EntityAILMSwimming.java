@@ -41,11 +41,11 @@ public class EntityAILMSwimming extends EntityAISwimming {
 				double xd = theMaid.posX;
 				double yd = theMaid.getEntityBoundingBox().minY;
 				double zd = theMaid.posZ;
-				int x = MathHelper.floor_double(xd);
-				int z = MathHelper.floor_double(zd);
-				int y = MathHelper.floor_double(yd);
+				int x = MathHelper.floor(xd);
+				int z = MathHelper.floor(zd);
+				int y = MathHelper.floor(yd);
 				totalmotionY += 0.03D * MathHelper.cos(theMaid.ticksExisted/16f);
-//				if(theMaid.worldObj.isAnyLiquid(new AxisAlignedBB(x, y, z, x, y+h+1, z))){
+//				if(theMaid.world.isAnyLiquid(new AxisAlignedBB(x, y, z, x, y+h+1, z))){
 //					totalmotionY += 0.05D;
 //				}
 
@@ -72,7 +72,7 @@ public class EntityAILMSwimming extends EntityAISwimming {
 					
 					// Going ashore
 					if (pathPoint != null && Math.abs(pathPoint.yCoord - yd) < 3d && Math.pow(pathPoint.xCoord - xd, 2) + Math.pow(pathPoint.zCoord - zd, 2) < 9d &&
-							(iState = theMaid.worldObj.getBlockState(new BlockPos(pathPoint.xCoord, pathPoint.yCoord + 1, pathPoint.zCoord)))
+							(iState = theMaid.world.getBlockState(new BlockPos(pathPoint.xCoord, pathPoint.yCoord + 1, pathPoint.zCoord)))
 							.getBlock().getMaterial(iState) != Material.WATER) {
 						totalmotionY += 0.05D;
 					}

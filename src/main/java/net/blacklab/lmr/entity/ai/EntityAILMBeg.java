@@ -11,14 +11,14 @@ public class EntityAILMBeg extends EntityAIBase {
 	protected EntityLittleMaid littleMaid;
 	protected EntityPlayer targetPlayer;
 	protected double targetRangeSq;
-	protected World worldObj;
+	protected World world;
 	protected float effectiveRange;
 	protected double effectiveRangeSq;
 	protected int field_48347_e; // 興味を持っている時間？
 
 	public EntityAILMBeg(EntityLittleMaid pentityLittlemaid, float par2) {
 		littleMaid = pentityLittlemaid;
-		worldObj = pentityLittlemaid.worldObj;
+		world = pentityLittlemaid.world;
 		effectiveRange = par2;
 		effectiveRangeSq = (double) par2 * (double) par2;
 		setMutexBits(2);
@@ -30,7 +30,7 @@ public class EntityAILMBeg extends EntityAIBase {
 			targetPlayer = littleMaid.getDistanceSqToMaster() > effectiveRangeSq ? null
 					: littleMaid.getMaidMasterEntity();
 		} else {
-			targetPlayer = worldObj.getClosestPlayerToEntity(littleMaid, effectiveRange);
+			targetPlayer = world.getClosestPlayerToEntity(littleMaid, effectiveRange);
 		}
 		
 		if (targetPlayer == null) {
@@ -89,7 +89,7 @@ public class EntityAILMBeg extends EntityAIBase {
 	private boolean checkItem(EntityPlayer par1EntityPlayer) {
 		ItemStack itemstack = par1EntityPlayer.inventory.getCurrentItem();
 		
-		if (itemstack == null) {
+		if (itemstack.isEmpty()) {
 			return false;
 		}
 		return littleMaid.isBreedingItem(itemstack);

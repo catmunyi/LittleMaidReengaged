@@ -21,7 +21,7 @@ public class EntityAILMTracerMove extends EntityAIBase implements IEntityAI {
 
 	public EntityAILMTracerMove(EntityLittleMaid pEntityLittleMaid) {
 		theMaid = pEntityLittleMaid;
-		world = pEntityLittleMaid.worldObj;
+		world = pEntityLittleMaid.world;
 		isEnable = false;
 
 		setMutexBits(1);
@@ -60,10 +60,10 @@ public class EntityAILMTracerMove extends EntityAIBase implements IEntityAI {
 	protected void doExecute() {
 		// ルート策定
 		// ターゲットをサーチ
-		int ox = MathHelper.floor_double(theMaid.posX);
-		int oy = MathHelper.floor_double(theMaid.posY);
-		int oz = MathHelper.floor_double(theMaid.posZ);
-		int vt = MathHelper.floor_float(((theMaid.rotationYawHead * 4F) / 360F) + 2.5F) & 3;
+		int ox = MathHelper.floor(theMaid.posX);
+		int oy = MathHelper.floor(theMaid.posY);
+		int oz = MathHelper.floor(theMaid.posZ);
+		int vt = MathHelper.floor(((theMaid.rotationYawHead * 4F) / 360F) + 2.5F) & 3;
 		int xx = ox;
 		int yy = oy;
 		int zz = oz;

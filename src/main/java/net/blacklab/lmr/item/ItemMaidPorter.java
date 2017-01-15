@@ -43,11 +43,12 @@ public class ItemMaidPorter extends Item {
 	}
 
 	@Override
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos,
+	public EnumActionResult onItemUse(EntityPlayer playerIn, World worldIn, BlockPos pos,
 			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (worldIn.isRemote) {
 			return EnumActionResult.PASS;
 		}
+		ItemStack stack = playerIn.getHeldItem(hand);
 		NBTTagCompound tagCompound = stack.getTagCompound();
 		if (tagCompound != null) {
 			if (worldIn.isAirBlock(pos.add(0, 1, 0)) && worldIn.isAirBlock(pos.add(0, 2, 0))) {
@@ -62,8 +63,8 @@ public class ItemMaidPorter extends Item {
 					}
 				}.addMaidExperienceWithoutEvent(experience);
 				lMaid.setLocationAndAngles(pos.getX(), pos.getY()+1, pos.getZ(), 0, 0);
-				worldIn.spawnEntityInWorld(lMaid);
-				lMaid.processInteract(playerIn, EnumHand.MAIN_HAND, new ItemStack(Items.CAKE));
+				worldIn.spawnEntity(lMaid);
+				lMaid.processInteract(playerIn, EnumHand.MAIN_HAND);
 
 				if (!customName.isEmpty()) {
 					lMaid.setCustomNameTag(customName);

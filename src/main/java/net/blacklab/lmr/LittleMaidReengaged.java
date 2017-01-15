@@ -64,9 +64,9 @@ public class LittleMaidReengaged {
 
 	public static final String DOMAIN = "lmreengaged";
 	public static final String VERSION = "8.0.1.66";
-	public static final String ACCEPTED_MCVERSION = "[1.9.4,1.10]";
+	public static final String ACCEPTED_MCVERSION = "[1.11]";
 	public static final int VERSION_CODE = 1;
-	public static final String DEPENDENCIES = "required-after:Forge@[1.9-12.16.0.1819,);"
+	public static final String DEPENDENCIES = "required-after:forge@[1.11-13.19.1.2199,);"
 			+ "required-after:net.blacklab.lib@[5.2.0.3,)";
 
 	/*
@@ -255,7 +255,7 @@ public class LittleMaidReengaged {
 
 //		latestVersion = Version.getLatestVersion("http://mc.el-blacklab.net/lmmnxversion.txt", 10000);
 
-		EntityRegistry.registerModEntity(EntityLittleMaid.class,
+		EntityRegistry.registerModEntity(new ResourceLocation(DOMAIN, "LittleMaid"), EntityLittleMaid.class,
 				"LittleMaid", 0, instance, 80, 1, true);
 
 		spawnEgg = new ItemMaidSpawnEgg();
@@ -331,19 +331,19 @@ public class LittleMaidReengaged {
 
 				if(biome != null &&
 						(
-								(BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.HOT) ||
-										BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.COLD) ||
-										BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.WET) ||
-										BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.DRY) ||
-										BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.SAVANNA) ||
-										BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.CONIFEROUS) ||
-										BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.LUSH) ||
-										BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.MUSHROOM) ||
-										BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.FOREST) ||
-										BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.PLAINS) ||
-										BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.SANDY) ||
-										BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.SNOWY) ||
-										BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.BEACH))
+								(BiomeDictionary.hasType(biome, BiomeDictionary.Type.HOT) ||
+										BiomeDictionary.hasType(biome, BiomeDictionary.Type.COLD) ||
+										BiomeDictionary.hasType(biome, BiomeDictionary.Type.WET) ||
+										BiomeDictionary.hasType(biome, BiomeDictionary.Type.DRY) ||
+										BiomeDictionary.hasType(biome, BiomeDictionary.Type.SAVANNA) ||
+										BiomeDictionary.hasType(biome, BiomeDictionary.Type.CONIFEROUS) ||
+										BiomeDictionary.hasType(biome, BiomeDictionary.Type.LUSH) ||
+										BiomeDictionary.hasType(biome, BiomeDictionary.Type.MUSHROOM) ||
+										BiomeDictionary.hasType(biome, BiomeDictionary.Type.FOREST) ||
+										BiomeDictionary.hasType(biome, BiomeDictionary.Type.PLAINS) ||
+										BiomeDictionary.hasType(biome, BiomeDictionary.Type.SANDY) ||
+										BiomeDictionary.hasType(biome, BiomeDictionary.Type.SNOWY) ||
+										BiomeDictionary.hasType(biome, BiomeDictionary.Type.BEACH))
 								)
 						)
 				{
