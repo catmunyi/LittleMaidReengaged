@@ -160,7 +160,7 @@ public class ExperienceHandler {
 							int consumesize = Math.min(stack.getCount(), requiredSugarToRevive);
 							stack.shrink(consumesize);
 							if (stack.getCount() <= 0) {
-								stack = null;
+								stack = ItemStack.EMPTY;
 							}
 							requiredSugarToRevive -= consumesize;
 						}
