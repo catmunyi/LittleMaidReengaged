@@ -1,5 +1,5 @@
 // Variiables
-def mod_version = "8.0.2"
+def mod_version = "8.0.3"
 def build_number = "1"
 
 buildscript {
