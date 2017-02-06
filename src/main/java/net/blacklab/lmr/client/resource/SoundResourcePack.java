@@ -95,8 +95,7 @@ public class SoundResourcePack implements IResourcePack {
 	}
 
 	@Override
-	public IMetadataSection getPackMetadata(MetadataSerializer par1MetadataSerializer, String par2Str)
-	{ //throws IOException {
+	public <T extends IMetadataSection> T getPackMetadata(MetadataSerializer metadataSerializer, String metadataSectionName) throws IOException {
 		return null;
 	}
 

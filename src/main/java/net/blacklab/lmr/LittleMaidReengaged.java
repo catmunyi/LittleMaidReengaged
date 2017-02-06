@@ -57,16 +57,15 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 		modid = LittleMaidReengaged.DOMAIN,
 		name = "LittleMaidReengaged",
 		version = LittleMaidReengaged.VERSION,
-		acceptedMinecraftVersions=LittleMaidReengaged.ACCEPTED_MCVERSION,
 		dependencies = LittleMaidReengaged.DEPENDENCIES,
 		updateJSON = "http://mc.el-blacklab.net/lmr-version.json")
 public class LittleMaidReengaged {
 
 	public static final String DOMAIN = "lmreengaged";
-	public static final String VERSION = "8.0.4.91";
-	public static final String ACCEPTED_MCVERSION = "[1.9.4,1.10]";
-	public static final int VERSION_CODE = 1;
-	public static final String DEPENDENCIES = "required-after:Forge@[1.9-12.16.0.1819,);"
+	public static final String VERSION = "GRADLE:VERSION";
+	public static final String ACCEPTED_MCVERSION = "[1.10.2]";
+	public static final int VERSION_CODE = 1; 
+	public static final String DEPENDENCIES = "required-after:Forge@[1.10.2-12.18.3.2185,);"
 			+ "required-after:net.blacklab.lib@[5.2.0.3,)";
 
 	/*
@@ -141,7 +140,7 @@ public class LittleMaidReengaged {
 	public static ItemMaidPorter maidPorter;
 
 	public static void Debug(String pText, Object... pVals) {
-		// デバッグメッセージ
+		// デバッグメッセージ - Debug Message
 		if (cfg_PrintDebugMessage || DevMode.DEVELOPMENT_DEBUG_MODE) {
 			System.out.println(String.format("littleMaidMob-" + pText, pVals));
 		}
@@ -179,6 +178,7 @@ public class LittleMaidReengaged {
 		StabilizerManager.init();
 
 		// テクスチャパックの構築
+		new ModelManager(); //ez fix.
 		ModelManager.instance.init();
 		ModelManager.instance.loadTextures();
 		// ロード
@@ -348,7 +348,6 @@ public class LittleMaidReengaged {
 						)
 				{
 					EntityRegistry.addSpawn(EntityLittleMaid.class, cfg_spawnWeight, cfg_minGroupSize, cfg_maxGroupSize, EnumCreatureType.CREATURE, biome);
-					System.out.println("Registering spawn in " + biome.getBiomeName());
 					Debug("Registering maids to spawn in " + biome.getBiomeName());
 				}
 			}

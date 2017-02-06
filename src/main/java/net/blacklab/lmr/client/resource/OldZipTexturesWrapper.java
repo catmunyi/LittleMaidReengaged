@@ -34,12 +34,6 @@ public class OldZipTexturesWrapper implements IResourcePack {
 	}
 
 	@Override
-	public IMetadataSection getPackMetadata(MetadataSerializer arg0,
-			String arg1) throws IOException {
-		return null;
-	}
-
-	@Override
 	public String getPackName() {
 		return "OldTexturesLoader";
 	}
@@ -47,6 +41,11 @@ public class OldZipTexturesWrapper implements IResourcePack {
 	@Override
 	public Set<String> getResourceDomains() {
 		return ImmutableSet.of("minecraft");
+	}
+
+	@Override
+	public <T extends IMetadataSection> T getPackMetadata(MetadataSerializer metadataSerializer, String metadataSectionName) throws IOException {
+		return null;
 	}
 
 	@Override

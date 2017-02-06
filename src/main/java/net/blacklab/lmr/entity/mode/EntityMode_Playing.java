@@ -97,6 +97,7 @@ public class EntityMode_Playing extends EntityModeBase {
 					for (int c = 0; c < 4; c++) {
 						if (checkSnows(x, y, z, owner.worldObj)) {
 							pe = owner.getNavigator().getPathToXYZ(x, y - 1, z);
+							owner.getNavigator().getPathToXYZ(x,y-1,z);
 //							pe = owner.getNavigator().getEntityPathToXYZ(owner, x, y - 1, z, 10F, true, false, false, true);
 							if (pe != null) {
 								break loop_search;

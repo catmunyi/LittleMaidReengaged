@@ -74,9 +74,9 @@ public class EntityAILMAvoidPlayer extends EntityAIBase implements
 		if (avoidPath == null) {
 			return false;
 		}
-
-		// WTF NSME on 1.10
-		return avoidPath.isDestinationSame(vec3d);
+		//TODO: return to this.
+		//return avoidPath.isSamePath(vec3d);
+		return true;
 	}
 
 	@Override

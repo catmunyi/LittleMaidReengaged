@@ -50,7 +50,7 @@ public abstract class ManagerBase {
 			return;
 		}
 
-		// mods]
+		// mods
 		String mcv = (String) FMLInjectionData.data()[4];
 		LittleMaidReengaged.Debug("MC %s", mcv);
 		LittleMaidReengaged.Debug("START SEARCH MODS FOLDER");

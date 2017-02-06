@@ -40,7 +40,7 @@ public class ModelManager {
 	/**
 	 * 継承クラスで置き換えることを考慮。
 	 */
-	public static ModelManager instance = new ModelManager();
+	public static ModelManager instance;
 
 	public static String nameTextureIndex = "config/mod_MMM_textureList.cfg";
 	public static String defaultModelName = "Orign";
@@ -74,6 +74,12 @@ public class ModelManager {
 		"mob_littlemaidw.png",
 		"mob_littlemaid_a00.png", "mob_littlemaid_a01.png"
 	};
+
+	//Replaced because terrible code.
+	public ModelManager() {
+		instance = this;
+	}
+
 
 	/**
 	 * ローカルで保持しているモデルのリスト

@@ -213,8 +213,7 @@ public class GuiIFF extends GuiScreen {
 				li++;
 			}
 
-			Entity player = mc.thePlayer;
-			player.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("ui.button.click")), 1, 1);
+			thePlayer.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("ui.button.click")), 1, 1);
 		}
 	}
 

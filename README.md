@@ -14,3 +14,14 @@ A MOD of Minecraft; LittleMaidMob for MC1.9/1.9.4/1.10. Cute and little maid gir
 Read LICENSE.md
 
 ## Making developing environment
+
+```
+# Setup Forge via Gradle
+gradlew setupDecompWorkspace
+
+# make Eclipse project (if you use it)
+gradlew eclipse
+
+# build .jar archive
+gradlew build
+```

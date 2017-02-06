@@ -25,16 +25,15 @@ public class MaidMoveNodeProcessor extends WalkNodeProcessor {
 	}
 
 	@Override
-	public PathPoint getPathPointToCoords(double x, double y, double z) {
+	public PathPoint getPathPointToCoords(double x, double y, double target) {
 		if (canSwim && entity.isInWater()) {
-			return this.openPoint(MathHelper.floor_double(x - (double)(entity.width / 2.0F)), MathHelper.floor_double(y + 0.5D), MathHelper.floor_double(z - (double)(entity.width / 2.0F)));
+			return this.openPoint(MathHelper.floor_double(x - (double)(entity.width / 2.0F)), MathHelper.floor_double(y + 0.5D), MathHelper.floor_double(target - (double)(entity.width / 2.0F)));
 		}
-		return super.getPathPointToCoords(x, y, z);
+		return super.getPathPointToCoords(x, y, target);
 	}
 
 	@Override
-	public int findPathOptions(PathPoint[] pathOptions, PathPoint currentPoint, PathPoint targetPoint,
-			float maxDistance) {
+	public int findPathOptions(PathPoint[] pathOptions, PathPoint currentPoint, PathPoint targetPoint, float maxDistance) {
 		if (canSwim && entity.isInWater()) {
 			int i = 0;
 

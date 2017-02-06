@@ -50,24 +50,24 @@ public class EntityLittleMaidAvatarMP extends FakePlayer implements IEntityLittl
 				CommonHelper.newGameProfile("1", "LMM_EntityLittleMaidAvatar"));
 	}
 
-	public EntityLittleMaidAvatarMP(World par1World, EntityLittleMaid par2EntityLittleMaid) {
+	public EntityLittleMaidAvatarMP(World par1World, EntityLittleMaid littleMaid) {
 		this(par1World);
 
 		// 初期設定
-		avatar = par2EntityLittleMaid;
-		// TODO dataManager has been taken over.
-		dataManager = avatar.getDataManager();
+		avatar = littleMaid;
+		// dataWatcher is now dataManager.
+		this.dataManager = avatar.getDataManager();
 
 //		this.dataManager.register(Statics.dataWatch_AbsorptionAmount, Float.valueOf(0.0F));
 
 		/*
-		 * TODO 要調整
+		 * TODO 要調整 --
 		 */
 		inventory = avatar.maidInventory;
 		inventory.player = this;
 	}
 
-	// 実績参照
+	// Probably being extended from FakePlayer
 	@Override
 	public StatisticsManagerServer getStatFile() {
 		// ご主人様がいれば、ご主人様の実績を返す。

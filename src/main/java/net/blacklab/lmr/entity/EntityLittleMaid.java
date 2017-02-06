@@ -1,18 +1,5 @@
 package net.blacklab.lmr.entity;
 
-import static net.blacklab.lmr.util.Statics.*;
-
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import net.blacklab.lib.minecraft.item.ItemUtil;
 import net.blacklab.lib.vevent.VEventBus;
 import net.blacklab.lmr.LittleMaidReengaged;
@@ -22,31 +9,10 @@ import net.blacklab.lmr.api.item.IItemSpecialSugar;
 import net.blacklab.lmr.client.entity.EntityLittleMaidAvatarSP;
 import net.blacklab.lmr.client.sound.SoundLoader;
 import net.blacklab.lmr.client.sound.SoundRegistry;
-import net.blacklab.lmr.entity.ai.EntityAILMAttackArrow;
-import net.blacklab.lmr.entity.ai.EntityAILMAttackOnCollide;
-import net.blacklab.lmr.entity.ai.EntityAILMAvoidPlayer;
-import net.blacklab.lmr.entity.ai.EntityAILMBeg;
-import net.blacklab.lmr.entity.ai.EntityAILMBegMove;
-import net.blacklab.lmr.entity.ai.EntityAILMCollectItem;
-import net.blacklab.lmr.entity.ai.EntityAILMFindBlock;
-import net.blacklab.lmr.entity.ai.EntityAILMFleeRain;
-import net.blacklab.lmr.entity.ai.EntityAILMFollowOwner;
-import net.blacklab.lmr.entity.ai.EntityAILMOpenDoor;
-import net.blacklab.lmr.entity.ai.EntityAILMRestrictOpenDoor;
-import net.blacklab.lmr.entity.ai.EntityAILMRestrictRain;
-import net.blacklab.lmr.entity.ai.EntityAILMSwimming;
-import net.blacklab.lmr.entity.ai.EntityAILMTracerMove;
-import net.blacklab.lmr.entity.ai.EntityAILMWait;
-import net.blacklab.lmr.entity.ai.EntityAILMWander;
-import net.blacklab.lmr.entity.ai.EntityAILMWatchClosest;
+import net.blacklab.lmr.entity.ai.*;
 import net.blacklab.lmr.entity.experience.ExperienceHandler;
 import net.blacklab.lmr.entity.experience.ExperienceUtil;
-import net.blacklab.lmr.entity.maidmodel.EquippedStabilizer;
-import net.blacklab.lmr.entity.maidmodel.IModelCaps;
-import net.blacklab.lmr.entity.maidmodel.IModelEntity;
-import net.blacklab.lmr.entity.maidmodel.ModelConfigCompound;
-import net.blacklab.lmr.entity.maidmodel.TextureBox;
-import net.blacklab.lmr.entity.maidmodel.TextureBoxBase;
+import net.blacklab.lmr.entity.maidmodel.*;
 import net.blacklab.lmr.entity.mode.EntityModeBase;
 import net.blacklab.lmr.entity.mode.EntityMode_Playing;
 import net.blacklab.lmr.entity.pathnavigate.PathNavigatorLittleMaid;
@@ -55,12 +21,7 @@ import net.blacklab.lmr.item.ItemTriggerRegisterKey;
 import net.blacklab.lmr.network.EnumPacketMode;
 import net.blacklab.lmr.network.GuiHandler;
 import net.blacklab.lmr.network.LMRNetwork;
-import net.blacklab.lmr.util.Counter;
-import net.blacklab.lmr.util.EntityCaps;
-import net.blacklab.lmr.util.EnumSound;
-import net.blacklab.lmr.util.IFF;
-import net.blacklab.lmr.util.SwingStatus;
-import net.blacklab.lmr.util.TriggerSelect;
+import net.blacklab.lmr.util.*;
 import net.blacklab.lmr.util.helper.CommonHelper;
 import net.blacklab.lmr.util.helper.ItemHelper;
 import net.blacklab.lmr.util.helper.NetworkHelper;
@@ -69,18 +30,9 @@ import net.blacklab.lmr.util.manager.EntityModeManager;
 import net.blacklab.lmr.util.manager.ModelManager;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.ai.EntityAILeapAtTarget;
-import net.minecraft.entity.ai.EntityAILookIdle;
-import net.minecraft.entity.ai.EntityAIPanic;
-import net.minecraft.entity.ai.EntityAITasks;
+import net.minecraft.entity.*;
+import net.minecraft.entity.ai.*;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
-import net.minecraft.entity.ai.EntityAITempt;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.item.EntityItem;
@@ -116,24 +68,28 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biome.TempCategory;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import static net.blacklab.lmr.util.Statics.*;
 
 public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 
@@ -273,6 +229,10 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	// 実験用
 	private int firstload = 100;
 	public String statusMessage = "";
+	
+	// for Moving AI
+	protected Path prevPathEntity = null;
+
 
 	// AI
 	public EntityAITempt aiTempt;
@@ -340,6 +300,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 					throwable.printStackTrace();
 					maidAvatar = null;
 					setDead();
+					System.out.println("She's dead jim.");
 					return;
 				}
 			}
@@ -388,6 +349,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 
 		// EntityModeの追加
 		maidEntityModeList = EntityModeManager.getModeList(this);
+
 		// モードリスト
 		setMaidActiveModeClass(null);
 		maidModeList = new HashMap<Integer, EntityAITasks[]>();
@@ -487,37 +449,38 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		// maidAvater用EntityPlayer互換変数
 		// 17 -> 18
 		// 18 : Absoption効果をクライアント側へ転送するのに使う
-		dataManager.register(EntityLittleMaid.dataWatch_Absoption, Float.valueOf(0));
+		this.dataManager.register(EntityLittleMaid.dataWatch_Absoption, Float.valueOf(0));
 
 		// 独自分
 		// 19:maidColor
-		dataManager.register(EntityLittleMaid.dataWatch_Color, Integer.valueOf(0));
+		this.dataManager.register(EntityLittleMaid.dataWatch_Color, Integer.valueOf(0));
 		// 20:選択テクスチャインデックス
 		// TODO いらん？
-		dataManager.register(EntityLittleMaid.dataWatch_Texture, Integer.valueOf(0));
+		this.dataManager.register(EntityLittleMaid.dataWatch_Texture, Integer.valueOf(0));
 		// 21:モデルパーツの表示フラグ
-		dataManager.register(EntityLittleMaid.dataWatch_Parts, Integer.valueOf(0));
+		this.dataManager.register(EntityLittleMaid.dataWatch_Parts, Integer.valueOf(0));
 		// 22:状態遷移フラグ群(32Bit)、詳細はStatics参照
-		dataManager.register(EntityLittleMaid.dataWatch_Flags, Integer.valueOf(0));
+		this.dataManager.register(EntityLittleMaid.dataWatch_Flags, Integer.valueOf(0));
 		// 23:GotchaID
-		dataManager.register(EntityLittleMaid.dataWatch_Gotcha, Integer.valueOf(0));
+		this.dataManager.register(EntityLittleMaid.dataWatch_Gotcha, Integer.valueOf(0));
 		// 24:メイドモード
-		dataManager.register(EntityLittleMaid.dataWatch_Mode, Integer.valueOf(0));
+		this.dataManager.register(EntityLittleMaid.dataWatch_Mode, Integer.valueOf(0));
 		// 25:利き腕
-		dataManager.register(EntityLittleMaid.dataWatch_DominamtArm, Integer.valueOf(0));
+		this.dataManager.register(EntityLittleMaid.dataWatch_DominamtArm, Integer.valueOf(0));
 		// 26:アイテムの使用判定
-		dataManager.register(EntityLittleMaid.dataWatch_ItemUse, Integer.valueOf(0));
+		this.dataManager.register(EntityLittleMaid.dataWatch_ItemUse, Integer.valueOf(0));
+
 		// 27:保持経験値
 		/**
 		 * TODO 旧コメにあった「互換性保持」の意味がよく分からなかった．
 		 * バニラには27番を使うMobはいないし，旧版継承の問題？
 		 * バニラ由来のexperienceValueはほとんど利用していないので上書き．
 		 */
-		dataManager.register(EntityLittleMaid.dataWatch_MaidExpValue , Float.valueOf(0));
+		this.dataManager.register(EntityLittleMaid.dataWatch_MaidExpValue , Float.valueOf(0));
 
 		// TODO:test
 		// 31:自由変数、EntityMode等で使用可能な変数。
-		dataManager.register(EntityLittleMaid.dataWatch_Free, new Integer(0));
+		this.dataManager.register(EntityLittleMaid.dataWatch_Free, new Integer(0));
 
 		defaultWidth = width;
 		defaultHeight = height;
@@ -740,7 +703,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		}
 		mstatModeName = getMaidModeString(pindex);
 		maidMode = pindex;
-		dataManager.set(EntityLittleMaid.dataWatch_Mode, maidMode);
+		this.dataManager.set(EntityLittleMaid.dataWatch_Mode, maidMode);
 		EntityAITasks[] ltasks = maidModeList.get(pindex);
 
 		// AIを根底から書き換える
@@ -940,17 +903,17 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 				so = EnumSound.living_morning;
 			} else if (mstatTime < 12500) {
 				if (isContract()) {
-					Biome Biome = worldObj.getBiomeGenForCoords(getPosition());
-					TempCategory ltemp = Biome.getTempCategory();
-					if (ltemp == TempCategory.COLD) {
+					Biome biomegenbase = worldObj.getBiomeForCoordsBody(getPosition());
+					Biome.TempCategory ltemp = biomegenbase.getTempCategory();
+					if (ltemp == Biome.TempCategory.COLD) {
 						so = EnumSound.living_cold;
-					} else if (ltemp == TempCategory.WARM) {
+					} else if (ltemp == Biome.TempCategory.WARM) {
 						so = EnumSound.living_hot;
 					} else {
 						so = EnumSound.living_daytime;
 					}
 					if (worldObj.isRaining()) {
-						if (Biome.getEnableSnow()) {
+						if (biomegenbase.getEnableSnow()) {
 							so = EnumSound.living_snow;
 						} else {
 							so = EnumSound.living_rain;
@@ -999,7 +962,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			return false;
 		}
 		/*
-		// TODO:サーバー側で判定できないので意味なし?
+		// TODO:サーバー側で判定できないので意味なし? Also translations.
 		MMM_TextureBox lbox = MMM_TextureManager.instance.getTextureBox(textureBox[0]);
 		if (worldObj == null || textureModel == null
 				|| !textureBox[0].mo.getCanSpawnHere(worldObj, lx, ly, lz, this)) {
@@ -1116,10 +1079,10 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			par1 = 0.0F;
 		}
 
-		dataManager.set(EntityLittleMaid.dataWatch_Absoption, Float.valueOf(par1));
+		this.dataManager.set(EntityLittleMaid.dataWatch_Absoption, Float.valueOf(par1));
 	}
 	public float getAbsorptionAmount() {
-		return dataManager.get(EntityLittleMaid.dataWatch_Absoption);
+		return this.dataManager.get(EntityLittleMaid.dataWatch_Absoption);
 	}
 
 
@@ -1394,7 +1357,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 
 		maidExperience = par1nbtTagCompound.getFloat(LittleMaidReengaged.DOMAIN + ":MAID_EXP");
 		setExpBooster(par1nbtTagCompound.getInteger(LittleMaidReengaged.DOMAIN + ":EXP_BOOST"));
-		dataManager.set(EntityLittleMaid.dataWatch_MaidExpValue, maidExperience);
+		this.dataManager.set(EntityLittleMaid.dataWatch_MaidExpValue, maidExperience);
 
 		// 肩車
 		boolean isRide = par1nbtTagCompound.getBoolean(LittleMaidReengaged.DOMAIN + ":riding");
@@ -1449,14 +1412,16 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		return super.canBeCollidedWith();
 	}
 
-	@Override
-	public boolean canBeAttackedWithItem() {
+
+	//....hmm....
+	/*
+	public boolean canAttackWithItem() {
 		if (getRidingEntity() != null && getRidingEntity() == mstatMasterEntity) {
 			return false;
 		}
 		return super.canBeAttackedWithItem();
 	}
-
+	*/
 	@Override
 	public double getMountedYOffset() {
 		// TODO: Changed from 'riddenByEntity'. Is it correct?
@@ -1563,16 +1528,16 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		if (looksWithInterest != f) {
 			looksWithInterest = f;
 
-			int li = dataManager.get(EntityLittleMaid.dataWatch_Flags);
+			int li = this.dataManager.get(EntityLittleMaid.dataWatch_Flags);
 			li = looksWithInterest ? (li | dataWatch_Flags_looksWithInterest) : (li & ~dataWatch_Flags_looksWithInterest);
 			li = looksWithInterestAXIS ? (li | dataWatch_Flags_looksWithInterestAXIS) : (li & ~dataWatch_Flags_looksWithInterestAXIS);
-			dataManager.set(EntityLittleMaid.dataWatch_Flags, Integer.valueOf(li));
+			this.dataManager.set(EntityLittleMaid.dataWatch_Flags, Integer.valueOf(li));
 		}
 	}
 
 	public boolean getLooksWithInterest() {
-		looksWithInterest = (dataManager.get(EntityLittleMaid.dataWatch_Flags) & dataWatch_Flags_looksWithInterest) > 0;
-		looksWithInterestAXIS = (dataManager.get(EntityLittleMaid.dataWatch_Flags) & dataWatch_Flags_looksWithInterestAXIS) > 0;
+		looksWithInterest = (this.dataManager.get(EntityLittleMaid.dataWatch_Flags) & dataWatch_Flags_looksWithInterest) > 0;
+		looksWithInterestAXIS = (this.dataManager.get(EntityLittleMaid.dataWatch_Flags) & dataWatch_Flags_looksWithInterestAXIS) > 0;
 
 		return looksWithInterest && !isHeadMount();
 	}
@@ -1829,6 +1794,20 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		getActiveModeClass().updateAITick(getMaidModeInt());
 	}
 
+	public Path getPrevPathEntity() {
+		return prevPathEntity;
+	}
+
+
+	/*
+	protected void updateAITick() {
+		// TODO 自動生成されたメソッド・スタブ
+		if(getNavigator().getPath()!=null)
+			prevPathEntity = getNavigator().getPath();
+		super.updateAITasks(); //todo: Check
+	}
+	*/
+
 	@Override
 	public void onEntityUpdate() {
 		//音声再生
@@ -1882,7 +1861,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	 */
 	private boolean isBlockTranslucent(int par1, int par2, int par3) {
 		IBlockState iState = worldObj.getBlockState(new BlockPos(par1, par2, par3));
-		return iState.getBlock().isNormalCube(iState);
+		return iState.getBlock().isNormalCube(iState, null, null); //Replaced with non depreciated version- ZE STATES! ZEY DO NUFFIN!
 	}
 
 	/**
@@ -2132,6 +2111,126 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		return maidOverDriveTime;
 	}
 
+	/* Not even used...
+	private void superLivingUpdate() {
+		if(onGround) isJumping = false;
+
+		if (newPosRotationIncrements > 0)
+		{
+			double d0 = posX + (interpTargetX - posX) / newPosRotationIncrements;
+			double d1 = posY + (interpTargetY - posY) / newPosRotationIncrements;
+			double d2 = posZ + (interpTargetZ - posZ) / newPosRotationIncrements;
+			double d3 = MathHelper.wrapAngleTo180_double(interpTargetYaw - rotationYaw);
+			rotationYaw = (float)(rotationYaw + d3 / newPosRotationIncrements);
+			rotationPitch = (float)(rotationPitch + (newPosX - rotationPitch) / newPosRotationIncrements);
+			--newPosRotationIncrements;
+			setPosition(d0, d1, d2);
+			setRotation(rotationYaw, rotationPitch);
+		}
+		else if (!isServerWorld())
+		{
+			motionX *= 0.98D;
+			motionY *= 0.98D;
+			motionZ *= 0.98D;
+		}
+
+		if (Math.abs(motionX) < 0.005D)
+		{
+			motionX = 0.0D;
+		}
+
+		if (Math.abs(motionY) < 0.005D)
+		{
+			motionY = 0.0D;
+		}
+
+		if (Math.abs(motionZ) < 0.005D)
+		{
+			motionZ = 0.0D;
+		}
+
+		worldObj.theProfiler.startSection("ai");
+
+		if (isMovementBlocked())
+		{
+			isJumping = false;
+			moveStrafing = 0.0F;
+			moveForward = 0.0F;
+			randomYawVelocity = 0.0F;
+		}
+		else if (isServerWorld())
+		{
+			worldObj.theProfiler.startSection("newAi");
+			try{
+				superUpdateEntityActionState();
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+			worldObj.theProfiler.endSection();
+		}
+
+		worldObj.theProfiler.endSection();
+		worldObj.theProfiler.startSection("jump");
+
+		if (isInWater())
+		{
+			updateAITick();
+		}
+		else if (isInLava())
+		{
+			motionY += 0.0333333339D;
+		}
+
+		worldObj.theProfiler.endSection();
+
+		worldObj.theProfiler.startSection("travel");
+		moveStrafing *= 0.98F;
+		moveForward *= 0.98F;
+		randomYawVelocity *= 0.9F;
+		moveEntityWithHeading(moveStrafing, moveForward);
+		worldObj.theProfiler.endSection();
+
+		worldObj.theProfiler.startSection("push");
+
+		if (!worldObj.isRemote)
+		{
+			collideWithNearbyEntities();
+		}
+
+		worldObj.theProfiler.endSection();
+	}
+	*/
+	private void superUpdateEntityActionState() {
+			worldObj.theProfiler.startSection("checkDespawn");
+			despawnEntity();
+			worldObj.theProfiler.endSection();
+			worldObj.theProfiler.startSection("sensing");
+			getEntitySenses().clearSensingCache();
+			worldObj.theProfiler.endSection();
+			worldObj.theProfiler.startSection("targetSelector");
+			targetTasks.onUpdateTasks();
+			worldObj.theProfiler.endSection();
+			worldObj.theProfiler.startSection("goalSelector");
+			tasks.onUpdateTasks();
+			worldObj.theProfiler.endSection();
+			worldObj.theProfiler.startSection("navigation");
+			navigator.onUpdateNavigation();
+			worldObj.theProfiler.endSection();
+			worldObj.theProfiler.startSection("mob tick");
+			updateAITasks();
+			worldObj.theProfiler.endSection();
+			worldObj.theProfiler.startSection("controls");
+			worldObj.theProfiler.startSection("move");
+			moveHelper.onUpdateMoveHelper();
+			worldObj.theProfiler.endStartSection("look");
+			getLookHelper().onUpdateLook();
+	//		worldObj.theProfiler.endStartSection("jump");
+	//		jumpHelper.doJump();
+	//		worldObj.theProfiler.endSection();
+			worldObj.theProfiler.endSection();
+		}
+
+
 	@Override
 	public void setLocationAndAngles(double x, double y, double z, float yaw, float pitch){
 		super.setLocationAndAngles(x, y, z, yaw, pitch);
@@ -2146,7 +2245,8 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			registerTick.onUpdate();
 
 			if (!registerTick.isEnable() && registerTick.getValue() == 0 && !worldObj.isRemote) {
-				getOwner().addChatMessage(new TextComponentTranslation("littleMaidMob.chat.text.cancelregistration").setStyle(new Style().setColor(TextFormatting.DARK_RED)));
+				getOwner().addChatMessage(new TextComponentString(I18n.translateToLocal("littleMaidMob.chat.text.cancelregistration"))
+						.setStyle(new Style().setColor(TextFormatting.DARK_RED)));
 			}
 		}
 
@@ -2175,18 +2275,18 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			if (lupd) {
 				setTextureNames();
 			}
-			setMaidMode(dataManager.get(EntityLittleMaid.dataWatch_Mode));
-			setDominantArm(dataManager.get(EntityLittleMaid.dataWatch_DominamtArm));
+			setMaidMode(this.dataManager.get(EntityLittleMaid.dataWatch_Mode));
+			setDominantArm(this.dataManager.get(EntityLittleMaid.dataWatch_DominamtArm));
 			updateMaidFlagsClient();
 			updateGotcha();
 
 			// メイド経験値
 			if (ticksExisted%10 == 0) {
-				maidExperience = dataManager.get(EntityLittleMaid.dataWatch_MaidExpValue);
+				maidExperience = this.dataManager.get(EntityLittleMaid.dataWatch_MaidExpValue);
 			}
 
 			// 腕の挙動関連
-			litemuse = dataManager.get(EntityLittleMaid.dataWatch_ItemUse);
+			litemuse = this.dataManager.get(EntityLittleMaid.dataWatch_ItemUse);
 			for (int li = 0; li < mstatSwingStatus.length; li++) {
 				ItemStack lis = mstatSwingStatus[li].getItemStack(this);
 				if ((litemuse & (1 << li)) > 0 && lis != null) {
@@ -2327,7 +2427,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		if (!worldObj.isRemote) {
 			// サーバー側処理
 			// アイテム使用状態の更新
-			dataManager.set(EntityLittleMaid.dataWatch_ItemUse, litemuse);
+			this.dataManager.set(EntityLittleMaid.dataWatch_ItemUse, litemuse);
 
 			// 弓構え
 			mstatAimeBow &= !getSwingStatusDominant().canAttack();
@@ -2441,6 +2541,29 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 				getMaidMasterEntity().addChatMessage(new TextComponentTranslation("littleMaidMob.chat.text.death", CommonHelper.getDeadSource(par1DamageSource)));
 			}
 //		}
+	}
+
+	public String sprintfDeadCause(String format, DamageSource source) {
+		String ls = source.getDamageType();
+		Entity lentity = source.getSourceOfDamage();
+		if (lentity != null) {
+			if (lentity instanceof EntityPlayer) {
+				ls += ":" + lentity.getName();
+			} else {
+				String lt = EntityList.getEntityString(lentity);
+				if (lt != null) {
+					ls += ":" + lt;
+				}
+			}
+		}
+
+		// 不具合対応
+		// getFormattedText → getUnformattedTextForChat
+		// getFormattedText はクライアント専用（描画用）。
+		// http://forum.minecraftuser.jp/viewtopic.php?f=13&t=23347&p=212078#p211805
+		String lt = getDisplayName().getFormattedText();
+
+		return String.format(format, lt, ls);
 	}
 
 	/**
@@ -2872,6 +2995,8 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 								if (registerTick.isEnable()) {
 									registerTick.setEnable(false);
 									par1EntityPlayer.addChatComponentMessage(new TextComponentTranslation("littleMaidMob.chat.text.cancelregistration").setStyle(new Style().setColor(TextFormatting.DARK_RED)));
+									par1EntityPlayer.addChatComponentMessage(new TextComponentString(I18n.translateToLocal("littleMaidMob.chat.text.cancelregistration"))
+											.setStyle(new Style().setColor(TextFormatting.DARK_RED)));
 									return true;
 								}
 
@@ -2893,10 +3018,10 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 								par1EntityPlayer.addChatComponentMessage(new TextComponentTranslation("littleMaidMob.chat.text.readyregistration", registerMode));
 								if(count >= ItemTriggerRegisterKey.RK_MAX_COUNT-10){
 									if(count<ItemTriggerRegisterKey.RK_MAX_COUNT){
-										par1EntityPlayer.addChatComponentMessage(new TextComponentTranslation("littleMaidMob.chat.text.warningcount",
+										par1EntityPlayer.addChatComponentMessage(new TextComponentString(I18n.translateToLocal("littleMaidMob.chat.text.warningcount") +
 												(ItemTriggerRegisterKey.RK_MAX_COUNT-count)).setStyle(new Style().setColor(TextFormatting.YELLOW)));
 									} else {
-										par1EntityPlayer.addChatComponentMessage(new TextComponentTranslation("littleMaidMob.chat.text.endcount")
+										par1EntityPlayer.addChatComponentMessage(new TextComponentString(I18n.translateToLocal("littleMaidMob.chat.text.endcount"))
 												.setStyle(new Style().setColor(TextFormatting.DARK_RED)));
 									}
 								}
@@ -2910,9 +3035,9 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 									while(list.remove(item)) flag = true;
 									if (!flag) {
 										list.add(item);
-										par1EntityPlayer.addChatComponentMessage(new TextComponentTranslation("littleMaidMob.chat.text.addtrigger", registerMode + "/+" + Item.REGISTRY.getNameForObject(item).toString()));
+										par1EntityPlayer.addChatComponentMessage(new TextComponentString(I18n.translateToLocal("littleMaidMob.chat.text.addtrigger") + " " + registerMode + "/+" + Item.REGISTRY.getNameForObject(item).toString()));
 									} else {
-										par1EntityPlayer.addChatComponentMessage(new TextComponentTranslation("littleMaidMob.chat.text.removetrigger", registerMode + "/-" + Item.REGISTRY.getNameForObject(item).toString()));
+										par1EntityPlayer.addChatComponentMessage(new TextComponentString(I18n.translateToLocal("littleMaidMob.chat.text.removetrigger") + " " + registerMode + "/-" + Item.REGISTRY.getNameForObject(item).toString()));
 									}
 								}
 								IFF.saveIFF(CommonHelper.getPlayerUUID(par1EntityPlayer));
@@ -3592,7 +3717,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			maidExperience = ExperienceUtil.getRequiredExpToLevel(ExperienceUtil.EXP_FUNCTION_MAX);
 		}
 
-		dataManager.set(EntityLittleMaid.dataWatch_MaidExpValue, maidExperience);
+		this.dataManager.set(EntityLittleMaid.dataWatch_MaidExpValue, maidExperience);
 		boolean flag = false;
 		for (;maidExperience >= ExperienceUtil.getRequiredExpToLevel(currentLevel+1); currentLevel++) {
 			// 一度に複数レベルアップした場合にその分だけ呼ぶ
@@ -3686,13 +3811,13 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	@Override
 	public int getColor() {
 //		return textureData.getColor();
-		return dataManager.get(EntityLittleMaid.dataWatch_Color);
+		return this.dataManager.get(EntityLittleMaid.dataWatch_Color);
 	}
 
 	@Override
 	public void setColor(int index) {
 		textureData.setColor(index);
-		dataManager.set(EntityLittleMaid.dataWatch_Color, index);
+		this.dataManager.set(EntityLittleMaid.dataWatch_Color, index);
 	}
 
 	public boolean updateMaidColor() {
@@ -3709,7 +3834,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	 * 紐の持ち主
 	 */
 	public void updateGotcha() {
-		int lid = dataManager.get(EntityLittleMaid.dataWatch_Gotcha);
+		int lid = this.dataManager.get(EntityLittleMaid.dataWatch_Gotcha);
 		if (lid == 0) {
 			mstatgotcha = null;
 			return;
@@ -3726,7 +3851,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	}
 
 	public void setGotcha(int pEntityID) {
-		dataManager.set(EntityLittleMaid.dataWatch_Gotcha, Integer.valueOf(pEntityID));
+		this.dataManager.set(EntityLittleMaid.dataWatch_Gotcha, Integer.valueOf(pEntityID));
 	}
 	public void setGotcha(Entity pEntity) {
 		setGotcha(pEntity == null ? 0 : pEntity.getEntityId());
@@ -3742,7 +3867,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	}
 
 	public boolean isAimebow() {
-		return (dataManager.get(EntityLittleMaid.dataWatch_Flags) & dataWatch_Flags_Aimebow) > 0;
+		return (this.dataManager.get(EntityLittleMaid.dataWatch_Flags) & dataWatch_Flags_Aimebow) > 0;
 	}
 
 
@@ -3750,7 +3875,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	 * 各種フラグのアップデート
 	 */
 	public void updateMaidFlagsClient() {
-		int li = dataManager.get(EntityLittleMaid.dataWatch_Flags);
+		int li = this.dataManager.get(EntityLittleMaid.dataWatch_Flags);
 		maidFreedom = (li & dataWatch_Flags_Freedom) > 0;
 		maidTracer = (li & dataWatch_Flags_Tracer) > 0;
 		maidWait = (li & dataWatch_Flags_Wait) > 0;
@@ -3770,16 +3895,16 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	 * @param pFlags： 対象フラグ。
 	 */
 	public void setMaidFlags(boolean pFlag, int pFlagvalue) {
-		int li = dataManager.get(EntityLittleMaid.dataWatch_Flags);
+		int li = this.dataManager.get(EntityLittleMaid.dataWatch_Flags);
 		li = pFlag ? (li | pFlagvalue) : (li & ~pFlagvalue);
-		dataManager.set(EntityLittleMaid.dataWatch_Flags, Integer.valueOf(li));
+		this.dataManager.set(EntityLittleMaid.dataWatch_Flags, Integer.valueOf(li));
 	}
 
 	/**
 	 * 指定されたフラグを獲得
 	 */
 	public boolean getMaidFlags(int pFlagvalue) {
-		return (dataManager.get(EntityLittleMaid.dataWatch_Flags) & pFlagvalue) > 0;
+		return (this.dataManager.get(EntityLittleMaid.dataWatch_Flags) & pFlagvalue) > 0;
 	}
 
 	/**
@@ -3792,7 +3917,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			lss.index = lss.lastIndex = -1;
 		}
 		maidDominantArm = pindex;
-		dataManager.set(EntityLittleMaid.dataWatch_DominamtArm, maidDominantArm);
+		this.dataManager.set(EntityLittleMaid.dataWatch_DominamtArm, maidDominantArm);
 		LittleMaidReengaged.Debug("Change Dominant.");
 	}
 
@@ -3807,10 +3932,11 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		// Client
 		textureData.setTexturePackName(pTextureBox);
 		setTextureNames();
-		LittleMaidReengaged.Debug("ID:%d, TextureModel:%s", getEntityId(), textureData.getTextureName(0));
-		// モデルの初期化
-		((TextureBox)textureData.textureBox[0]).models[0].setCapsValue(IModelCaps.caps_changeModel, maidCaps);
-		// スタビの付け替え
+		//LittleMaidReengaged.Debug("ID:%d, TextureModel:%s", getEntityId(), textureData.getTextureName(0));
+		//Todo: FIX
+		//pTextureBox[0].models[0].setCapsValue(IModelCaps.caps_changeModel, maidCaps);
+
+		// スタビの付け替え -- Replacement stablizer?
 //		for (Entry<String, MMM_EquippedStabilizer> le : pEntity.maidStabilizer.entrySet()) {
 //			if (le.getValue() != null) {
 //				le.getValue().updateEquippedPoint(pEntity.textureModel0);
@@ -4092,11 +4218,11 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	}
 
 	public boolean isUsingItem() {
-		return dataManager.get(EntityLittleMaid.dataWatch_ItemUse) > 0;
+		return this.dataManager.get(EntityLittleMaid.dataWatch_ItemUse) > 0;
 	}
 
 	public boolean isUsingItem(int pIndex) {
-		return (dataManager.get(EntityLittleMaid.dataWatch_ItemUse) & (1 << pIndex)) > 0;
+		return (this.dataManager.get(EntityLittleMaid.dataWatch_ItemUse) & (1 << pIndex)) > 0;
 	}
 
 	public void setExperienceValue(int val) {

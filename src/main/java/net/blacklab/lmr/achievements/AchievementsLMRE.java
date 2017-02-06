@@ -48,7 +48,7 @@ public class AchievementsLMRE {
 
 		// モード拡張実績
 		ac_Buster		= (Achievement) new Achievement("achievement.zombuster"		, "zombuster"	, 2, 1, Items.IRON_SHOVEL		, ac_Contract	).initIndependentStat().registerStat();
-
+		
 		// アクション系実績
 		ac_MyFavorite	= (Achievement) new Achievement("achievement.myfavorite"	, "myfavorite"	, 5, 3, Items.SUGAR				, ac_Contract	).setSpecial().initIndependentStat().registerStat();
 		ac_Boost		= (Achievement) new Achievement("achievement.boost"			, "boost"		,-2,-2, Items.GUNPOWDER			, ac_Contract	).initIndependentStat().registerStat();

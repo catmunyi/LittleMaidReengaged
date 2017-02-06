@@ -1,11 +1,43 @@
-/build.gradle
-/.settings/
-/.project
-/eclipse/
-/.gradle/
+#Remove OS generated garbage
+*/.DS_Store
+.DS_Store
+.DS_Store?
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+
+#gradle stuff
+/.gradle
 /build/
-/bin/
+/run*/
+/ui/
+gradle-app.setting
+
+#IDEA files from Gradle
+.idea/
+/*.iml
+/*.ipr
+/*.iws
+
+#Vim backups
+*~
+
+#eclipse stuffs
 /.classpath
-/run/
-/LittleMaidReengaged.1.9_Client.launch
-/LittleMaidReengaged.1.9_Server.launch
+/.project
+/.settings/
+/eclipse/
+/debug/
+*.lock
+/.metadata/
+/config/
+/logs/
+options.txt
+/saves/
+/out
+
+#others
+/bin/
+/*.launch

@@ -50,7 +50,7 @@ public class EntityLittleMaidAvatarSP extends EntityPlayer implements IEntityLit
 
 		// 初期設定
 		avatar = par2EntityLittleMaid;
-		dataManager = avatar.getDataManager();
+		this.dataManager = avatar.getDataManager();
 
 //		this.dataManager.register(Statics.dataWatch_AbsorptionAmount, Float.valueOf(0.0F));
 
