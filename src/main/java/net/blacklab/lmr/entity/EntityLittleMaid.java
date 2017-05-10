@@ -79,8 +79,11 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.EnumDifficulty;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.Biome;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -294,7 +297,12 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			}
 			else
 			{
+				WorldServer worldServer = FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(par1World == null ? 0 : par1World.provider.getDimension());
+				GameRules gameRules = worldServer.getGameRules();
+				NBTTagCompound oldGameRules = null;
 				try{
+					oldGameRules = gameRules.writeToNBT();
+					gameRules.setOrCreateGameRule("spawnRadius", "0");
 					maidAvatar = new EntityLittleMaidAvatarMP(par1World, this);
 				}catch(Throwable throwable){
 					throwable.printStackTrace();
@@ -302,6 +310,10 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 					setDead();
 					System.out.println("She's dead jim.");
 					return;
+				} finally {
+					if (oldGameRules != null) {
+						gameRules.readFromNBT(oldGameRules);
+					}
 				}
 			}
 		}
