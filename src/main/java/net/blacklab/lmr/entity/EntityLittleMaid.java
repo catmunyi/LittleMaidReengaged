@@ -1,5 +1,20 @@
 package net.blacklab.lmr.entity;
 
+import static net.blacklab.lmr.util.Statics.*;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.annotation.Nullable;
+
 import net.blacklab.lib.minecraft.item.ItemUtil;
 import net.blacklab.lib.vevent.VEventBus;
 import net.blacklab.lmr.LittleMaidReengaged;
@@ -9,7 +24,24 @@ import net.blacklab.lmr.api.item.IItemSpecialSugar;
 import net.blacklab.lmr.client.entity.EntityLittleMaidAvatarSP;
 import net.blacklab.lmr.client.sound.SoundLoader;
 import net.blacklab.lmr.client.sound.SoundRegistry;
-import net.blacklab.lmr.entity.ai.*;
+import net.blacklab.lmr.entity.ai.EntityAILMAttackArrow;
+import net.blacklab.lmr.entity.ai.EntityAILMAttackOnCollide;
+import net.blacklab.lmr.entity.ai.EntityAILMAvoidPlayer;
+import net.blacklab.lmr.entity.ai.EntityAILMMoveTowardsRestriction;
+import net.blacklab.lmr.entity.ai.EntityAILMBeg;
+import net.blacklab.lmr.entity.ai.EntityAILMBegMove;
+import net.blacklab.lmr.entity.ai.EntityAILMCollectItem;
+import net.blacklab.lmr.entity.ai.EntityAILMFindBlock;
+import net.blacklab.lmr.entity.ai.EntityAILMFleeRain;
+import net.blacklab.lmr.entity.ai.EntityAILMFollowOwner;
+import net.blacklab.lmr.entity.ai.EntityAILMOpenDoor;
+import net.blacklab.lmr.entity.ai.EntityAILMRestrictOpenDoor;
+import net.blacklab.lmr.entity.ai.EntityAILMRestrictRain;
+import net.blacklab.lmr.entity.ai.EntityAILMSwimming;
+import net.blacklab.lmr.entity.ai.EntityAILMTracerMove;
+import net.blacklab.lmr.entity.ai.EntityAILMWait;
+import net.blacklab.lmr.entity.ai.EntityAILMWander;
+import net.blacklab.lmr.entity.ai.EntityAILMWatchClosest;
 import net.blacklab.lmr.entity.experience.ExperienceHandler;
 import net.blacklab.lmr.entity.experience.ExperienceUtil;
 import net.blacklab.lmr.entity.maidmodel.*;
@@ -83,13 +115,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import static net.blacklab.lmr.util.Statics.*;
 
 public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 
@@ -242,6 +267,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	public EntityAILMRestrictOpenDoor aiCloseDoor;
 	public EntityAILMAvoidPlayer aiAvoidPlayer;
 	public EntityAILMFollowOwner aiFollow;
+	public EntityAILMMoveTowardsRestriction aiMoveTowardsRestriction;
 	public EntityAILMAttackOnCollide aiAttack;
 	public EntityAILMAttackArrow aiShooting;
 	public EntityAILMCollectItem aiCollectItem;
@@ -342,7 +368,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		setHealth(15F);
 
 		// 移動用フィジカル設定
-		((PathNavigateGround)navigator).setEnterDoors(true);
+		((PathNavigateGround)navigator).setBreakDoors(true);
 
 		// TODO:これはテスト
 //		maidStabilizer.put("HeadTop", MMM_StabilizerManager.getStabilizer("WitchHat", "HeadTop"));
@@ -494,6 +520,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		aiCloseDoor = new EntityAILMRestrictOpenDoor(this);
 		aiAvoidPlayer = new EntityAILMAvoidPlayer(this, 1.0F, 3);
 		aiFollow = new EntityAILMFollowOwner(this, 1.0F, 81D);
+		aiMoveTowardsRestriction = new EntityAILMMoveTowardsRestriction(this, 1.0);
 		aiAttack = new EntityAILMAttackOnCollide(this, 1.0F, true);
 		aiShooting = new EntityAILMAttackArrow(this);
 		aiCollectItem = new EntityAILMCollectItem(this, 1.0F);
@@ -534,8 +561,9 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		// 移動用AI
 		ltasks[0].addTask(30, aiTracer);
 		ltasks[0].addTask(31, aiFollow);
-		ltasks[0].addTask(32, aiWander);
-		ltasks[0].addTask(33, new EntityAILeapAtTarget(this, 0.3F));
+		ltasks[0].addTask(32, aiMoveTowardsRestriction);
+		ltasks[0].addTask(33, aiWander);
+		ltasks[0].addTask(34, new EntityAILeapAtTarget(this, 0.3F));
 		// Mutexの影響しない特殊行動
 		ltasks[0].addTask(40, aiCloseDoor);
 		ltasks[0].addTask(41, aiOpenDoor);
@@ -600,12 +628,8 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		return ls;
 	}
 
-	public EntityModeBase getMaidActiveModeClass() {
-		return maidActiveModeClass;
-	}
-
-	public void setMaidActiveModeClass(EntityModeBase maidActiveModeClass) {
-		this.maidActiveModeClass = maidActiveModeClass;
+	public final void setMaidActiveModeClass(EntityModeBase pModeClass) {
+		maidActiveModeClass = pModeClass;
 	}
 
 	public boolean setMaidMode(String pname) {
@@ -771,17 +795,19 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 
 	/**
 	 * 適用されているモードクラス
+	 * This method is nullable, so check if isActiveModeClass() is true
 	 */
-	public EntityModeBase getActiveModeClass() {
-		return getMaidActiveModeClass();
+	@Nullable
+	public final EntityModeBase getActiveModeClass() {
+		return maidActiveModeClass;
 	}
 
 	public void setActiveModeClass(EntityModeBase pEntityMode) {
 		setMaidActiveModeClass(pEntityMode);
 	}
 
-	public boolean isActiveModeClass() {
-		return getMaidActiveModeClass() != null;
+	public final boolean isActiveModeClass() {
+		return getActiveModeClass() != null;
 	}
 
 	public Counter getWorkingCount() {
@@ -3637,6 +3663,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 //			aiJumpTo.setEnable(!pFlag);
 			aiAvoidPlayer.setEnable(!pFlag);
 			aiFollow.setEnable(!pFlag);
+			aiMoveTowardsRestriction.setEnable(maidFreedom);
 			aiTracer.setEnable(isTracer()&&pFlag);
 //			setAIMoveSpeed(pFlag ? moveSpeed_Nomal : moveSpeed_Max);
 //			setMoveForward(0.0F);
