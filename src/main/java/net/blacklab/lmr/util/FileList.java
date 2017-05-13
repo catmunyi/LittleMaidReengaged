@@ -154,7 +154,7 @@ public class FileList {
 		if(DevMode.DEVMODE != DevMode.NOT_IN_DEV){
 			// Linux準拠の形式に変更
 			String dirProjectPath = FileClassUtil.getParentDir(dirMinecraftPath);
-
+			
 			String binPath = "";
 			String assetsPath = "";
 
