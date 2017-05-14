@@ -99,7 +99,13 @@ public class FileList {
 		@Override
 		public String map(String typeName) {
 			/// MMM_から始まるクラスの代わりにnet.blacklab.lmr.entity.maidmodelパッケージのクラスを使う
-			if ("MMM_".equals(typeName.substring(0, 4))) {
+			boolean isMMM;
+			try {
+				isMMM = "MMM_".equals(typeName.substring(0, 4));
+			} catch (StringIndexOutOfBoundsException e) {
+				isMMM = false;
+			}
+			if (isMMM) {
 				try {
 					Class<?> aClass = Class.forName("net.blacklab.lmr.entity.maidmodel.".concat(typeName.substring(4)));
 					return aClass.getCanonicalName().replace(".", "/");
@@ -112,7 +118,13 @@ public class FileList {
 
 		@Override
 		public String mapType(String typeName) {
-			if ("MMM_".equals(typeName.substring(0, 4))) {
+			boolean isMMM;
+			try {
+				isMMM = "MMM_".equals(typeName.substring(0, 4));
+			} catch (StringIndexOutOfBoundsException e) {
+				isMMM = false;
+			}
+			if (isMMM) {
 				try {
 					Class<?> aClass = Class.forName("net.blacklab.lmr.entity.maidmodel.".concat(typeName.substring(4)));
 					return aClass.getCanonicalName().replace(".", "/");
