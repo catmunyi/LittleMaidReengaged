@@ -161,7 +161,9 @@ public class EntityAILMFindBlock extends EntityAIBase implements IEntityAILM {
 
 	@Override
 	public void resetTask() {
-		theMaid.getActiveModeClass().resetBlock(theMaid.maidMode);
+		if (theMaid.getActiveModeClass() != null) {
+			theMaid.getActiveModeClass().resetBlock(theMaid.maidMode);
+		}
 	}
 
 	@Override
