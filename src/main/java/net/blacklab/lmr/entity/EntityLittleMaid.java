@@ -2578,6 +2578,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			if (LittleMaidReengaged.cfg_DeathMessage && getMaidMasterEntity() != null) {
 				getMaidMasterEntity().addChatMessage(new TextComponentTranslation("littleMaidMob.chat.text.death", CommonHelper.getDeadSource(par1DamageSource)));
 			}
+			System.out.println(getDisplayName().getUnformattedText().concat(" was killed by ".concat(CommonHelper.getDeadSource(par1DamageSource))));
 //		}
 	}
 
