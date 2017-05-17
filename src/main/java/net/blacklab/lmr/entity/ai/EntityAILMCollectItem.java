@@ -44,7 +44,7 @@ public class EntityAILMCollectItem extends EntityAIBase {
 				NBTTagCompound p = new NBTTagCompound();
 				ei.writeEntityToNBT(p);
 				if (!ei.isDead && ei.onGround && p.getShort("PickupDelay") <= 0 && !ei.isBurning()
-						&& canEntityItemBeSeen(ei) && (ep == null ||
+						/*&& canEntityItemBeSeen(ei)*/ && (ep == null ||
 						ep.getDistanceSq(
 								ei.posX + MathHelper.sin(ep.rotationYaw * 0.01745329252F) * 2.0D,
 								ei.posY,
