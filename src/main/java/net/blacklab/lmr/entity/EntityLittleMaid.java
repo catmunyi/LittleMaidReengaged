@@ -115,6 +115,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.Biome.TempCategory;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -2578,6 +2579,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			if (LittleMaidReengaged.cfg_DeathMessage && getMaidMasterEntity() != null) {
 				getMaidMasterEntity().addChatMessage(new TextComponentTranslation("littleMaidMob.chat.text.death", CommonHelper.getDeadSource(par1DamageSource)));
 			}
+			System.out.println(getDisplayName().getUnformattedText().concat(" was killed by ".concat(CommonHelper.getDeadSource(par1DamageSource))));
 //		}
 	}
 
