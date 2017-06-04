@@ -110,7 +110,7 @@ public class FileList {
 					Class<?> aClass = Class.forName("net.blacklab.lmr.entity.maidmodel.".concat(typeName.substring(4)));
 					return aClass.getCanonicalName().replace(".", "/");
 				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 			}
 			return super.map(typeName);
@@ -129,7 +129,7 @@ public class FileList {
 					Class<?> aClass = Class.forName("net.blacklab.lmr.entity.maidmodel.".concat(typeName.substring(4)));
 					return aClass.getCanonicalName().replace(".", "/");
 				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 			}
 			return super.mapType(typeName);
