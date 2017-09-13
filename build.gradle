@@ -1,6 +1,6 @@
 // Variiables
-def mod_version = "8.0.3"
-def build_number = "1"
+def mod_version = "8.1.1"
+def build_number = "102"
 
 buildscript {
     repositories {
@@ -50,7 +50,7 @@ jar {
 
 dependencies {
 	
-	compile files("lib/EBLib-6.0.2.5.jar")
+	compile files("lib/[1.9.4-1.10.x]EBLib-6.1.4.7.jar")
 }
 
 processResources
