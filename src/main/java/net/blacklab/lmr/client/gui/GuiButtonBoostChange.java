@@ -19,11 +19,11 @@ public class GuiButtonBoostChange extends GuiButton {
 	}
 
 	protected void handleHovered(int mouseX, int mouseY) {
-		hovered = enabled && mouseX >= xPosition && mouseY >= yPosition && mouseX < xPosition + width && mouseY < yPosition + height;
+		hovered = enabled && mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
 	}
 
 	@Override
-	public void drawButton(Minecraft mc, int mouseX, int mouseY) {
+	public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
 		handleHovered(mouseX, mouseY);
 		GlStateManager.pushMatrix();
 		GlStateManager.disableAlpha();
@@ -32,11 +32,11 @@ public class GuiButtonBoostChange extends GuiButton {
 		GlStateManager.color(1f, 1f, 1f, 1f);
 		mc.getTextureManager().bindTexture(widgetRL);
 		GlStateManager.enableBlend();
-		drawTexturedModalRect(xPosition  , yPosition  , 0  , 46 + 20*getHoverState(hovered), 8, 8);
-		drawTexturedModalRect(xPosition  , yPosition+8, 0  , 58 + 20*getHoverState(hovered), 8, 8);
-		drawTexturedModalRect(xPosition+8, yPosition  , 192, 46 + 20*getHoverState(hovered), 8, 8);
-		drawTexturedModalRect(xPosition+8, yPosition+8, 192, 58 + 20*getHoverState(hovered), 8, 8);
-		drawCenteredString(mc.fontRendererObj, inverse ? "-" : "+", xPosition + 8, yPosition + 4, enabled ? 0xffffff : 0x404040);
+		drawTexturedModalRect(x  , y  , 0  , 46 + 20*getHoverState(hovered), 8, 8);
+		drawTexturedModalRect(x  , y+8, 0  , 58 + 20*getHoverState(hovered), 8, 8);
+		drawTexturedModalRect(x+8, y  , 192, 46 + 20*getHoverState(hovered), 8, 8);
+		drawTexturedModalRect(x+8, y+8, 192, 58 + 20*getHoverState(hovered), 8, 8);
+		drawCenteredString(mc.fontRenderer, inverse ? "-" : "+", x + 8, y + 4, enabled ? 0xffffff : 0x404040);
 		GlStateManager.enableLighting();
 		GlStateManager.enableDepth();
 		GlStateManager.enableAlpha();

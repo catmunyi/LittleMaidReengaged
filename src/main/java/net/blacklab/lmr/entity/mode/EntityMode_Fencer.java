@@ -106,19 +106,19 @@ public class EntityMode_Fencer extends EntityModeBase {
 			if (isTriggerItem(mmode_Fencer, litemstack)) {
 				owner.setMaidMode("Fencer");
 				if (pentityplayer != null) {
-					pentityplayer.addStat(AchievementsLMRE.ac_Fencer);
+					AchievementsLMRE.grantAdvancement(pentityplayer, "fencer");
 				}
 				if (litemstack.getItem() instanceof ItemSpade && pentityplayer != null) {
-					pentityplayer.addStat(AchievementsLMRE.ac_Buster);
+					AchievementsLMRE.grantAdvancement(pentityplayer, "zombuster");
 				}
 				return true;
 			} else  if (isTriggerItem(mmode_Bloodsucker, litemstack)) {
 				owner.setMaidMode("Bloodsucker");
 				if (pentityplayer != null) {
-					pentityplayer.addStat(AchievementsLMRE.ac_RandomKiller);
+					AchievementsLMRE.grantAdvancement(pentityplayer, "bloodsucker");
 				}
 				if (litemstack.getItem() instanceof ItemSpade && pentityplayer != null) {
-					pentityplayer.addStat(AchievementsLMRE.ac_Buster);
+					AchievementsLMRE.grantAdvancement(pentityplayer, "zombuster");
 				}
 				return true;
 			}

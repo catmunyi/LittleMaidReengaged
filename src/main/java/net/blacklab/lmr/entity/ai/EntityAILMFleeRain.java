@@ -58,15 +58,15 @@ public class EntityAILMFleeRain extends EntityAIBase implements IEntityAI {
 		if (vec3d == null) {
 			return false;
 		}
-		shelterX = vec3d.xCoord;
-		shelterY = vec3d.yCoord;
-		shelterZ = vec3d.zCoord;
+		shelterX = vec3d.x;
+		shelterY = vec3d.y;
+		shelterZ = vec3d.z;
 		LittleMaidReengaged.Debug("SHELTER FOUND %04.2f,%04.2f,%04.2f", shelterX, shelterY, shelterZ);
 		return true;
 	}
 
 	@Override
-	public boolean continueExecuting() {
+	public boolean shouldContinueExecuting() {
 		return theMaid.getNavigator().noPath() ? false :
 			theWorld.canBlockSeeSky(theMaid.getPosition());
 	}

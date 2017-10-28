@@ -258,7 +258,7 @@ public class InventoryLittleMaid extends InventoryPlayer {
 		if (entityLittleMaid.isDead) {
 			return false;
 		}
-		return entityplayer.getDistanceSqToEntity(entityLittleMaid) <= 64D;
+		return entityplayer.getDistanceSq(entityLittleMaid) <= 64D;
 	}
 
 	public ItemStack getCurrentItem() {

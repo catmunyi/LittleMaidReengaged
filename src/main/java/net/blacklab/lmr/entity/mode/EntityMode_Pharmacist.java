@@ -58,10 +58,10 @@ public class EntityMode_Pharmacist extends EntityModeBlockBase {
 	public boolean changeMode(EntityPlayer pentityplayer) {
 		ItemStack litemstack = owner.getHandSlotForModeChange();
 		if (!litemstack.isEmpty()) {
-			if (isTriggerItem(mmode_Pharmacist, litemstack) && owner.maidInventory.getInventorySlotContainItem(Items.BLAZE_POWDER) > 0) {
+			if (isTriggerItem(mmode_Pharmacist, litemstack) && owner.maidInventory.getInventorySlotContainItem(Items.BLAZE_POWDER) >= 0) {
 				owner.setMaidMode("Pharmacist");
 				if (pentityplayer != null) {
-					pentityplayer.addStat(AchievementsLMRE.ac_Pharmacist);
+					AchievementsLMRE.grantAdvancement(pentityplayer, "pharmacist");
 				}
 				return true;
 			}

@@ -120,42 +120,43 @@ public class GuiTextureSlot extends GuiSlot {
 	}
 
 	@Override
-	protected void drawSlot(int var1, int var2, int var3, int var4, int var6, int var7) {
+	//protected void drawSlot(int var1, int var2, int var3, int var4, int var6, int var7) {
+	protected void drawSlot(int slotIndex, int xPos, int yPos, int heightIn, int mouseXIn, int mouseYIn, float partialTicks) {
 		GL11.glPushMatrix();
 
 		if (!mode) {
 			for (int li = 0; li < 16; li++) {
-				int lx = var2 + 15 + 12 * li;
-				selectColor = (mouseX - (var2 + 15)) / 12;
+				int lx = xPos + 15 + 12 * li;
+				selectColor = (mouseX - (xPos + 15)) / 12;
 				if ((selectColor < 0) && (selectColor > 15)) {
 					selectColor = -1;
 				}
 				if (color == li) {
-					Gui.drawRect(lx, var3, lx + 11, var3 + 36, 0x88882222);
+					Gui.drawRect(lx, yPos, lx + 11, yPos + 36, 0x88882222);
 				} else if (owner.selectColor == li) {
-					Gui.drawRect(lx, var3, lx + 11, var3 + 36, 0x88226622);
+					Gui.drawRect(lx, yPos, lx + 11, yPos + 36, 0x88226622);
 				} else if ((owner.canSelectColor & (1 << li)) > 0) {
-					Gui.drawRect(lx, var3, lx + 11, var3 + 36, 0x88222288);
+					Gui.drawRect(lx, yPos, lx + 11, yPos + 36, 0x88222288);
 				}
 			}
 		}
 
 		TextureBox lbox;
 		if (mode) {
-			lbox = indexArmor.get(var1);
+			lbox = indexArmor.get(slotIndex);
 			entity.textureData.textureBox[0] = blankBox;
 			entity.textureData.textureBox[1] = lbox;
 		} else {
-			lbox = indexTexture.get(var1);
+			lbox = indexTexture.get(slotIndex);
 			entity.textureData.textureBox[0] = lbox;
 			entity.textureData.textureBox[1] = blankBox;
 		}
 //		MMM_TextureManager.instance.checkTextureBoxServer(lbox);
 		GL11.glDisable(GL11.GL_BLEND);
 
-		owner.drawString(this.owner.mc.fontRendererObj, lbox.textureName,
-				var2 + 207 - mc.fontRendererObj.getStringWidth(lbox.textureName), var3 + 25, -1);
-		GL11.glTranslatef(var2 + 8F, var3 + 25F, 50F);
+		owner.drawString(this.owner.mc.fontRenderer, lbox.textureName,
+				xPos + 207 - mc.fontRenderer.getStringWidth(lbox.textureName), yPos + 25, -1);
+		GL11.glTranslatef(xPos + 8F, yPos + 25F, 50F);
 		GL11.glScalef(12F, -12F, 12F);
 		entity.renderYawOffset = 30F;
 		entity.rotationYawHead = 15F;
@@ -165,7 +166,7 @@ public class GuiTextureSlot extends GuiSlot {
 			//デフォルトアーマー
 			GL11.glTranslatef(1f, 0.25F, 0f);
 			entity.setTextureNames("default");
-			Minecraft.getMinecraft().getRenderManager().doRenderEntity(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
+			Minecraft.getMinecraft().getRenderManager().renderEntity(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
 			RendererHelper.setLightmapTextureCoords(0x00f0);//61680
 
 			// 素材別アーマー
@@ -179,7 +180,7 @@ public class GuiTextureSlot extends GuiSlot {
 //					ltxname[0] = ltxname[1] = ltxname[2] = ltxname[3] =
 //							lbox.getArmorTextureName(MMM_TextureManager.tx_armor2, "default", 0);
 					entity.setTextureNames(ModelManager.armorFilenamePrefix[li]);
-					Minecraft.getMinecraft().getRenderManager().doRenderEntity(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
+					Minecraft.getMinecraft().getRenderManager().renderEntity(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
 					RendererHelper.setLightmapTextureCoords(0x00f0);//61680
 				}
 			}
@@ -192,7 +193,7 @@ public class GuiTextureSlot extends GuiSlot {
 					entity.setContract(isContract);
 					entity.setTextureNames();
 //					entity.getTextures(0)[0] = lbox.getTextureName(li + (isContract ? 0 : MMM_TextureManager.tx_wild));
-					Minecraft.getMinecraft().getRenderManager().doRenderEntity(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
+					Minecraft.getMinecraft().getRenderManager().renderEntity(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
 					RendererHelper.setLightmapTextureCoords(0x00f0);//61680
 				}
 			}

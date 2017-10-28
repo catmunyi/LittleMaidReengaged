@@ -55,7 +55,7 @@ public class EntityMode_Cooking extends EntityModeBlockBase {
 			if (ItemHelper.isItemBurned(litemstack)) {
 				owner.setMaidMode("Cooking");
 				if (pentityplayer != null) {
-					pentityplayer.addStat(AchievementsLMRE.ac_Cook);
+					AchievementsLMRE.grantAdvancement(pentityplayer, "cooking");
 				}
 				return true;
 			}

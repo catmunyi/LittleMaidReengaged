@@ -32,15 +32,18 @@ import net.blacklab.lmr.util.manager.ModelManager;
 import net.blacklab.lmr.util.manager.StabilizerManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResourcePack;
+import net.minecraft.client.resources.SimpleReloadableResourceManager;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.BiomeDictionary;
-//github.com/Verclene/LittleMaidReengaged.git
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -49,9 +52,12 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.registries.IForgeRegistry;
 
 @Mod(
 		modid = LittleMaidReengaged.DOMAIN,
@@ -64,10 +70,10 @@ public class LittleMaidReengaged {
 
 	public static final String DOMAIN = "lmreengaged";
 	public static final String VERSION = "8.0.1.66";
-	public static final String ACCEPTED_MCVERSION = "[1.11]";
+	public static final String ACCEPTED_MCVERSION = "[1.12.2]";
 	public static final int VERSION_CODE = 1;
-	public static final String DEPENDENCIES = "required-after:forge@[1.11-13.19.1.2199,);"
-			+ "required-after:net.blacklab.lib@[5.2.0.3,)";
+	public static final String DEPENDENCIES = "required-after:forge@[1.12.2-14.23.0.2517,)";
+			//+ "required-after:net.blacklab.lib@[5.2.0.3,)";
 
 	/*
 	 * public static String[] cfg_comment = {
@@ -259,9 +265,11 @@ public class LittleMaidReengaged {
 				"LittleMaid", 0, instance, 80, 1, true);
 
 		spawnEgg = new ItemMaidSpawnEgg();
-		GameRegistry.<Item>register(spawnEgg, new ResourceLocation(DOMAIN, "spawn_littlemaid_egg"));
+		ForgeRegistries.ITEMS.register(spawnEgg);
 		if (cfg_enableSpawnEgg) {
-			GameRegistry.addRecipe(
+			GameRegistry.addShapedRecipe(
+					new ResourceLocation(DOMAIN, "spawn_littlemaid_egg"),
+					null,
 					new ItemStack(spawnEgg, 1),
 					new Object[] { "scs", "sbs", " e ", Character.valueOf('s'),
 							Items.SUGAR, Character.valueOf('c'),
@@ -271,17 +279,20 @@ public class LittleMaidReengaged {
 		}
 
 		registerKey = new ItemTriggerRegisterKey();
-		GameRegistry.<Item>register(registerKey, new ResourceLocation(DOMAIN, "registerkey"));
+		ForgeRegistries.ITEMS.register(registerKey);
 
-		GameRegistry.addShapelessRecipe(new ItemStack(registerKey), Items.EGG,
-				Items.SUGAR, Items.NETHER_WART);
+		GameRegistry.addShapelessRecipe(
+			new ResourceLocation(DOMAIN, "registerkey"),
+			null,
+			new ItemStack(registerKey),
+			Ingredient.fromItem(Items.EGG),
+			Ingredient.fromItem(Items.SUGAR),
+			Ingredient.fromItem(Items.NETHER_WART)
+		);
 
 		maidPorter = new ItemMaidPorter();
-		GameRegistry.register(maidPorter, new ResourceLocation(DOMAIN, "maidporter"));
-
-		// 実績追加
-		AchievementsLMRE.initAchievements();
-
+		ForgeRegistries.ITEMS.register(maidPorter);
+		
 		// AIリストの追加
 		EntityModeManager.init();
 
@@ -299,11 +310,10 @@ public class LittleMaidReengaged {
 		NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiHandler());
 
 		if (CommonHelper.isClient) {
-			List<IResourcePack> defaultResourcePacks = ObfuscationReflectionHelper
-					.getPrivateValue(Minecraft.class, Minecraft.getMinecraft(),
-							"defaultResourcePacks", "field_110449_ao");
-			defaultResourcePacks.add(new SoundResourcePack());
-			defaultResourcePacks.add(new OldZipTexturesWrapper());
+			SimpleReloadableResourceManager resourceManager = ((SimpleReloadableResourceManager)Minecraft.getMinecraft().getResourceManager());
+			resourceManager.reloadResourcePack(new SoundResourcePack());
+			resourceManager.reloadResourcePack(new OldZipTexturesWrapper());
+			Minecraft.getMinecraft().getSoundHandler().onResourceManagerReload(resourceManager);
 		}
 
 		MinecraftForge.EVENT_BUS.register(new EventHookLMRE());

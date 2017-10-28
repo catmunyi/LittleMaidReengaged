@@ -46,7 +46,7 @@ public class EntityLittleMaidAvatarMP extends FakePlayer implements IEntityLittl
 
 	public EntityLittleMaidAvatarMP(World par1World)
 	{
-		super(FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(par1World == null ? 0 : par1World.provider.getDimension()),
+		super(FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(par1World == null ? 0 : par1World.provider.getDimension()),
 				CommonHelper.newGameProfile("1", "LMM_EntityLittleMaidAvatar"));
 	}
 
@@ -125,7 +125,7 @@ public class EntityLittleMaidAvatarMP extends FakePlayer implements IEntityLittl
 	}
 
 	@Override
-	protected SoundEvent getHurtSound() {
+	protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
 		return null;
 	}
 

@@ -54,8 +54,8 @@ public class EntityLittleMaidForTexSelect extends EntityLiving implements IModel
 	}
 */
 	@Override
-	public float getBrightness(float par1) {
-		return world == null ? 0.0F : super.getBrightness(par1);
+	public float getBrightness() {
+		return world == null ? 0.0F : super.getBrightness();
 	}
 
 	// EntityCaps
@@ -218,7 +218,7 @@ public class EntityLittleMaidForTexSelect extends EntityLiving implements IModel
 	}
 
 	@Override
-	public int getBrightnessForRender(float par1) {
+	public int getBrightnessForRender() {
 		// 一定の明るさを返す
 		return 0x00f000f0;
 	}

@@ -1,0 +1,16 @@
+{
+    "display": {
+        "icon": {
+            "item": "minecraft:flint_and_steel"
+        },
+        "title": { "translate": "achievement.blazingstar" },
+        "description": { "translate": "achievement.blazingstar.desc" }
+    },
+    "parent": "lmreengaged:archer",
+    "criteria": {
+        "done": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "requirements": [["done"]]
+}

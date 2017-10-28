@@ -207,9 +207,9 @@ public class ExperienceHandler {
 		tagCompound.setInteger(LittleMaidReengaged.DOMAIN + ":EXP_HANDLER_DEATH_PCNT", pauseCount);
 		tagCompound.setInteger(LittleMaidReengaged.DOMAIN + ":EXP_HANDLER_DEATH_REQ", requiredSugarToRevive);
 		tagCompound.setString(LittleMaidReengaged.DOMAIN + ":EXP_HANDLER_DEATH_CAUSE_T", deadCause.getDamageType());
-		if (deadCause.getSourceOfDamage() != null) {
+		if (deadCause.getImmediateSource() != null) {
 			NBTTagCompound causeEntityTag = new NBTTagCompound();
-			deadCause.getSourceOfDamage().writeToNBT(causeEntityTag);
+			deadCause.getImmediateSource().writeToNBT(causeEntityTag);
 			tagCompound.setTag(LittleMaidReengaged.DOMAIN + ":EXP_HANDLER_DEATH_CAUSE_E", causeEntityTag);
 		}
 	}

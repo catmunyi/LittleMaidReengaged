@@ -76,7 +76,7 @@ public class EntityAILMFollowOwner extends EntityAIBase implements IEntityAI {
 		theMaid.setSprinting(false);
 		theOwner = null;
 //		if(!theMaid.isInWater()) ((PathNavigateGround)this.theMaid.getNavigator()).setAvoidsWater(true);
-		petPathfinder.clearPathEntity();
+		petPathfinder.clearPath();
 		//petPathfinder.setAvoidsWater(lastAvoidWater);
 	}
 
@@ -84,7 +84,7 @@ public class EntityAILMFollowOwner extends EntityAIBase implements IEntityAI {
 	 * Updates the task
 	 */
 	public void updateTask() {
-		double toDistance = theMaid.getDistanceSqToEntity(theOwner);
+		double toDistance = theMaid.getDistanceSq(theOwner);
 		
 		if (toDistance - theMaid.getActiveModeClass().getDistanceSqToStartFollow() > 1.0) {
 			theMaid.getLookHelper().setLookPositionWithEntity(theOwner, 10F, theMaid.getVerticalFaceSpeed());

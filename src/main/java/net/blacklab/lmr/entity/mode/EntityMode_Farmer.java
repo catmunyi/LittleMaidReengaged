@@ -72,7 +72,7 @@ public class EntityMode_Farmer extends EntityModeBase {
 			if (UtilModeFarmer.isHoe(owner, litemstack)) {
 				owner.setMaidMode("Farmer");
 				if (pentityplayer != null) {
-					pentityplayer.addStat(AchievementsLMRE.ac_Farmer);
+					AchievementsLMRE.grantAdvancement(pentityplayer, "farmer");
 				}
 				return true;
 			}
@@ -223,6 +223,7 @@ public class EntityMode_Farmer extends EntityModeBase {
 	@Override
 	public void onUpdate(int pMode) {
 		// TODO 自動生成されたメソッド・スタブ
+		/*
 		if(pMode==mmode_Farmer&&++clearCount>=300&&owner.getNavigator().noPath()){
 			try{
 				if(!owner.isWorking()){
@@ -231,6 +232,7 @@ public class EntityMode_Farmer extends EntityModeBase {
 			}catch(NullPointerException e){}
 			clearCount=0;
 		}
+		*/
 	}
 
 	@Override

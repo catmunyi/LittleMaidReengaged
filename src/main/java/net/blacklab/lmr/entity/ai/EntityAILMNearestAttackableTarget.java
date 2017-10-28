@@ -62,7 +62,7 @@ public class EntityAILMNearestAttackableTarget<T extends EntityLivingBase> exten
 			lfollowRange = getTargetDistance();
 		}
 
-		List<T> llist = this.taskOwner.world.getEntitiesWithinAABB(targetClass, taskOwner.getEntityBoundingBox().expand(lfollowRange, 8.0D, lfollowRange));
+		List<T> llist = this.taskOwner.world.getEntitiesWithinAABB(targetClass, taskOwner.getEntityBoundingBox().grow(lfollowRange, 8.0D, lfollowRange));
 
 		if (theMaid.getMaidMasterEntity() != null && !theMaid.isBloodsuck()) {
 			// ソーターを主中心へ
@@ -97,7 +97,7 @@ public class EntityAILMNearestAttackableTarget<T extends EntityLivingBase> exten
 	}
 
 	@Override
-	public boolean continueExecuting() {
+	public boolean shouldContinueExecuting() {
 		/*
 		if (theMaid.getActiveModeClass() != null && theMaid.getActiveModeClass().isSearchEntity()) {
 			if (!theMaid.getActiveModeClass().checkEntity(theMaid.getMaidModeInt(), targetEntity)) {
@@ -105,7 +105,7 @@ public class EntityAILMNearestAttackableTarget<T extends EntityLivingBase> exten
 			}
 		}
 		*/
-		return super.continueExecuting();
+		return super.shouldContinueExecuting();
 	}
 
 //	@Override
@@ -179,8 +179,8 @@ public class EntityAILMNearestAttackableTarget<T extends EntityLivingBase> exten
 		if (var3 == null) {
 			return false;
 		}
-		int var4 = var3.xCoord - MathHelper.floor(par1EntityLiving.posX);
-		int var5 = var3.zCoord - MathHelper.floor(par1EntityLiving.posZ);
+		int var4 = var3.x - MathHelper.floor(par1EntityLiving.posX);
+		int var5 = var3.z - MathHelper.floor(par1EntityLiving.posZ);
 		return var4 * var4 + var5 * var5 <= 2.25D;
 	}
 

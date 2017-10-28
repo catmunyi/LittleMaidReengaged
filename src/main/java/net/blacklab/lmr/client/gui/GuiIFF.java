@@ -124,7 +124,7 @@ public class GuiIFF extends GuiScreen {
 
 		drawDefaultBackground();
 		selectPanel.drawScreen(px, py, pf);
-		drawCenteredString(this.mc.fontRendererObj, I18n.format(screenTitle), width / 2, 20, 0xffffff);
+		drawCenteredString(this.mc.fontRenderer, I18n.format(screenTitle), width / 2, 20, 0xffffff);
 		super.drawScreen(px, py, pf);
 
 /*
@@ -237,10 +237,10 @@ public class GuiIFF extends GuiScreen {
 			c = 0xff3f3f;
 			break;
 		}
-		drawString(this.mc.fontRendererObj, GuiIFF.IFFString[tt],
-				(width - this.mc.fontRendererObj.getStringWidth(GuiIFF.IFFString[tt])) / 2, pY + 18, c);
-		drawString(this.mc.fontRendererObj, pName,
-				(width - this.mc.fontRendererObj.getStringWidth(pName)) / 2, pY + 6, 0xffffff);
+		drawString(this.mc.fontRenderer, GuiIFF.IFFString[tt],
+				(width - this.mc.fontRenderer.getStringWidth(GuiIFF.IFFString[tt])) / 2, pY + 18, c);
+		drawString(this.mc.fontRenderer, pName,
+				(width - this.mc.fontRenderer.getStringWidth(pName)) / 2, pY + 6, 0xffffff);
 	}
 
 }

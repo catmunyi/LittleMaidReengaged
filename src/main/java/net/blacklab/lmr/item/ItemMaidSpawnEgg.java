@@ -29,6 +29,7 @@ public class ItemMaidSpawnEgg extends Item
 		setHasSubtypes(true);
 		setCreativeTab(CreativeTabs.MISC);
 		setUnlocalizedName(LittleMaidReengaged.DOMAIN + ":spawn_littlemaid_egg");
+		setRegistryName(getUnlocalizedName());
 	}
 
 	@Override
@@ -90,9 +91,9 @@ public class ItemMaidSpawnEgg extends Item
 
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void getSubItems(Item par1, CreativeTabs par2, NonNullList<ItemStack> par3)
+	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
 	{
-		par3.add(new ItemStack(par1, 1));
+		items.add(new ItemStack(this, 1));
 	}
 
 }

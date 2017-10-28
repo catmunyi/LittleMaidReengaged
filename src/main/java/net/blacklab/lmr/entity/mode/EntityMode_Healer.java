@@ -62,7 +62,7 @@ public class EntityMode_Healer extends EntityModeBase {
 			if (isTriggerItem(mmode_Healer, litemstack)) {
 				owner.setMaidMode("Healer");
 				if (pentityplayer != null) {
-					pentityplayer.addStat(AchievementsLMRE.ac_Healer);
+					AchievementsLMRE.grantAdvancement(pentityplayer, "healer");
 				}
 				return true;
 			}

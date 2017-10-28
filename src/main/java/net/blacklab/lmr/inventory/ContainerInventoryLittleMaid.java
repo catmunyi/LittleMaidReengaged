@@ -114,7 +114,7 @@ public class ContainerInventoryLittleMaid extends Container {
 				((ItemArmor)item).getArmorMaterial() == ArmorMaterial.DIAMOND;
 
 		if (flag && !owner.world.isRemote)
-			owner.getMaidMasterEntity().addStat(AchievementsLMRE.ac_Overprtct);
+			AchievementsLMRE.grantAdvancement(owner.getMaidMasterEntity(), "overprtct");
 	}
 
 	@Override
@@ -125,7 +125,7 @@ public class ContainerInventoryLittleMaid extends Container {
 //		if(entitylittlemaid.isDead || entitylittlemaid.isOpenInventory()) {
 			return false;
 		}
-		return entityplayer.getDistanceSqToEntity(entitylittlemaid) <= 64D;
+		return entityplayer.getDistanceSq(entitylittlemaid) <= 64D;
 	}
 
 	@Override

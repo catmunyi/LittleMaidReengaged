@@ -97,12 +97,12 @@ public class EntityMode_Archer extends EntityModeBase {
 				if (owner.maidInventory.getInventorySlotContainItem(ItemFlintAndSteel.class) > -1) {
 					owner.setMaidMode("Blazingstar");
 					if (pentityplayer != null) {
-						pentityplayer.addStat(AchievementsLMRE.ac_BlazingStar);
+						AchievementsLMRE.grantAdvancement(pentityplayer, "blazingstar");
 					}
 				} else {
 					owner.setMaidMode("Archer");
 					if (pentityplayer != null) {
-						pentityplayer.addStat(AchievementsLMRE.ac_Archer);
+						AchievementsLMRE.grantAdvancement(pentityplayer, "archer");
 					}
 				}
 				return true;
@@ -216,7 +216,7 @@ public class EntityMode_Archer extends EntityModeBase {
 //			updateGuns();
 			// Blazingstarの特殊効果
 			World lworld = owner.world;
-			List<Entity> llist = lworld.getEntitiesWithinAABB(Entity.class, owner.getEntityBoundingBox().expand(16D, 16D, 16D));
+			List<Entity> llist = lworld.getEntitiesWithinAABB(Entity.class, owner.getEntityBoundingBox().grow(16D, 16D, 16D));
 			for (int li = 0; li < llist.size(); li++) {
 				Entity lentity = llist.get(li);
 				if (lentity.isEntityAlive() && lentity.isBurning() && owner.getRNG().nextFloat() > 0.9F) {

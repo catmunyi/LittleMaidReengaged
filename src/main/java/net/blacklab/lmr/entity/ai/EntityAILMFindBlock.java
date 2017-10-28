@@ -131,7 +131,7 @@ public class EntityAILMFindBlock extends EntityAIBase implements IEntityAI {
 	}
 
 	@Override
-	public boolean continueExecuting() {
+	public boolean shouldContinueExecuting() {
 		theMaid.getMaidActiveModeClass().updateBlock();
 		// 移動中は継続
 		if (!theMaid.getNavigator().noPath()) return true;

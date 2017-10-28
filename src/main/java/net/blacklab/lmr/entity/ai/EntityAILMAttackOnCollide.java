@@ -96,7 +96,7 @@ public class EntityAILMAttackOnCollide extends EntityAIBase implements IEntityAI
 	}
 
 	@Override
-	public boolean continueExecuting() {
+	public boolean shouldContinueExecuting() {
 		Entity lentity = theMaid.getAttackTarget();
 		if (lentity == null || entityTarget != lentity) {
 			return false;
@@ -122,7 +122,7 @@ public class EntityAILMAttackOnCollide extends EntityAIBase implements IEntityAI
 	@Override
 	public void resetTask() {
 		entityTarget = null;
-		theMaid.getNavigator().clearPathEntity();
+		theMaid.getNavigator().clearPath();
 		theMaid.setAttackTarget(null);
 		theMaid.setRevengeTarget(null);
 //		theMaid.maidAvatar.stopActiveHand();
@@ -161,7 +161,7 @@ public class EntityAILMAttackOnCollide extends EntityAIBase implements IEntityAI
 					lel = ((EntityCreature)entityTarget).getAttackTarget();
 				}
 				else if (entityTarget instanceof EntityLivingBase) {
-					lel = ((EntityLivingBase)entityTarget).getAITarget();
+					lel = ((EntityLivingBase)entityTarget).getRevengeTarget();
 				}
 				if (lel == theMaid) {
 					ItemStack li = theMaid.getCurrentEquippedItem();
@@ -198,7 +198,7 @@ public class EntityAILMAttackOnCollide extends EntityAIBase implements IEntityAI
 			// 対象を再設定させる
 			theMaid.setAttackTarget(null);
 			theMaid.setRevengeTarget(null);
-			theMaid.getNavigator().clearPathEntity();
+			theMaid.getNavigator().clearPath();
 		}
 		return;
 	}

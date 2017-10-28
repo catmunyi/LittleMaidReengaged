@@ -83,7 +83,7 @@ public class EntityLittleMaidAvatarSP extends EntityPlayer implements IEntityLit
 	}
 
 	@Override
-	protected SoundEvent getHurtSound() {
+	protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
 		return null;
 	}
 

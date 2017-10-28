@@ -113,7 +113,7 @@ public class EntityAILMAttackArrow extends EntityAIBase implements IEntityAI {
 	}
 
 	@Override
-	public boolean continueExecuting() {
+	public boolean shouldContinueExecuting() {
 		return isExecutable() || (fTarget != null && !fMaid.getNavigator().noPath());
 	}
 
@@ -142,7 +142,7 @@ public class EntityAILMAttackArrow extends EntityAIBase implements IEntityAI {
 		}
 
 		double lrange = 225D;
-		double ldist = fMaid.getDistanceSqToEntity(fTarget);
+		double ldist = fMaid.getDistanceSq(fTarget);
 		boolean lsee = fMaid.getEntitySenses().canSee(fTarget)/* &&
 				VectorUtil.canMoveThrough(
 						fMaid, fMaid.getEyeHeight(),
@@ -243,7 +243,7 @@ public class EntityAILMAttackArrow extends EntityAIBase implements IEntityAI {
 						fMaid.getNavigator().tryMoveToXYZ(tpx, tpy, tpz, 1.0F);
 					}
 					else if (lsee & ldist < 100) {
-						fMaid.getNavigator().clearPathEntity();
+						fMaid.getNavigator().clearPath();
 //						mod_LMM_littleMaidMob.Debug("Shooting Range.");
 					}
 

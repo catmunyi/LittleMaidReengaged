@@ -1,10 +1,12 @@
 package net.blacklab.lmr.item;
 
 import java.util.List;
+import javax.annotation.Nullable;
 
 import net.blacklab.lmr.LittleMaidReengaged;
 import net.blacklab.lmr.entity.EntityLittleMaid;
 import net.blacklab.lmr.entity.experience.ExperienceUtil;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -21,6 +23,7 @@ public class ItemMaidPorter extends Item {
 	public ItemMaidPorter() {
 		setMaxStackSize(1);
 		setUnlocalizedName(LittleMaidReengaged.DOMAIN + ":maidporter");
+		setRegistryName(getUnlocalizedName());
 	}
 
 	@Override
@@ -29,7 +32,7 @@ public class ItemMaidPorter extends Item {
 	}
 
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer playerIn, List tooltip, boolean advanced) {
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		NBTTagCompound stackTag = stack.getTagCompound();
 		if (stackTag != null) {
 			String customName = stackTag.getString(LittleMaidReengaged.DOMAIN + ":MAID_NAME");

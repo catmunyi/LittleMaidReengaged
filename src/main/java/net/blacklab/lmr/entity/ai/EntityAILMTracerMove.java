@@ -53,7 +53,7 @@ public class EntityAILMTracerMove extends EntityAIBase implements IEntityAI {
 	}
 
 	@Override
-	public boolean continueExecuting() {
+	public boolean shouldContinueExecuting() {
 		return shouldExecute() || !theMaid.getNavigator().noPath();
 	}
 

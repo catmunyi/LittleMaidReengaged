@@ -39,7 +39,7 @@ public class MaidHelper {
 	 * @return
 	 */
 	public static boolean canStartFollow(EntityLittleMaid pMaid, Entity pTarget, double expandIgnoreRangeSq) {
-		return pMaid.isFreedom() ? false : pMaid.getDistanceSqToEntity(pTarget) > pMaid.getActiveModeClass().getDistanceSqToStartFollow() + expandIgnoreRangeSq;
+		return pMaid.isFreedom() ? false : pMaid.getDistanceSq(pTarget) > pMaid.getActiveModeClass().getDistanceSqToStartFollow() + expandIgnoreRangeSq;
 	}
 	
 	public static boolean isTargetReachable(EntityLittleMaid pMaid, Entity pTarget, double expandRangeSq) {
@@ -50,7 +50,7 @@ public class MaidHelper {
 	public static boolean isTargetReachable(EntityLittleMaid pMaid, Vec3d pTarget, double expandRangeSq) {
 		expandRangeSq -= 1D;
 		return pMaid.isFreedom() ?
-				pMaid.getHomePosition().distanceSq(pTarget.xCoord, pTarget.yCoord, pTarget.zCoord) <= pMaid.getActiveModeClass().getFreedomTrackingRangeSq() + expandRangeSq :
+				pMaid.getHomePosition().distanceSq(pTarget.x, pTarget.y, pTarget.z) <= pMaid.getActiveModeClass().getFreedomTrackingRangeSq() + expandRangeSq :
 				(pMaid.getMaidMasterEntity() == null ? true : pMaid.getMaidMasterEntity().getPositionVector().squareDistanceTo(pTarget) <= pMaid.getActiveModeClass().getLimitRangeSqOnFollow() + expandRangeSq);
 	}
 

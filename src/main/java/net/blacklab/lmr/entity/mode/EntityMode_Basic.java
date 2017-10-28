@@ -428,8 +428,8 @@ public class EntityMode_Basic extends EntityModeBlockBase {
 			// チェスト付カートとか
 			Entity lentity = (Entity)myInventory;
 			if (!lentity.isDead) {
-				if (owner.getDistanceSqToEntity(lentity) < 5D)	{
-					owner.getNavigator().clearPathEntity();
+				if (owner.getDistanceSq(lentity) < 5D)	{
+					owner.getNavigator().clearPath();
 					if (myChest == null) {
 						myChest = (IInventory)lentity;
 						fusedTiles.add(myChest);
@@ -443,7 +443,7 @@ public class EntityMode_Basic extends EntityModeBlockBase {
 				} else {
 					// チェストまでのパスを作る
 					if (!owner.isMaidWaitEx()) {
-						double distance = owner.getDistanceSqToEntity(lentity);
+						double distance = owner.getDistanceSq(lentity);
 						if (distance == lastdistance) {
 							// TODO: 現状無意味
 							LittleMaidReengaged.Debug("Assert.");

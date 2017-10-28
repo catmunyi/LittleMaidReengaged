@@ -83,7 +83,7 @@ public class RenderModelMulti extends RenderLiving {
 		modelFATT.isAlphablend = true;
 		modelMain.renderCount = 0;
 		modelFATT.renderCount = 0;
-		modelMain.lighting = modelFATT.lighting = par1EntityLiving.getBrightnessForRender(par8);
+		modelMain.lighting = modelFATT.lighting = par1EntityLiving.getBrightnessForRender();
 
 		modelMain.setCapsValue(IModelCaps.caps_heldItemLeft, (Integer)0);
 		modelMain.setCapsValue(IModelCaps.caps_heldItemRight, (Integer)0);

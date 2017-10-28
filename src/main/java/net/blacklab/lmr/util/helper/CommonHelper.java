@@ -175,9 +175,9 @@ public class CommonHelper {
 					pEntity.posX, pEntity.posY + pEntity.getEyeHeight(), pEntity.posZ);
 	//		Vec3 lvpos = pEntity.getPosition(pDelta).addVector(0D, pEntity.getEyeHeight(), 0D);
 			Vec3d lvlook = pEntity.getLook(pDelta);
-			Vec3d lvview = lvpos.addVector(lvlook.xCoord * pRange, lvlook.yCoord * pRange, lvlook.zCoord * pRange);
+			Vec3d lvview = lvpos.addVector(lvlook.x * pRange, lvlook.y * pRange, lvlook.z * pRange);
 			Entity ltarget = null;
-			List llist = pEntity.world.getEntitiesWithinAABBExcludingEntity(pEntity, pEntity.getEntityBoundingBox().addCoord(lvlook.xCoord * pRange, lvlook.yCoord * pRange, lvlook.zCoord * pRange).expand(pExpand, pExpand, pExpand));
+			List llist = pEntity.world.getEntitiesWithinAABBExcludingEntity(pEntity, pEntity.getEntityBoundingBox().expand(lvlook.x * pRange, lvlook.y * pRange, lvlook.z * pRange).grow(pExpand, pExpand, pExpand));
 			double ltdistance = pRange * pRange;
 
 			for (int var13 = 0; var13 < llist.size(); ++var13) {
@@ -185,10 +185,10 @@ public class CommonHelper {
 
 				if (lentity.canBeCollidedWith()) {
 					float lexpand = lentity.getCollisionBorderSize() + 0.3F;
-					AxisAlignedBB laabb = lentity.getEntityBoundingBox().expand(lexpand, lexpand, lexpand);
+					AxisAlignedBB laabb = lentity.getEntityBoundingBox().grow(lexpand, lexpand, lexpand);
 					RayTraceResult lmop = laabb.calculateIntercept(lvpos, lvview);
 
-					if (laabb.isVecInside(lvpos)) {
+					if (laabb.contains(lvpos)) {
 						if (0.0D < ltdistance || ltdistance == 0.0D) {
 							ltarget = lentity;
 							ltdistance = 0.0D;
@@ -209,7 +209,7 @@ public class CommonHelper {
 	public static String getDeadSource(DamageSource source) {
 		String ls = source.getDamageType();
 	
-		Entity lentity = source.getSourceOfDamage();
+		Entity lentity = source.getImmediateSource();
 		if (lentity != null) {
 			if (lentity instanceof EntityPlayer) {
 				ls += ":" + lentity.getName();

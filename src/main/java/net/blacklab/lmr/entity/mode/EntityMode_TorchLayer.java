@@ -69,7 +69,7 @@ public class EntityMode_TorchLayer extends EntityModeBase {
 			if (litemstack.getItem() == Item.getItemFromBlock(Blocks.TORCH) || TriggerSelect.checkTrigger(owner.getMaidMasterUUID(), "Torch", litemstack.getItem())) {
 				owner.setMaidMode("Torcher");
 				if (pentityplayer != null) {
-					pentityplayer.addStat(AchievementsLMRE.ac_TorchLayer);
+					AchievementsLMRE.grantAdvancement(pentityplayer, "torcher");
 				}
 				return true;
 			}
@@ -297,8 +297,8 @@ public class EntityMode_TorchLayer extends EntityModeBase {
 		Path pathEntity = owner.getNavigator().getPath();
 		if (pathEntity == null) return;
 		PathPoint destination = pathEntity.getFinalPathPoint();
-		if (!checkBlock(owner.getMaidModeInt(), destination.xCoord, destination.yCoord, destination.zCoord)) {
-			owner.getNavigator().clearPathEntity();
+		if (!checkBlock(owner.getMaidModeInt(), destination.x, destination.y, destination.z)) {
+			owner.getNavigator().clearPath();
 		}
 	}
 

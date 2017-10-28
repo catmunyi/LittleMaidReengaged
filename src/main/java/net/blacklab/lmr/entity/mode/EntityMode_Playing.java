@@ -127,11 +127,11 @@ public class EntityMode_Playing extends EntityModeBase {
 			if (!owner.getNextEquipItem()) {
 				owner.setAttackTarget(null);
 
-				owner.getNavigator().clearPathEntity();
+				owner.getNavigator().clearPath();
 				fcounter = 1;
 			} else if (owner.getAttackTarget() == null) {
 				// メイドとプレーヤー（無差別）をターゲットに
-				List<Entity> list = owner.world.getEntitiesWithinAABBExcludingEntity(owner, owner.getEntityBoundingBox().expand(16D, 4D, 16D));
+				List<Entity> list = owner.world.getEntitiesWithinAABBExcludingEntity(owner, owner.getEntityBoundingBox().grow(16D, 4D, 16D));
 				for (Entity e : list) {
 					if (e != null && (e instanceof EntityPlayer || e instanceof EntityLittleMaid)) {
 						if (owner.getRNG().nextBoolean()) {
@@ -209,7 +209,7 @@ public class EntityMode_Playing extends EntityModeBase {
 			}
 //			owner.isMaidChaseWait = true;
 			owner.setJumping(false);
-			owner.getNavigator().clearPathEntity();
+			owner.getNavigator().clearPath();
 			owner.getLookHelper().setLookPosition(
 					MathHelper.floor(owner.posX),
 					MathHelper.floor(owner.posY - 1D),
@@ -307,7 +307,7 @@ public class EntityMode_Playing extends EntityModeBase {
 
 	@Override
 	public float attackEntityFrom(DamageSource par1DamageSource, float par2) {
-		if (par1DamageSource.getSourceOfDamage() instanceof EntitySnowball) {
+		if (par1DamageSource.getImmediateSource() instanceof EntitySnowball) {
 			// お遊び判定用、雪玉かどうか判定
 			owner.setMaidDamegeSound(EnumSound.hurt_snow);
 			if (!owner.isContractEX() || (owner.isFreedom() && owner.maidMode==1)) {

@@ -1,0 +1,17 @@
+{
+    "display": {
+        "icon": {
+            "item": "minecraft:diamond_hoe",
+            "data": 0
+        },
+        "title": { "translate": "achievement.farmer" },
+        "description": { "translate": "achievement.farmer.desc" }
+    },
+    "parent": "lmreengaged:contract",
+    "criteria": {
+        "done": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "requirements": [["done"]]
+}

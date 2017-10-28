@@ -40,7 +40,7 @@ public class EntityAILMBeg extends EntityAIBase {
 	}
 
 	@Override
-	public boolean continueExecuting() {
+	public boolean shouldContinueExecuting() {
 		// if (!targetPlayer.isEntityAlive()) {
 		if (targetPlayer == null || !targetPlayer.isEntityAlive()) {
 			return false;
@@ -49,7 +49,7 @@ public class EntityAILMBeg extends EntityAIBase {
 		if (littleMaid.isContract()) {
 			targetRangeSq = littleMaid.getDistanceSqToMaster();
 		} else {
-			targetRangeSq = littleMaid.getDistanceSqToEntity(targetPlayer);
+			targetRangeSq = littleMaid.getDistanceSq(targetPlayer);
 		}
 		
 		if (targetRangeSq > effectiveRangeSq) {

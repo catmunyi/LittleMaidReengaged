@@ -160,14 +160,14 @@ public class GuiMaidInventory extends GuiContainer {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		String mInventoryString = I18n.format(maidInventory.getName());
-		mc.fontRendererObj.drawString(mInventoryString, 168 - mc.fontRendererObj.getStringWidth(mInventoryString), 64, 0x404040);
-		mc.fontRendererObj.drawString(I18n.format(playerInventory.getName()), 8, 114, 0x404040);
+		mc.fontRenderer.drawString(mInventoryString, 168 - mc.fontRenderer.getStringWidth(mInventoryString), 64, 0x404040);
+		mc.fontRenderer.drawString(I18n.format(playerInventory.getName()), 8, 114, 0x404040);
 
 		//fontRenderer.drawString(StatCollector.translateToLocal("littleMaidMob.text.Health"), 86, 8, 0x404040);
 		//fontRenderer.drawString(StatCollector.translateToLocal("littleMaidMob.text.AP"), 86, 32, 0x404040);
 
 		if (RenderInfoPart.getRenderingPart() == 2) {
-			mc.fontRendererObj.drawString(I18n.format(
+			mc.fontRenderer.drawString(I18n.format(
 					"littleMaidMob.mode.".concat(entitylittlemaid.getMaidModeString())), 7, 64, 0x404040);
 		}
 
@@ -346,12 +346,12 @@ public class GuiMaidInventory extends GuiContainer {
 
 		//経験値ブースト
 		drawGradientRect(guiLeft+112, guiTop-16, guiLeft+xSize-16, guiTop, 0x80202020, 0x80202020);
-		drawCenteredString(fontRendererObj, String.format("x%d", booster), guiLeft+112+(xSize-128)/2, guiTop-12, 0xffffff);
+		drawCenteredString(fontRenderer, String.format("x%d", booster), guiLeft+112+(xSize-128)/2, guiTop-12, 0xffffff);
 
 		// LV数値
 //		GlStateManager.pushMatrix();
 		String lvString = String.format("Lv. %d", entitylittlemaid.getMaidLevel());
-		mc.fontRendererObj.drawString(lvString, guiLeft + 108, guiTop + 13 - mc.fontRendererObj.FONT_HEIGHT/2, 0xff303030);
+		mc.fontRenderer.drawString(lvString, guiLeft + 108, guiTop + 13 - mc.fontRenderer.FONT_HEIGHT/2, 0xff303030);
 //		mc.fontRendererObj.drawString(lvString, guiLeft + 109, guiTop + 13 - mc.fontRendererObj.FONT_HEIGHT/2, 0xfff0f0f0);
 //		GlStateManager.popMatrix();
 
@@ -360,7 +360,7 @@ public class GuiMaidInventory extends GuiContainer {
 		if (RenderInfoPart.getRenderingPart() == 0) {
 			float lhealth = entitylittlemaid.getHealth();
 			if (lhealth > 20) {
-				mc.fontRendererObj.drawString(String.format("x%d", MathHelper.floor((lhealth-1) / 20)), guiLeft + 95, guiTop + 64, 0x404040);
+				mc.fontRenderer.drawString(String.format("x%d", MathHelper.floor((lhealth-1) / 20)), guiLeft + 95, guiTop + 64, 0x404040);
 			}
 		}
 
@@ -539,8 +539,8 @@ public class GuiMaidInventory extends GuiContainer {
 			if (entitylittlemaid.textureData.textureBox[0] != null) {
 				String ls1 = entitylittlemaid.textureData.getTextureName(0);
 				String ls2 = entitylittlemaid.textureData.getTextureName(1);
-				int ltw1 = this.mc.fontRendererObj.getStringWidth(ls1);
-				int ltw2 = this.mc.fontRendererObj.getStringWidth(ls2);
+				int ltw1 = this.mc.fontRenderer.getStringWidth(ls1);
+				int ltw2 = this.mc.fontRenderer.getStringWidth(ls2);
 				int ltwmax = (ltw1 > ltw2) ? ltw1 : ltw2;
 				int lbx = 52 - ltwmax / 2;
 				int lby = 68;
@@ -550,10 +550,10 @@ public class GuiMaidInventory extends GuiContainer {
 				GlStateManager.disableDepth();
 				GlStateManager.colorMask(true, true, true, false);
 				drawGradientRect(lbx - 3, lby - 4, lbx + ltwmax + 3, lby + 8, lcolor, lcolor);
-				drawString(this.mc.fontRendererObj, ls1, 52 - ltw1 / 2, lby - 2, -1);
+				drawString(this.mc.fontRenderer, ls1, 52 - ltw1 / 2, lby - 2, -1);
 				lcolor = jj > 46 ? 0xc0882222 : 0xc0000000;
 				drawGradientRect(lbx - 3, lby + 8, lbx + ltwmax + 3, lby + 16 + 4, lcolor, lcolor);
-				drawString(this.mc.fontRendererObj, ls2, 52 - ltw2 / 2, lby + 10, -1);
+				drawString(this.mc.fontRenderer, ls2, 52 - ltw2 / 2, lby + 10, -1);
 				GlStateManager.enableLighting();
 				GlStateManager.enableDepth();
 				GlStateManager.colorMask(true, true, true, true);
@@ -576,10 +576,10 @@ public class GuiMaidInventory extends GuiContainer {
 			GlStateManager.disableDepth();
 			GlStateManager.colorMask(true, true, true, false);
 			String str = I18n.format("littleMaidMob.gui.text.expboost");
-			int width = fontRendererObj.getStringWidth(str);
+			int width = fontRenderer.getStringWidth(str);
 			int centerx = guiLeft + 48 + xSize/2;
-			drawGradientRect(centerx - width/2 - 4, guiTop, centerx + width/2 + 4, guiTop + fontRendererObj.FONT_HEIGHT, 0xc0202020, 0xc0202020);
-			drawCenteredString(fontRendererObj, str, centerx, guiTop, 0xffffff);
+			drawGradientRect(centerx - width/2 - 4, guiTop, centerx + width/2 + 4, guiTop + fontRenderer.FONT_HEIGHT, 0xc0202020, 0xc0202020);
+			drawCenteredString(fontRenderer, str, centerx, guiTop, 0xffffff);
 			GlStateManager.enableLighting();
 			GlStateManager.enableDepth();
 			GlStateManager.colorMask(true, true, true, true);
@@ -734,10 +734,10 @@ public class GuiMaidInventory extends GuiContainer {
 								.append(potioneffect.getAmplifier())
 								.toString())).toString();
 			}
-			mc.fontRendererObj.drawString(ls, lx + 10 + 18, ly + 6, 0xffffff);
+			mc.fontRenderer.drawString(ls, lx + 10 + 18, ly + 6, 0xffffff);
 			// TODO ここもよく分からん
 			String s1 = Potion.getPotionDurationString(potioneffect, 1);
-			mc.fontRendererObj.drawString(s1, lx + 10 + 18, ly + 6 + 10, 0x7f7f7f);
+			mc.fontRenderer.drawString(s1, lx + 10 + 18, ly + 6 + 10, 0x7f7f7f);
 			ly += lh;
 		}
 	}

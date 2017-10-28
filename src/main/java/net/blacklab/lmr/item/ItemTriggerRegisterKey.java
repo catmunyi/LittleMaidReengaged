@@ -2,8 +2,11 @@ package net.blacklab.lmr.item;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import net.blacklab.lmr.LittleMaidReengaged;
 import net.blacklab.lmr.util.TriggerSelect;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,6 +28,7 @@ public class ItemTriggerRegisterKey extends Item {
 
 	public ItemTriggerRegisterKey() {
 		setUnlocalizedName(LittleMaidReengaged.DOMAIN + ":registerkey");
+		setRegistryName(getUnlocalizedName());
 		setCreativeTab(CreativeTabs.MISC);
 	}
 
@@ -55,8 +59,7 @@ public class ItemTriggerRegisterKey extends Item {
 	}
 
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer playerIn,
-			List tooltip, boolean advanced) {
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		NBTTagCompound tagCompound = stack.getTagCompound();
 		if(tagCompound != null) {
 			tooltip.add("Mode: "+tagCompound.getString(RK_MODE_TAG));
