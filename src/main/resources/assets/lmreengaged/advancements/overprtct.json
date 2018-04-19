@@ -1,0 +1,17 @@
+{
+    "display": {
+        "icon": {
+            "item": "minecraft:diamond_chestplate",
+            "data": 0
+        },
+        "title": { "translate": "achievement.overprtct" },
+        "description": { "translate": "achievement.overprtct.desc" }
+    },
+    "parent": "lmreengaged:contract",
+    "criteria": {
+        "done": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "requirements": [["done"]]
+}

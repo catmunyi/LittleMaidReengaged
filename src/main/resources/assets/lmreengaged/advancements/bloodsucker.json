@@ -1,0 +1,16 @@
+{
+    "display": {
+        "icon": {
+            "item": "minecraft:diamond_axe"
+        },
+        "title": { "translate": "achievement.bloodsucker" },
+        "description": { "translate": "achievement.bloodsucker.desc" }
+    },
+    "parent": "lmreengaged:fencer",
+    "criteria": {
+        "done": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "requirements": [["done"]]
+}

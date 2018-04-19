@@ -30,7 +30,7 @@ public class EntityAILMFleeRain extends EntityAIBase implements IEntityAILM {
 			theMaid = (EntityLittleMaid) theCreature;
 		}
 		movespeed = pMoveSpeed;
-		theWorld = par1EntityCreature.worldObj;
+		theWorld = par1EntityCreature.world;
 		isEnable = false;
 		setMutexBits(1);
 	}
@@ -58,15 +58,15 @@ public class EntityAILMFleeRain extends EntityAIBase implements IEntityAILM {
 		if (vec3d == null) {
 			return false;
 		}
-		shelterX = vec3d.xCoord;
-		shelterY = vec3d.yCoord;
-		shelterZ = vec3d.zCoord;
+		shelterX = vec3d.x;
+		shelterY = vec3d.y;
+		shelterZ = vec3d.z;
 		LittleMaidReengaged.Debug("SHELTER FOUND %04.2f,%04.2f,%04.2f", shelterX, shelterY, shelterZ);
 		return true;
 	}
 
 	@Override
-	public boolean continueExecuting() {
+	public boolean shouldContinueExecuting() {
 		return theMaid.getNavigator().noPath() ? false :
 			theWorld.canBlockSeeSky(theMaid.getPosition());
 	}
@@ -81,10 +81,10 @@ public class EntityAILMFleeRain extends EntityAIBase implements IEntityAILM {
 		Random random = theMaid.getRNG();
 		
 		for (int i = 0; i < 10; i++) {
-			int j = MathHelper.floor_double((theMaid.posX + (i-5)));
-			int k = MathHelper.floor_double((theMaid.getEntityBoundingBox().minY +
+			int j = MathHelper.floor((theMaid.posX + (i-5)));
+			int k = MathHelper.floor((theMaid.getEntityBoundingBox().minY +
 					random.nextInt(4)) - 2D);
-			int l = MathHelper.floor_double((theMaid.posZ + (i-5)));
+			int l = MathHelper.floor((theMaid.posZ + (i-5)));
 			
 			//離れすぎている
 			if(theMaid.isFreedom() && !MaidHelper.isTargetReachable(theMaid, new Vec3d(j, k, l), 0)){

@@ -103,23 +103,23 @@ public class EntityMode_Fencer extends EntityModeBase {
 	@Override
 	public boolean changeMode(EntityPlayer pentityplayer) {
 		ItemStack litemstack = owner.getHandSlotForModeChange();
-		if (litemstack != null) {
+		if (!litemstack.isEmpty()) {
 			if (isTriggerItem(mmode_Fencer, litemstack)) {
 				owner.setMaidMode(mmode_Fencer);
 				if (pentityplayer != null) {
-					pentityplayer.addStat(AchievementsLMRE.ac_Fencer);
+					AchievementsLMRE.grantAdvancement(pentityplayer, "fencer");
 				}
 				if (litemstack.getItem() instanceof ItemSpade && pentityplayer != null) {
-					pentityplayer.addStat(AchievementsLMRE.ac_Buster);
+					AchievementsLMRE.grantAdvancement(pentityplayer, "zombuster");
 				}
 				return true;
 			} else  if (isTriggerItem(mmode_Bloodsucker, litemstack)) {
 				owner.setMaidMode(mmode_Bloodsucker);
 				if (pentityplayer != null) {
-					pentityplayer.addStat(AchievementsLMRE.ac_RandomKiller);
+					AchievementsLMRE.grantAdvancement(pentityplayer, "bloodsucker");
 				}
 				if (litemstack.getItem() instanceof ItemSpade && pentityplayer != null) {
-					pentityplayer.addStat(AchievementsLMRE.ac_Buster);
+					AchievementsLMRE.grantAdvancement(pentityplayer, "zombuster");
 				}
 				return true;
 			}
@@ -161,7 +161,7 @@ public class EntityMode_Fencer extends EntityModeBase {
 		case mmode_Fencer :
 			for (li = 0; li < owner.maidInventory.getSizeInventory() - 1; li++) {
 				litemstack = owner.maidInventory.getStackInSlot(li);
-				if (litemstack == null) continue;
+				if (litemstack.isEmpty()) continue;
 
 				// 剣
 				if (isTriggerItem(pMode, litemstack)) {
@@ -184,7 +184,7 @@ public class EntityMode_Fencer extends EntityModeBase {
 		case mmode_Bloodsucker :
 			for (li = 0; li < owner.maidInventory.getSizeInventory(); li++) {
 				litemstack = owner.maidInventory.getStackInSlot(li);
-				if (litemstack == null) continue;
+				if (litemstack.isEmpty()) continue;
 
 				// 斧
 				if (isTriggerItem(pMode, litemstack)) {
@@ -211,7 +211,7 @@ public class EntityMode_Fencer extends EntityModeBase {
 
 	@Override
 	protected boolean isTriggerItem(String pMode, ItemStack par1ItemStack) {
-		if (par1ItemStack == null) {
+		if (par1ItemStack.isEmpty()) {
 			return false;
 		}
 
@@ -239,7 +239,7 @@ public class EntityMode_Fencer extends EntityModeBase {
 	public boolean checkEntity(String pMode, Entity pEntity) {
 		// Distance from master
 		if (!owner.isFreedom() && owner.getMaidMasterEntity() != null &&
-				owner.getMaidMasterEntity().getDistanceSqToEntity(pEntity) >= getLimitRangeSqOnFollow()) {
+				owner.getMaidMasterEntity().getDistanceSq(pEntity) >= getLimitRangeSqOnFollow()) {
 			return false;
 		}
 

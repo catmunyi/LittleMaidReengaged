@@ -1,0 +1,17 @@
+{
+    "display": {
+        "icon": {
+            "item": "minecraft:bread",
+            "data": 0
+        },
+        "title": { "translate": "achievement.healer" },
+        "description": { "translate": "achievement.healer.desc" }
+    },
+    "parent": "lmreengaged:contract",
+    "criteria": {
+        "done": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "requirements": [["done"]]
+}

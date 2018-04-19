@@ -29,6 +29,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.EntityEntry;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class GuiIFF extends GuiScreen {
 
@@ -83,8 +86,9 @@ public class GuiIFF extends GuiScreen {
 		// 表示用EntityListの初期化
 		if (entityMapClass.isEmpty()) {
 			try {
-				Map lmap = EntityList.CLASS_TO_NAME;// (Map)ModLoader.getPrivateValue(EntityList.class, null, 1);
-				entityMapClass.putAll(lmap);
+				for (EntityEntry e : ForgeRegistries.ENTITIES) {
+					entityMapClass.put(e.getEntityClass(), e.getName());
+				}
 			}
 			catch (Exception e) {
 				LittleMaidReengaged.Debug("EntityClassMap copy failed.");
@@ -122,7 +126,7 @@ public class GuiIFF extends GuiScreen {
 
 		drawDefaultBackground();
 		selectPanel.drawScreen(px, py, pf);
-		drawCenteredString(this.mc.fontRendererObj, I18n.format(screenTitle), width / 2, 20, 0xffffff);
+		drawCenteredString(this.mc.fontRenderer, I18n.format(screenTitle), width / 2, 20, 0xffffff);
 		super.drawScreen(px, py, pf);
 
 /*
@@ -193,7 +197,7 @@ public class GuiIFF extends GuiScreen {
 
 	public void clickSlot(int pIndex, boolean pDoubleClick, String pName, EntityLivingBase pEntity) {
 		if (pDoubleClick) {
-			byte tt = IFF.getIFF(CommonHelper.getPlayerUUID(thePlayer), pName, pEntity.worldObj);
+			byte tt = IFF.getIFF(CommonHelper.getPlayerUUID(thePlayer), pName, pEntity.world);
 			tt++;
 			if (tt > 2) {
 				tt = 0;
@@ -208,14 +212,14 @@ public class GuiIFF extends GuiScreen {
 			tagCompound.setString("Name", pName);
 			LMRNetwork.sendPacketToServer(LMRMessage.EnumPacketMode.SERVER_CHANGE_IFF, -1, tagCompound);
 
-			Entity player = mc.thePlayer;
+			Entity player = mc.player;
 			player.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("ui.button.click")), 1, 1);
 		}
 	}
 
 	public void drawSlot(int pSlotindex, int pX, int pY, int pDrawheight, String pName, Entity pEntity) {
 		// 名前と敵味方識別の描画
-		int tt = IFF.getIFF(CommonHelper.getPlayerUUID(thePlayer), pName, pEntity.worldObj);
+		int tt = IFF.getIFF(CommonHelper.getPlayerUUID(thePlayer), pName, pEntity.world);
 		int c = 0xffffff;
 		switch (tt) {
 		case IFF.iff_Friendry:
@@ -228,10 +232,10 @@ public class GuiIFF extends GuiScreen {
 			c = 0xff3f3f;
 			break;
 		}
-		drawString(this.mc.fontRendererObj, GuiIFF.IFFString[tt],
-				(width - this.mc.fontRendererObj.getStringWidth(GuiIFF.IFFString[tt])) / 2, pY + 18, c);
-		drawString(this.mc.fontRendererObj, pName,
-				(width - this.mc.fontRendererObj.getStringWidth(pName)) / 2, pY + 6, 0xffffff);
+		drawString(this.mc.fontRenderer, GuiIFF.IFFString[tt],
+				(width - this.mc.fontRenderer.getStringWidth(GuiIFF.IFFString[tt])) / 2, pY + 18, c);
+		drawString(this.mc.fontRenderer, pName,
+				(width - this.mc.fontRenderer.getStringWidth(pName)) / 2, pY + 6, 0xffffff);
 	}
 
 }

@@ -11,6 +11,12 @@ import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.entity.passive.EntityTameable;
+//TODO <<<<<<< HEAD
+/*TODO =======
+import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
+>>>>>>> v8.0.1.66-unofficial-1.12.2 */
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.FMLInjectionData;
 
@@ -158,7 +164,7 @@ public class IFF {
 			} else {
 				ls = entityname;
 			}
-			Entity lentity = EntityList.createEntityByName(ls, world);
+			Entity lentity = EntityList.createEntityByIDFromName(new ResourceLocation(entityname), world);
 			li = 0;
 			if (entityname.indexOf(":Contract") > -1) {
 				li = 1;
@@ -218,7 +224,7 @@ public class IFF {
 		if (!getUserIFF(pUsername).containsKey(lcname)) {
 			checkEntityStatic(lename, entity, li, null);
 		}
-		return getIFF(pUsername, lcname, entity.worldObj);
+		return getIFF(pUsername, lcname, entity.world);
 	}
 
 	public static void loadIFFs() {

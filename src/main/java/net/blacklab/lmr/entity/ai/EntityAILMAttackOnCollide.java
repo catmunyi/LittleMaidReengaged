@@ -17,7 +17,7 @@ public class EntityAILMAttackOnCollide extends EntityAIBase implements IEntityAI
 
 	protected boolean fEnable;
 
-	protected World worldObj;
+	protected World world;
 	protected EntityLittleMaid theMaid;
 	protected Entity entityTarget;
 	protected float moveSpeed;
@@ -31,7 +31,7 @@ public class EntityAILMAttackOnCollide extends EntityAIBase implements IEntityAI
 
 	public EntityAILMAttackOnCollide(EntityLittleMaid par1EntityLittleMaid, float par2, boolean par3) {
 		theMaid = par1EntityLittleMaid;
-		worldObj = par1EntityLittleMaid.worldObj;
+		world = par1EntityLittleMaid.world;
 		moveSpeed = par2;
 		isReroute = par3;
 		isGuard = false;
@@ -97,7 +97,7 @@ public class EntityAILMAttackOnCollide extends EntityAIBase implements IEntityAI
 	}
 
 	@Override
-	public boolean continueExecuting() {
+	public boolean shouldContinueExecuting() {
 		Entity lentity = theMaid.getAttackTarget();
 		if (lentity == null || entityTarget != lentity) {
 			return false;
@@ -132,7 +132,7 @@ public class EntityAILMAttackOnCollide extends EntityAIBase implements IEntityAI
 	@Override
 	public void resetTask() {
 		entityTarget = null;
-		theMaid.getNavigator().clearPathEntity();
+		theMaid.getNavigator().clearPath();
 		theMaid.setAttackTarget(null);
 		theMaid.setRevengeTarget(null);
 //		theMaid.maidAvatar.stopActiveHand();
@@ -171,12 +171,12 @@ public class EntityAILMAttackOnCollide extends EntityAIBase implements IEntityAI
 					lel = ((EntityCreature)entityTarget).getAttackTarget();
 				}
 				else if (entityTarget instanceof EntityLivingBase) {
-					lel = ((EntityLivingBase)entityTarget).getAITarget();
+					lel = ((EntityLivingBase)entityTarget).getRevengeTarget();
 				}
 				if (lel == theMaid) {
 					ItemStack li = theMaid.getCurrentEquippedItem();
-					if (li != null && li.getItemUseAction() == EnumAction.BLOCK) {
-						li.useItemRightClick(worldObj, theMaid.maidAvatar, EnumHand.MAIN_HAND);
+					if (!li.isEmpty() && li.getItemUseAction() == EnumAction.BLOCK) {
+						li.useItemRightClick(world, theMaid.maidAvatar, EnumHand.MAIN_HAND);
 						lguard = true;
 					}
 				}
@@ -208,7 +208,7 @@ public class EntityAILMAttackOnCollide extends EntityAIBase implements IEntityAI
 			// 対象を再設定させる
 			theMaid.setAttackTarget(null);
 			theMaid.setRevengeTarget(null);
-			theMaid.getNavigator().clearPathEntity();
+			theMaid.getNavigator().clearPath();
 		}
 		return;
 	}

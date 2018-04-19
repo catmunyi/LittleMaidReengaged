@@ -1,10 +1,16 @@
 package net.blacklab.lmr.item;
 
 import java.util.List;
+import javax.annotation.Nullable;
 
 import net.blacklab.lmr.LittleMaidReengaged;
 import net.blacklab.lmr.entity.experience.ExperienceUtil;
+//TODO <<<<<<< HEAD
 import net.blacklab.lmr.entity.littlemaid.EntityLittleMaid;
+/*TODO =======
+import net.minecraft.client.util.ITooltipFlag;
+>>>>>>> v8.0.1.66-unofficial-1.12.2 */
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -21,6 +27,7 @@ public class ItemMaidPorter extends Item {
 	public ItemMaidPorter() {
 		setMaxStackSize(1);
 		setUnlocalizedName(LittleMaidReengaged.DOMAIN + ":maidporter");
+		setRegistryName(getUnlocalizedName());
 	}
 
 	@Override
@@ -29,7 +36,7 @@ public class ItemMaidPorter extends Item {
 	}
 
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer playerIn, List tooltip, boolean advanced) {
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		NBTTagCompound stackTag = stack.getTagCompound();
 		if (stackTag != null) {
 			String customName = stackTag.getString(LittleMaidReengaged.DOMAIN + ":MAID_NAME");
@@ -43,11 +50,12 @@ public class ItemMaidPorter extends Item {
 	}
 
 	@Override
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos,
+	public EnumActionResult onItemUse(EntityPlayer playerIn, World worldIn, BlockPos pos,
 			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (worldIn.isRemote) {
 			return EnumActionResult.PASS;
 		}
+		ItemStack stack = playerIn.getHeldItem(hand);
 		NBTTagCompound tagCompound = stack.getTagCompound();
 		if (tagCompound != null) {
 			if (worldIn.isAirBlock(pos.add(0, 1, 0)) && worldIn.isAirBlock(pos.add(0, 2, 0))) {
@@ -62,8 +70,8 @@ public class ItemMaidPorter extends Item {
 					}
 				}.addMaidExperienceWithoutEvent(experience);
 				lMaid.setLocationAndAngles(pos.getX(), pos.getY()+1, pos.getZ(), 0, 0);
-				worldIn.spawnEntityInWorld(lMaid);
-				lMaid.processInteract(playerIn, EnumHand.MAIN_HAND, new ItemStack(Items.CAKE));
+				worldIn.spawnEntity(lMaid);
+				lMaid.processInteract(playerIn, EnumHand.MAIN_HAND);
 
 				if (!customName.isEmpty()) {
 					lMaid.setCustomNameTag(customName);

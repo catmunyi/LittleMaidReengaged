@@ -73,7 +73,7 @@ public class LMRNetwork
 
 		Entity lemaid = null;
 		if (lmode.withEntity) {
-			lemaid = sender.worldObj.getEntityByID(pPayload.getEntityId());
+			lemaid = sender.world.getEntityByID(pPayload.getEntityId());
 			if (!(lemaid instanceof EntityLittleMaid)) return;
 
 			LittleMaidReengaged.Debug("Check Debug-%d/%s/%s",
@@ -107,8 +107,8 @@ public class LMRNetwork
 			lemaid.setColor(color);
 
 			if (!sender.capabilities.isCreativeMode) {
-				for (int li = 0; li < sender.inventory.mainInventory.length; li++) {
-					ItemStack lis = sender.inventory.mainInventory[li];
+				for (int li = 0; li < sender.inventory.mainInventory.size(); li++) {
+					ItemStack lis = sender.inventory.mainInventory.get(li);
 					if (lis != null && lis.getItem() == Items.DYE) {
 						if (lis.getItemDamage() == (15 - color)) {
 							CommonHelper.decPlayerInventory(sender, li, 1);
@@ -133,7 +133,7 @@ public class LMRNetwork
 		case SERVER_REQUEST_IFF :
 			// IFFGUI open
 			lname = tagCompound.getString("Name");
-			value = IFF.getIFF(CommonHelper.getPlayerUUID(sender), lname, sender.worldObj);
+			value = IFF.getIFF(CommonHelper.getPlayerUUID(sender), lname, sender.world);
 
 			sendIFFValue(sender, value, lname);
 
@@ -143,7 +143,7 @@ public class LMRNetwork
 		case SERVER_SAVE_IFF :
 			// IFFファイルの保存
 			IFF.saveIFF(CommonHelper.getPlayerUUID(sender));
-//			if (!sender.worldObj.isRemote) {
+//			if (!sender.world.isRemote) {
 //				IFF.saveIFF("");
 //			}
 			break;

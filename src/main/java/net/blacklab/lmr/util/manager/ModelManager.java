@@ -106,8 +106,8 @@ public class ModelManager {
 
 	public void init() {
 		addSearch("littleMaidMob", "/assets/minecraft/textures/entity/ModelMulti/", "ModelMulti_");
-		addSearch("littleMaidMob", "/assets/minecraft/textures/entity/littleMaid/", "ModelMulti_");
-		addSearch("littleMaidMob", "/assets/minecraft/textures/entity/littleMaid/", "ModelLittleMaid_");
+		addSearch("littleMaidMob", "/assets/minecraft/textures/entity/littlemaid/", "ModelMulti_");
+		addSearch("littleMaidMob", "/assets/minecraft/textures/entity/littlemaid/", "ModelLittleMaid_");
 		addSearch("littleMaidMob", "/mob/ModelMulti/", "ModelMulti_");
 		addSearch("littleMaidMob", "/mob/littleMaid/", "ModelLittleMaid_");
 	}
@@ -175,6 +175,15 @@ public class ModelManager {
 		}
 		return null;
 	}
+	
+	private ModelMultiBase[] getModel(String pName) {
+		for (Entry<String, ModelMultiBase[]> le : modelMap.entrySet()) {
+			if (le.getKey().toLowerCase().equals(pName.toLowerCase())) {
+				return le.getValue();
+			}
+		}
+		return null;
+	}
 
 	protected void getArmorPrefix() {
 		//1.8検討
@@ -211,8 +220,9 @@ public class ModelManager {
 			if (ltb.modelName.isEmpty()) {
 				ltb.setModels(defaultModelName, null, ldm);
 			} else {
-				if (modelMap.containsKey(ltb.modelName)) {
-					ltb.setModels(ltb.modelName, modelMap.get(ltb.modelName), ldm);
+				ModelMultiBase[] model = getModel(ltb.modelName);
+				if (model != null) {
+					ltb.setModels(ltb.modelName, model, ldm);
 				}
 			}
 		}

@@ -32,7 +32,7 @@ public class EntityAILMAttackArrow extends EntityAIBase implements IEntityAILM {
 	protected EntityPlayer fAvatar;
 	protected InventoryLittleMaid fInventory;
 	protected SwingStatus swingState;
-	protected World worldObj;
+	protected World world;
 	protected EntityLivingBase fTarget;
 	protected int fForget;
 
@@ -42,7 +42,7 @@ public class EntityAILMAttackArrow extends EntityAIBase implements IEntityAILM {
 		fAvatar = pEntityLittleMaid.maidAvatar;
 		fInventory = pEntityLittleMaid.maidInventory;
 		swingState = pEntityLittleMaid.getSwingStatusDominant();
-		worldObj = pEntityLittleMaid.worldObj;
+		world = pEntityLittleMaid.world;
 		fEnable = false;
 		setMutexBits(3);
 	}
@@ -113,7 +113,7 @@ public class EntityAILMAttackArrow extends EntityAIBase implements IEntityAILM {
 	}
 
 	@Override
-	public boolean continueExecuting() {
+	public boolean shouldContinueExecuting() {
 		return isExecutable() || (fTarget != null && !fMaid.getNavigator().noPath());
 	}
 
@@ -136,13 +136,13 @@ public class EntityAILMAttackArrow extends EntityAIBase implements IEntityAILM {
 		{
 			double dtx = fTarget.posX - fMaid.posX;
 			double dtz = fTarget.posZ - fMaid.posZ;
-			double distTarget = MathHelper.sqrt_double(dtx*dtx + dtz*dtz);
+			double distTarget = MathHelper.sqrt(dtx*dtx + dtz*dtz);
 			fMaid.posX += dtx / distTarget * 1.0;	// 1m 目標に近づける
 			fMaid.posZ += dtz / distTarget * 1.0;	// 1m 目標に近づける
 		}
 
 		double lrange = 15 * 15;
-		double ldist = fMaid.getDistanceSqToEntity(fTarget);
+		double ldist = fMaid.getDistanceSq(fTarget);
 		boolean lsee = fMaid.getEntitySenses().canSee(fTarget)/* &&
 				VectorUtil.canMoveThrough(
 						fMaid, fMaid.getEyeHeight(),
@@ -200,9 +200,9 @@ public class EntityAILMAttackArrow extends EntityAIBase implements IEntityAILM {
 //					mod_LMM_littleMaidMob.Debug("il:%f, milsq:%f", il, milsq);
 				}
 
-				if (litemstack != null && !(litemstack.getItem() instanceof ItemFood) && !fMaid.weaponReload) {
-//					int lastentityid = worldObj.loadedEntityList.size();
-					int itemcount = litemstack.stackSize;
+				if (!litemstack.isEmpty() && !(litemstack.getItem() instanceof ItemFood) && !fMaid.weaponReload) {
+//					int lastentityid = world.loadedEntityList.size();
+					int itemcount = litemstack.getCount();
 					fMaid.mstatAimeBow = true;
 					getAvatarIF().getValueVectorFire(atx, aty, atz, atl);
 					// ダイヤ、金ヘルムなら味方への誤射を気持ち軽減
@@ -210,8 +210,8 @@ public class EntityAILMAttackArrow extends EntityAIBase implements IEntityAILM {
 					boolean ldotarget = false;
 					double tpr = Math.sqrt(atl);
 					Entity lentity = CommonHelper.getRayTraceEntity(fMaid.maidAvatar, tpr + 1.0F, 1.0F, 1.0F);
-					ItemStack headstack = fInventory.armorInventory[3];
-					Item helmid = headstack == null ? null : headstack.getItem();
+					ItemStack headstack = fInventory.armorInventory.get(3);
+					Item helmid = headstack.isEmpty() ? null : headstack.getItem();
 
 					/*
 					if (helmid == Items.DIAMOND_HELMET || helmid == Items.GOLDEN_HELMET) {
@@ -248,7 +248,7 @@ public class EntityAILMAttackArrow extends EntityAIBase implements IEntityAILM {
 						fMaid.getNavigator().tryMoveToXYZ(tpx, tpy, tpz, 1.0F);
 					}
 					else if (lsee & ldist < 100) {
-						fMaid.getNavigator().clearPathEntity();
+						fMaid.getNavigator().clearPath();
 //						mod_LMM_littleMaidMob.Debug("Shooting Range.");
 					}
 
@@ -273,7 +273,7 @@ public class EntityAILMAttackArrow extends EntityAIBase implements IEntityAILM {
 								if (!fMaid.weaponFullAuto || lcanattack) {
 									int at = ((helmid == Items.IRON_HELMET) || (helmid == Items.DIAMOND_HELMET)) ? 26 : 16;
 									if (swingState.attackTime < at) {
-										ActionResult<ItemStack> result = litemstack.useItemRightClick(worldObj, fAvatar, EnumHand.MAIN_HAND);
+										ActionResult<ItemStack> result = litemstack.useItemRightClick(world, fAvatar, EnumHand.MAIN_HAND);
 										if (result.getType() != EnumActionResult.SUCCESS) {
 											LittleMaidReengaged.Debug("id:%d bow trigger failed.", fMaid.getEntityId());
 											resetTask();
@@ -294,10 +294,10 @@ public class EntityAILMAttackArrow extends EntityAIBase implements IEntityAILM {
 							// 通常投擲兵装
 							if (swingState.canAttack() && !fAvatar.isHandActive()) {
 								if (lcanattack) {
-									litemstack = litemstack.useItemRightClick(worldObj, fAvatar, EnumHand.MAIN_HAND).getResult();
+									litemstack = litemstack.useItemRightClick(world, fAvatar, EnumHand.MAIN_HAND).getResult();
 									// 意図的にショートスパンで音が鳴るようにしてある
 									fMaid.mstatAimeBow = false;
-									fMaid.setSwing(10, (litemstack.stackSize == itemcount) ? EnumSound.shoot_burst : EnumSound.Null, !fMaid.isPlaying());
+									fMaid.setSwing(10, (litemstack.getCount() == itemcount) ? EnumSound.shoot_burst : EnumSound.Null, !fMaid.isPlaying());
 									LittleMaidReengaged.Debug(String.format("id:%d throw weapon.(%d:%f:%f)", fMaid.getEntityId(), swingState.attackTime, fMaid.rotationYaw, fMaid.rotationYawHead));
 									swingState.attackTime = 5;
 									if (!fMaid.maidMode.equals("Playing")) {
@@ -312,7 +312,7 @@ public class EntityAILMAttackArrow extends EntityAIBase implements IEntityAILM {
 						} else {
 							// リロード有りの特殊兵装
 							if (!getAvatarIF().isUsingItemLittleMaid()) {
-								litemstack = litemstack.useItemRightClick(worldObj, fAvatar, EnumHand.MAIN_HAND).getResult();
+								litemstack = litemstack.useItemRightClick(world, fAvatar, EnumHand.MAIN_HAND).getResult();
 								LittleMaidReengaged.Debug(String.format("%d reload.", fMaid.getEntityId()));
 							}
 							// リロード終了まで強制的に構える
@@ -322,7 +322,7 @@ public class EntityAILMAttackArrow extends EntityAIBase implements IEntityAILM {
 //            		maidAvatarEntity.setValueRotation();
 					getAvatarIF().setValueVector();
 					// アイテムが亡くなった
-					if (litemstack.stackSize <= 0) {
+					if (litemstack.getCount() <= 0) {
 						fMaid.destroyCurrentEquippedItem();
 						fMaid.getNextEquipItem();
 					} else {
@@ -332,7 +332,7 @@ public class EntityAILMAttackArrow extends EntityAIBase implements IEntityAILM {
 					// 発生したEntityをチェックしてmaidAvatarEntityが居ないかを確認
 					// TODO issue #9 merge from LittleMaidMobAX(https://github.com/asiekierka/littleMaidMobX/commit/92b2850b1bc4a70b69629cfc84c92748174c8bc6)
 /*
-					List<Entity> newentitys = worldObj.loadedEntityList.subList(lastentityid, worldObj.loadedEntityList.size());
+					List<Entity> newentitys = world.loadedEntityList.subList(lastentityid, world.loadedEntityList.size());
 					boolean shootingflag = false;
 					if (newentitys != null && newentitys.size() > 0) {
 						LMM_LittleMaidMobNX.Debug(String.format("new FO entity %d", newentitys.size()));
@@ -361,7 +361,7 @@ public class EntityAILMAttackArrow extends EntityAIBase implements IEntityAILM {
 					}
 					// 既に命中していた場合の処理
 					if (shootingflag) {
-						for (Object obj : worldObj.loadedEntityList) {
+						for (Object obj : world.loadedEntityList) {
 							if (obj instanceof EntityCreature && !(obj instanceof LMM_EntityLittleMaid)) {
 								EntityCreature ecr = (EntityCreature)obj;
 								//1.8修正検討

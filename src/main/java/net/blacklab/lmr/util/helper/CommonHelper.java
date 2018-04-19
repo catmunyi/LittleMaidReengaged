@@ -69,7 +69,7 @@ public class CommonHelper {
 	 */
 	public static boolean hasEffect(ItemStack pItemStack) {
 		// マジClientSIDEとか辞めてほしい。
-		if (pItemStack != null) {
+		if (!pItemStack.isEmpty()) {
 			Item litem = pItemStack.getItem();
 			if (litem instanceof ItemPotion) {
 				List llist = PotionUtils.getEffectsFromStack(pItemStack);
@@ -85,7 +85,7 @@ public class CommonHelper {
 	 * @return
 	 */
 	public static double getAttackVSEntity(ItemStack pItemStack) {
-		AttributeModifier lam = (AttributeModifier)pItemStack.getAttributeModifiers(EntityEquipmentSlot.MAINHAND).get(SharedMonsterAttributes.ATTACK_DAMAGE.getAttributeUnlocalizedName());
+		AttributeModifier lam = (AttributeModifier)pItemStack.getAttributeModifiers(EntityEquipmentSlot.MAINHAND).get(SharedMonsterAttributes.ATTACK_DAMAGE.getName());
 		return lam == null ? 0 : lam.getAmount();
 	}
 
@@ -102,9 +102,9 @@ public class CommonHelper {
 		PathNavigate lpn = pEntity.getNavigator();
 		float lspeed = 1.0F;
 		// 向きに合わせて距離を調整
-		int i = (pTarget.getPos().getY() == MathHelper.floor_double(pEntity.posY) && flag) ? 2 : 1;
+		int i = (pTarget.getPos().getY() == MathHelper.floor(pEntity.posY) && flag) ? 2 : 1;
 		try {
-			switch (pEntity.worldObj.getBlockState(pTarget.getPos()).getValue(BlockHorizontal.FACING)) {
+			switch (pEntity.world.getBlockState(pTarget.getPos()).getValue(BlockHorizontal.FACING)) {
 			case SOUTH:
 				return lpn.tryMoveToXYZ(pTarget.getPos().getX(), pTarget.getPos().getY(), pTarget.getPos().getZ() + i, lspeed);
 			case NORTH:
@@ -126,32 +126,32 @@ public class CommonHelper {
 	 */
 	public static ItemStack decPlayerInventory(EntityPlayer par1EntityPlayer, int par2Index, int par3DecCount) {
 		if (par1EntityPlayer == null) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 
 		if (par2Index == -1) {
 			par2Index = par1EntityPlayer.inventory.currentItem;
 		}
 		ItemStack itemstack1 = par1EntityPlayer.inventory.getStackInSlot(par2Index);
-		if (itemstack1 == null) {
-			return null;
+		if (itemstack1.isEmpty()) {
+			return ItemStack.EMPTY;
 		}
 
 		if (!par1EntityPlayer.capabilities.isCreativeMode) {
 			// クリエイティブだと減らない
-			itemstack1.stackSize -= par3DecCount;
+			itemstack1.shrink(par3DecCount);
 		}
 
 		if (itemstack1.getItem() instanceof ItemPotion) {
-			if(itemstack1.stackSize <= 0) {
+			if(itemstack1.getCount() <= 0) {
 				par1EntityPlayer.inventory.setInventorySlotContents(par1EntityPlayer.inventory.currentItem, new ItemStack(Items.GLASS_BOTTLE, par3DecCount));
-				return null;
+				return ItemStack.EMPTY;
 			}
 			par1EntityPlayer.inventory.addItemStackToInventory(new ItemStack(Items.GLASS_BOTTLE, par3DecCount));
 		} else {
-			if (itemstack1.stackSize <= 0) {
-				par1EntityPlayer.inventory.setInventorySlotContents(par2Index, null);
-				return null;
+			if (itemstack1.getCount() <= 0) {
+				par1EntityPlayer.inventory.setInventorySlotContents(par2Index, ItemStack.EMPTY);
+				return ItemStack.EMPTY;
 			}
 		}
 
@@ -175,9 +175,9 @@ public class CommonHelper {
 					pEntity.posX, pEntity.posY + pEntity.getEyeHeight(), pEntity.posZ);
 	//		Vec3 lvpos = pEntity.getPosition(pDelta).addVector(0D, pEntity.getEyeHeight(), 0D);
 			Vec3d lvlook = pEntity.getLook(pDelta);
-			Vec3d lvview = lvpos.addVector(lvlook.xCoord * pRange, lvlook.yCoord * pRange, lvlook.zCoord * pRange);
+			Vec3d lvview = lvpos.addVector(lvlook.x * pRange, lvlook.y * pRange, lvlook.z * pRange);
 			Entity ltarget = null;
-			List llist = pEntity.worldObj.getEntitiesWithinAABBExcludingEntity(pEntity, pEntity.getEntityBoundingBox().addCoord(lvlook.xCoord * pRange, lvlook.yCoord * pRange, lvlook.zCoord * pRange).expand(pExpand, pExpand, pExpand));
+			List llist = pEntity.world.getEntitiesWithinAABBExcludingEntity(pEntity, pEntity.getEntityBoundingBox().expand(lvlook.x * pRange, lvlook.y * pRange, lvlook.z * pRange).grow(pExpand, pExpand, pExpand));
 			double ltdistance = pRange * pRange;
 
 			for (int var13 = 0; var13 < llist.size(); ++var13) {
@@ -185,10 +185,10 @@ public class CommonHelper {
 
 				if (lentity.canBeCollidedWith()) {
 					float lexpand = lentity.getCollisionBorderSize() + 0.3F;
-					AxisAlignedBB laabb = lentity.getEntityBoundingBox().expand(lexpand, lexpand, lexpand);
+					AxisAlignedBB laabb = lentity.getEntityBoundingBox().grow(lexpand, lexpand, lexpand);
 					RayTraceResult lmop = laabb.calculateIntercept(lvpos, lvview);
 
-					if (laabb.isVecInside(lvpos)) {
+					if (laabb.contains(lvpos)) {
 						if (0.0D < ltdistance || ltdistance == 0.0D) {
 							ltarget = lentity;
 							ltdistance = 0.0D;
@@ -209,7 +209,7 @@ public class CommonHelper {
 	public static String getDeadSource(DamageSource source) {
 		String ls = source.getDamageType();
 	
-		Entity lentity = source.getSourceOfDamage();
+		Entity lentity = source.getImmediateSource();
 		if (lentity != null) {
 			if (lentity instanceof EntityPlayer) {
 				ls += ":" + lentity.getName();

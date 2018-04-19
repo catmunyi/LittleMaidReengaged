@@ -165,30 +165,30 @@ public class EntityCapsLiving implements IModelCaps {
 		case caps_isSprinting:
 			return owner.isSprinting();
 		case caps_PosBlockID:
-			return owner.worldObj.getBlockState(new BlockPos(
-					MathHelper.floor_double(owner.posX + (Double)pArg[0]),
-					MathHelper.floor_double(owner.posY + (Double)pArg[1]),
-					MathHelper.floor_double(owner.posZ + (Double)pArg[2]))).getBlock();
+			return owner.world.getBlockState(new BlockPos(
+					MathHelper.floor(owner.posX + (Double)pArg[0]),
+					MathHelper.floor(owner.posY + (Double)pArg[1]),
+					MathHelper.floor(owner.posZ + (Double)pArg[2]))).getBlock();
 		case caps_PosBlockState:
-			return owner.worldObj.getBlockState(new BlockPos(
-					MathHelper.floor_double(owner.posX + (Double)pArg[0]),
-					MathHelper.floor_double(owner.posY + (Double)pArg[1]),
-					MathHelper.floor_double(owner.posZ + (Double)pArg[2])));
+			return owner.world.getBlockState(new BlockPos(
+					MathHelper.floor(owner.posX + (Double)pArg[0]),
+					MathHelper.floor(owner.posY + (Double)pArg[1]),
+					MathHelper.floor(owner.posZ + (Double)pArg[2])));
 		case caps_PosBlockAir:
-			return !owner.worldObj.getBlockState(new BlockPos(
-					MathHelper.floor_double(owner.posX + (Double)pArg[0]),
-					MathHelper.floor_double(owner.posY + (Double)pArg[1]),
-					MathHelper.floor_double(owner.posZ + (Double)pArg[2]))).getBlock().isVisuallyOpaque();
+			return !owner.world.getBlockState(new BlockPos(
+					MathHelper.floor(owner.posX + (Double)pArg[0]),
+					MathHelper.floor(owner.posY + (Double)pArg[1]),
+					MathHelper.floor(owner.posZ + (Double)pArg[2]))).getMaterial().isOpaque();
 		case caps_PosBlockLight:
-			return owner.worldObj.getBlockLightOpacity(new BlockPos(
-					MathHelper.floor_double(owner.posX + (Double)pArg[0]),
-					MathHelper.floor_double(owner.posY + (Double)pArg[1]),
-					MathHelper.floor_double(owner.posZ + (Double)pArg[2])));
+			return owner.world.getBlockLightOpacity(new BlockPos(
+					MathHelper.floor(owner.posX + (Double)pArg[0]),
+					MathHelper.floor(owner.posY + (Double)pArg[1]),
+					MathHelper.floor(owner.posZ + (Double)pArg[2])));
 		case caps_PosBlockPower:
-			return owner.worldObj.getStrongPower(new BlockPos(
-					MathHelper.floor_double(owner.posX + (Double)pArg[0]),
-					MathHelper.floor_double(owner.posY + (Double)pArg[1]),
-					MathHelper.floor_double(owner.posZ + (Double)pArg[2])));
+			return owner.world.getStrongPower(new BlockPos(
+					MathHelper.floor(owner.posX + (Double)pArg[0]),
+					MathHelper.floor(owner.posY + (Double)pArg[1]),
+					MathHelper.floor(owner.posZ + (Double)pArg[2])));
 		case caps_boundingBox:
 			if (pArg == null) {
 				return owner.getEntityBoundingBox();
@@ -214,11 +214,11 @@ public class EntityCapsLiving implements IModelCaps {
 
 		// World
 		case caps_WorldTotalTime:
-			return owner.worldObj.getWorldInfo().getWorldTotalTime();
+			return owner.world.getWorldInfo().getWorldTotalTime();
 		case caps_WorldTime:
-			return owner.worldObj.getWorldInfo().getWorldTime();
+			return owner.world.getWorldInfo().getWorldTime();
 		case caps_MoonPhase:
-			return owner.worldObj.getMoonPhase();
+			return owner.world.getMoonPhase();
 		case caps_TextureEntity:
 			return owner;
 		}

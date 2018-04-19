@@ -94,19 +94,19 @@ public class EntityMode_Archer extends EntityModeBase {
 	public boolean changeMode(EntityPlayer pentityplayer) {
 		ItemStack litemstack = owner.getHandSlotForModeChange();
 
-		if (litemstack != null) {
+		if (!litemstack.isEmpty()) {
 			Item item = litemstack.getItem();
 			
 			if (owner.getModeTrigger().isTriggerable(mtrigger_Bow, item, item instanceof ItemBow)) {
 				if (owner.maidInventory.getInventorySlotContainItem(ItemFlintAndSteel.class) > -1) {
 					owner.setMaidMode(mmode_Blazingstar);
 					if (pentityplayer != null) {
-						pentityplayer.addStat(AchievementsLMRE.ac_BlazingStar);
+						AchievementsLMRE.grantAdvancement(pentityplayer, "blazingstar");
 					}
 				} else {
 					owner.setMaidMode(mmode_Archer);
 					if (pentityplayer != null) {
-						pentityplayer.addStat(AchievementsLMRE.ac_Archer);
+						AchievementsLMRE.grantAdvancement(pentityplayer, "archer");
 					}
 				}
 				return true;
@@ -149,7 +149,7 @@ public class EntityMode_Archer extends EntityModeBase {
 			// Except off hand slot
 			for (li = 0; li < owner.maidInventory.getSizeInventory() - 1; li++) {
 				litemstack = owner.maidInventory.getStackInSlot(li);
-				if (litemstack == null) continue;
+				if (litemstack.isEmpty()) continue;
 
 				// 射手
 				if (isTriggerItem(pMode, litemstack)) {
@@ -164,7 +164,7 @@ public class EntityMode_Archer extends EntityModeBase {
 
 	@Override
 	protected boolean isTriggerItem(String pMode, ItemStack par1ItemStack) {
-		if (par1ItemStack == null) {
+		if (par1ItemStack.isEmpty()) {
 			return false;
 		}
 		
@@ -174,7 +174,7 @@ public class EntityMode_Archer extends EntityModeBase {
 
 	@Override
 	public boolean checkItemStack(ItemStack pItemStack) {
-		if (pItemStack == null) {
+		if (pItemStack.isEmpty()) {
 			return false;
 		}
 		
@@ -222,8 +222,8 @@ public class EntityMode_Archer extends EntityModeBase {
 //			owner.getWeaponStatus();
 //			updateGuns();
 			// Blazingstarの特殊効果
-			World lworld = owner.worldObj;
-			List<Entity> llist = lworld.getEntitiesWithinAABB(Entity.class, owner.getEntityBoundingBox().expand(16D, 16D, 16D));
+			World lworld = owner.world;
+			List<Entity> llist = lworld.getEntitiesWithinAABB(Entity.class, owner.getEntityBoundingBox().grow(16D, 16D, 16D));
 			for (int li = 0; li < llist.size(); li++) {
 				Entity lentity = llist.get(li);
 				if (lentity.isEntityAlive() && lentity.isBurning() && owner.getRNG().nextFloat() > 0.9F) {
@@ -262,7 +262,7 @@ public class EntityMode_Archer extends EntityModeBase {
 		}
 		if (owner.weaponReload && !owner.maidAvatar.isHandActive()) {
 			// 特殊リロード
-			owner.maidInventory.getCurrentItem().useItemRightClick(owner.worldObj, owner.maidAvatar, EnumHand.MAIN_HAND);
+			owner.maidInventory.getCurrentItem().useItemRightClick(owner.world, owner.maidAvatar, EnumHand.MAIN_HAND);
 			LittleMaidReengaged.Debug("id:%d force reload.", owner.getEntityId());
 			owner.mstatAimeBow = true;
 		}

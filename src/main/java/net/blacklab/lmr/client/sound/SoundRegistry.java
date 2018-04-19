@@ -47,7 +47,7 @@ public class SoundRegistry {
 		} else if (map.containsKey(new SinglePair(texture, color)) && !map.get(new SinglePair(texture, color)).equals("<P>")) {
 			return;
 		}
-		map.put(new SinglePair<String, Integer>(texture, color), name);
+		map.put(new SinglePair<String, Integer>(texture, color), name.toLowerCase());
 	}
 
 	public static void setLivingVoiceRatio(String name, Float ratio) {
@@ -124,6 +124,7 @@ public class SoundRegistry {
 
 	public static void registerSoundPath(String name, String path) {
 		// サウンドの種類を増やす
+		name = name.toLowerCase();
 		List<String> g = instR.pathMap.get(name);
 		if (g == null) {
 			instR.pathMap.put(name, new ArrayList<String>());
@@ -166,22 +167,22 @@ public class SoundRegistry {
 	}
 
 	public static boolean isSoundNameRegistered(String name) {
-		return getRegisteredNamesList().contains(name);
+		return getRegisteredNamesList().contains(name.toLowerCase());
 	}
 
 	public static List<String> getPathListFromRegisteredName(String name) {
-		return instR.pathMap.get(name);
+		return instR.pathMap.get(name.toLowerCase());
 	}
 
 	public static String getPathFromRegisteredName(String name){
-		List<String> g = getPathListFromRegisteredName(name);
+		List<String> g = getPathListFromRegisteredName(name.toLowerCase());
 		if (g == null) return null;
 		String ret = g.get((int)(Math.random() * g.size()));
 		return ret;
 	}
 
 	public static InputStream getSoundStream(String name) {
-		String aString = getPathFromRegisteredName(name);
+		String aString = getPathFromRegisteredName(name.toLowerCase());
 		LittleMaidReengaged.Debug("GETSTREAM %s", aString);
 		return LittleMaidReengaged.class.getClassLoader().getResourceAsStream(aString);
 	}

@@ -12,10 +12,7 @@ public class EntityAILMFollowOwner extends EntityAIBase implements IEntityAILM {
 	private EntityLittleMaid theMaid;
 	private Entity theOwner;
 	private float moveSpeed;
-	private PathNavigate petPathfinder;
 	private int field_48310_h;
-	private double maxDist;
-	private double minDist;
 	protected double sprintDist;
 	protected boolean isEnable;
 
@@ -23,7 +20,6 @@ public class EntityAILMFollowOwner extends EntityAIBase implements IEntityAILM {
 			float pSpeed, double pSprintDistSQ) {
 		theMaid = par1EntityLittleMaid;
 		moveSpeed = pSpeed;
-		petPathfinder = par1EntityLittleMaid.getNavigator();
 		sprintDist = pSprintDistSQ;
 		isEnable = true;
 		setMutexBits(3);
@@ -65,7 +61,7 @@ public class EntityAILMFollowOwner extends EntityAIBase implements IEntityAILM {
 		theMaid.setSprinting(false);
 		theOwner = null;
 //		if(!theMaid.isInWater()) ((PathNavigateGround)this.theMaid.getNavigator()).setAvoidsWater(true);
-		theMaid.getNavigator().clearPathEntity();
+		theMaid.getNavigator().clearPath();
 		//petPathfinder.setAvoidsWater(lastAvoidWater);
 	}
 
@@ -73,7 +69,7 @@ public class EntityAILMFollowOwner extends EntityAIBase implements IEntityAILM {
 	 * Updates the task
 	 */
 	public void updateTask() {
-		double toDistance = theMaid.getDistanceSqToEntity(theOwner);
+		double toDistance = theMaid.getDistanceSq(theOwner);
 		
 		if (toDistance - theMaid.getActiveModeClass().getDistanceSqToStartFollow() > 1.0) {
 			theMaid.getLookHelper().setLookPositionWithEntity(theOwner, 10F, theMaid.getVerticalFaceSpeed());

@@ -1,0 +1,17 @@
+{
+    "display": {
+        "icon": {
+            "item": "minecraft:chainmail_boots",
+            "data": 0
+        },
+        "title": { "translate": "achievement.ashikubi" },
+        "description": { "translate": "achievement.ashikubi.desc" }
+    },
+    "parent": "lmreengaged:contract",
+    "criteria": {
+        "done": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "requirements": [["done"]]
+}

@@ -1,0 +1,17 @@
+{
+    "display": {
+        "icon": {
+            "item": "minecraft:nether_wart",
+            "data": 0
+        },
+        "title": { "translate": "achievement.pharmacist" },
+        "description": { "translate": "achievement.pharmacist.desc" }
+    },
+    "parent": "lmreengaged:contract",
+    "criteria": {
+        "done": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "requirements": [["done"]]
+}

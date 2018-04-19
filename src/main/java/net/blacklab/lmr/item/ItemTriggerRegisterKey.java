@@ -2,8 +2,16 @@ package net.blacklab.lmr.item;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import net.blacklab.lmr.LittleMaidReengaged;
+//TODO <<<<<<< HEAD
 import net.blacklab.lmr.entity.littlemaid.trigger.ModeTrigger;
+/*TODO =======
+import net.blacklab.lmr.util.TriggerSelect;
+import net.minecraft.client.util.ITooltipFlag;
+>>>>>>> v8.0.1.66-unofficial-1.12.2 */
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,12 +33,14 @@ public class ItemTriggerRegisterKey extends Item {
 
 	public ItemTriggerRegisterKey() {
 		setUnlocalizedName(LittleMaidReengaged.DOMAIN + ":registerkey");
+		setRegistryName(getUnlocalizedName());
 		setCreativeTab(CreativeTabs.MISC);
 	}
 
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn,
+	public ActionResult<ItemStack> onItemRightClick(World worldIn,
 			EntityPlayer playerIn, EnumHand pHand) {
+		ItemStack itemStackIn = playerIn.getHeldItem(pHand);
 		NBTTagCompound tagCompound = itemStackIn.getTagCompound();
 		if(tagCompound==null) {
 			tagCompound = new NBTTagCompound();
@@ -50,14 +60,13 @@ public class ItemTriggerRegisterKey extends Item {
 		tagCompound.setString(RK_MODE_TAG, modeString);
 
 		if(!worldIn.isRemote)
-			playerIn.addChatComponentMessage(new TextComponentTranslation("littleMaidMob.chat.text.changeregistermode", modeString));
+			playerIn.sendMessage(new TextComponentTranslation("littleMaidMob.chat.text.changeregistermode", modeString));
 
 		return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStackIn);
 	}
 
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer playerIn,
-			List tooltip, boolean advanced) {
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		NBTTagCompound tagCompound = stack.getTagCompound();
 		if(tagCompound != null) {
 			tooltip.add("Mode: "+tagCompound.getString(RK_MODE_TAG));

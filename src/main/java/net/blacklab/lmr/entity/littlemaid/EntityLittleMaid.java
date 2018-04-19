@@ -72,6 +72,12 @@ import net.minecraft.potion.PotionUtils;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -162,6 +168,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 //	public int jumpTicks;
 
 	public InventoryLittleMaid maidInventory;
+	private int timesInventoryChanged;
 	public EntityPlayer maidAvatar;
 	public EntityCaps maidCaps;	// Client側のみ
 
@@ -303,7 +310,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			}
 			else
 			{
-				WorldServer worldServer = FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(par1World == null ? 0 : par1World.provider.getDimension());
+				WorldServer worldServer = FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(par1World == null ? 0 : par1World.provider.getDimension());
 				GameRules gameRules = worldServer.getGameRules();
 				NBTTagCompound oldGameRules = null;
 				try{
@@ -337,7 +344,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		textureNameMain = textureNameArmor = "default_"+ModelManager.defaultModelName;
 
 		textureData = new ModelConfigCompound(this, maidCaps);
-//		if (worldObj.isRemote) {
+//		if (world.isRemote) {
 			// 形態形成場
 			textureData.setColor((byte)0xc);
 			TextureBox ltb[] = new TextureBox[2];
@@ -530,7 +537,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		aiWatchClosest = new EntityAILMWatchClosest(this, EntityLivingBase.class, 10F);
 
 		// TODO:これいらなくね？
-		aiProfiler = worldObj != null && worldObj.theProfiler != null ? worldObj.theProfiler : null;
+		aiProfiler = world != null && world.profiler != null ? world.profiler : null;
 
 		// 動作モード用のTasksListを初期化
 		EntityAITasks ltasks[] = new EntityAITasks[2];
@@ -572,7 +579,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	}
 
 	@Override
-	protected PathNavigate getNewNavigator(World worldIn) {
+	protected PathNavigate createNavigator(World worldIn) {
 		return new PathNavigatorLittleMaid(this, worldIn);
 	}
 
@@ -614,7 +621,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 
 /*
 	public boolean isInWater() {
-		IBlockState state = worldObj.getBlockState(getPosition());
+		IBlockState state = world.getBlockState(getPosition());
 		return inWater ? true : state.getBlock().getMaterial(state) == Material.water;
 	}
 */
@@ -672,7 +679,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 
 	public void syncNet(LMRMessage.EnumPacketMode pMode, NBTTagCompound tagCompound) {
 		LittleMaidReengaged.Debug("Id: %d, Send: %s", getEntityId(), pMode);
-		if(worldObj.isRemote){
+		if(world.isRemote){
 			LMRNetwork.sendPacketToServer(pMode, getEntityId(), tagCompound);
 		}else{
 			LMRNetwork.sendPacketToAllPlayer(pMode, getEntityId(), tagCompound);
@@ -781,7 +788,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 
 	// 効果音の設定
 	@Override
-	protected SoundEvent getHurtSound() {
+	protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
 		if(getHealth()>0f) playLittleMaidSound(getMaidDamegeSound(), true);
 		return null;
 	}
@@ -823,13 +830,13 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	 */
 	public void playSound(String pName, float pitch) {
 		LittleMaidReengaged.Debug("REQUESTED PLAYING SOUND: %s", pName);
-//		if(!worldObj.isRemote) {
+//		if(!world.isRemote) {
 			SoundEvent sEvent = SoundEvent.REGISTRY.getObject(new ResourceLocation(pName));
 			if (sEvent != null) {
-				if (worldObj.isRemote)
+				if (world.isRemote)
 					LittleMaidReengaged.Debug("PLAYING SOUND EVENT-%s", sEvent.getSoundName().toString());
 				playSound(sEvent, 1, pitch);
-			} else if (worldObj.isRemote) {
+			} else if (world.isRemote) {
 				// ClientOnlyなダメ元
 				sEvent = new SoundEvent(new ResourceLocation(pName));
 				LittleMaidReengaged.Debug("PLAYING SOUND EVENT-%s", sEvent.getSoundName().toString());
@@ -844,7 +851,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	 * ネットワーク対応音声再生
 	 */
 	public void playSound(EnumSound enumsound, boolean force) {
-		if (worldObj.isRemote && enumsound!=EnumSound.Null && maidSoundInterval <= 0) {
+		if (world.isRemote && enumsound!=EnumSound.Null && maidSoundInterval <= 0) {
 			if (!force) {
 				if(Math.random() > LittleMaidReengaged.cfg_voiceRate) {
 					return;
@@ -853,7 +860,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			playingSound.add(enumsound);
 			maidSoundInterval = 10;
 //			float lpitch = LMM_LittleMaidMobNX.cfg_VoiceDistortion ? (rand.nextFloat() * 0.2F) + 0.95F : 1.0F;
-//			LMM_LittleMaidMobNX.proxy.playLittleMaidSound(worldObj, posX, posY, posZ, s, getSoundVolume(), lpitch, false);
+//			LMM_LittleMaidMobNX.proxy.playLittleMaidSound(world, posX, posY, posZ, s, getSoundVolume(), lpitch, false);
 		}
 	}
 
@@ -865,7 +872,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		// 音声の再生
 		if (enumsound == EnumSound.Null) return;
 //		if (!force && rand.nextFloat() > LittleMaidReengaged.cfg_voiceRate) return;
-		if (!worldObj.isRemote) {
+		if (!world.isRemote) {
 			// Server
 //			if((LMM_LittleMaidMobNX.cfg_ignoreForceSound || !force) && new Random().nextInt(LMM_LittleMaidMobNX.cfg_soundPlayChance)!=0) return;
 			LittleMaidReengaged.Debug("id:%d-%s, seps:%04x-%s", getEntityId(), "Server",  enumsound.index, enumsound.name());
@@ -880,7 +887,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 
 	@Override
 	public void playLivingSound() {
-		if (!worldObj.isRemote) return;
+		if (!world.isRemote) return;
 		// 普段の声
 		//LMM_LittleMaidMobNX.Debug("DEBUG INFO=tick %d", livingSoundTick);
 		//livingSoundTick--;
@@ -893,7 +900,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 				so = EnumSound.living_morning;
 			} else if (mstatTime < 12500) {
 				if (isContract()) {
-					Biome Biome = worldObj.getBiomeGenForCoords(getPosition());
+					Biome Biome = world.getBiome(getPosition());
 					TempCategory ltemp = Biome.getTempCategory();
 					if (ltemp == TempCategory.COLD) {
 						so = EnumSound.living_cold;
@@ -902,7 +909,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 					} else {
 						so = EnumSound.living_daytime;
 					}
-					if (worldObj.isRaining()) {
+					if (world.isRaining()) {
 						if (Biome.getEnableSnow()) {
 							so = EnumSound.living_snow;
 						} else {
@@ -918,8 +925,8 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		}
 
 		//if(livingSoundTick<=0){
-			LittleMaidReengaged.Debug("id:%d LivingSound:%s", getEntityId(), worldObj == null ? "null" : worldObj.isRemote ? "Client" : "Server");
-//			if(!worldObj.isRemote)
+			LittleMaidReengaged.Debug("id:%d LivingSound:%s", getEntityId(), world == null ? "null" : world.isRemote ? "Client" : "Server");
+//			if(!world.isRemote)
 //				playLittleMaidSound(so, false);
 //			else
 		// LivingSoundの再生調整はonEntityUpdateで行う
@@ -954,17 +961,17 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		/*
 		// TODO:サーバー側で判定できないので意味なし?
 		MMM_TextureBox lbox = MMM_TextureManager.instance.getTextureBox(textureBox[0]);
-		if (worldObj == null || textureModel == null
-				|| !textureBox[0].mo.getCanSpawnHere(worldObj, lx, ly, lz, this)) {
+		if (world == null || textureModel == null
+				|| !textureBox[0].mo.getCanSpawnHere(world, lx, ly, lz, this)) {
 			mod_LMM_littleMaidMob.Debug(String.format("%s is can't spawn hear.", textureName));
 			return false;
 		}
 		*/
 		if (LittleMaidReengaged.cfg_Dominant) {
 			// ドミナント
-			return worldObj.checkNoEntityCollision(getEntityBoundingBox())
-					&& worldObj.getCollisionBoxes(getEntityBoundingBox()).isEmpty()
-					&& !worldObj.containsAnyLiquid(getEntityBoundingBox())
+			return world.checkNoEntityCollision(getEntityBoundingBox())
+					&& world.getCollisionBoxes(this, getEntityBoundingBox()).isEmpty()
+					&& !world.containsAnyLiquid(getEntityBoundingBox())
 					/*&& getBlockPathWeight(lx, ly, lz) >= 0.0F*/;
 		}
 		return super.getCanSpawnHere();
@@ -979,8 +986,8 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	public void setDead() {
 		if (mstatgotcha != null&&maidAvatar != null) {
 			// 首紐をドロップ
-			EntityItem entityitem = new EntityItem(worldObj, mstatgotcha.posX, mstatgotcha.posY, mstatgotcha.posZ, new ItemStack(Items.STRING));
-			worldObj.spawnEntityInWorld(entityitem);
+			EntityItem entityitem = new EntityItem(world, mstatgotcha.posX, mstatgotcha.posY, mstatgotcha.posZ, new ItemStack(Items.STRING));
+			world.spawnEntity(entityitem);
 			mstatgotcha = null;
 		}
 		super.setDead();
@@ -991,8 +998,8 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	 */
 	public int getMaidCount() {
 		int lj = 0;
-		for (int li = 0; li < worldObj.loadedEntityList.size(); li++) {
-			if (worldObj.loadedEntityList.get(li) instanceof EntityLittleMaid) {
+		for (int li = 0; li < world.loadedEntityList.size(); li++) {
+			if (world.loadedEntityList.get(li) instanceof EntityLittleMaid) {
 				lj++;
 			}
 		}
@@ -1020,13 +1027,13 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			double d7 = rand.nextGaussian() * d1 + d4;
 			double d8 = rand.nextGaussian() * d2 + d5;
 
-			worldObj.spawnParticle(s, (posX + rand.nextFloat() * width * 2.0F) - width, posY + 0.5D + rand.nextFloat() * height, (posZ + rand.nextFloat() * width * 2.0F) - width, d6, d7, d8);
+			world.spawnParticle(s, (posX + rand.nextFloat() * width * 2.0F) - width, posY + 0.5D + rand.nextFloat() * height, (posZ + rand.nextFloat() * width * 2.0F) - width, d6, d7, d8);
 		}
 	}
 
 	@Override
 	public void handleStatusUpdate(byte par1) {
-		// worldObj.setEntityState(this, (byte))で指定されたアクションを実行
+		// world.setEntityState(this, (byte))で指定されたアクションを実行
 		switch (par1) {
 		case 10:
 			// 不機嫌
@@ -1039,7 +1046,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			double d7 = a;
 			double d8 = a * 0.3D;
 
-			worldObj.spawnParticle(EnumParticleTypes.NOTE, posX, posY + height + 0.1D, posZ, d6, d7, d8);
+			world.spawnParticle(EnumParticleTypes.NOTE, posX, posY + height + 0.1D, posZ, d6, d7, d8);
 			break;
 		case 12:
 			// 自由行動
@@ -1272,7 +1279,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		// データロード
 		super.readEntityFromNBT(par1nbtTagCompound);
 
-		LittleMaidReengaged.Debug("read." + worldObj.isRemote);
+		LittleMaidReengaged.Debug("read." + world.isRemote);
 
 		maidInventory.readFromNBT(par1nbtTagCompound.getTagList("Inventory", 10));
 		setMaidWait(par1nbtTagCompound.getBoolean("Wait"));
@@ -1288,18 +1295,18 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			if (isContract() && lcl == 0) {
 				maidContractLimit = 24000;
 			} else {
-				maidContractLimit = (int)((lcl - worldObj.getWorldTime()));
+				maidContractLimit = (int)((lcl - world.getWorldTime()));
 			}
 		}
 		if (isContract() && maidContractLimit == 0) {
 			// 値がおかしい時は１日分
-//				maidContractLimit = worldObj.getWorldTime() + 24000L;
+//				maidContractLimit = world.getWorldTime() + 24000L;
 			maidContractLimit = 24000;
 		}
 		maidAnniversary = par1nbtTagCompound.getLong("Anniversary");
 		if (maidAnniversary == 0L && isContract()) {
 			// ダミーの数値を入れる
-			maidAnniversary = worldObj.getWorldTime() - getEntityId();
+			maidAnniversary = world.getWorldTime() - getEntityId();
 		}
 		if (maidAvatar != null) {
 			maidAvatar.experienceTotal = par1nbtTagCompound.getInteger("EXP");
@@ -1367,7 +1374,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			String playerUid = par1nbtTagCompound.getString(LittleMaidReengaged.DOMAIN + ":ridingPlayer");
 			if (!playerUid.isEmpty()) {
 				try {
-					EntityPlayer ridingPlayer = worldObj.getPlayerEntityByUUID(UUID.fromString(playerUid));
+					EntityPlayer ridingPlayer = world.getPlayerEntityByUUID(UUID.fromString(playerUid));
 					if (ridingPlayer != null) {
 						startRiding(ridingPlayer);
 					}
@@ -1408,7 +1415,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	public boolean canBeCollidedWith() {
 		if (getRidingEntity() != null && getRidingEntity() == mstatMasterEntity) {
 			ItemStack litemstack = mstatMasterEntity.getHeldItemMainhand();
-			return (litemstack == null) || (litemstack.getItem() == Items.SADDLE);
+			return (litemstack.isEmpty()) || (litemstack.getItem() == Items.SADDLE);
 		}
 		return super.canBeCollidedWith();
 	}
@@ -1444,7 +1451,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			// プレイヤーが馬に乗っているときは、肩車ではなく馬の後ろに乗る
 			if(getRidingEntity().getRidingEntity() instanceof EntityHorse)
 			{
-				if(worldObj.isRemote) {
+				if(world.isRemote) {
 					return yOffset - 2.8F;
 				} else {
 					return yOffset - 1.0F;
@@ -1454,7 +1461,6 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		return yOffset;
 	}
 
-	/*
 	@Override
 	public void updateRidden() {
 		super.updateRidden();
@@ -1487,7 +1493,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			if(lep.getRidingEntity() instanceof EntityHorse)
 			{
 				EntityHorse horse = (EntityHorse)lep.getRidingEntity();
-				if(worldObj.isRemote)
+				if(world.isRemote)
 				{
 					dx = Math.sin((horse.renderYawOffset * Math.PI) / 180D) * 0.5;
 					dz = Math.cos((horse.renderYawOffset * Math.PI) / 180D) * 0.5;
@@ -1512,7 +1518,6 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 //			lastTickPosZ = llpz;
 		}
 	}
-	*/
 
 	@Override
 	public float getSwingProgress(float par1) {
@@ -1542,7 +1547,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	}
 
 	public float getInterestedAngle(float f) {
-		if (maidInventory.armorInventory[3] != null) {
+		if (!maidInventory.armorInventory.get(3).isEmpty()) {
 			return 0f;
 		}
 		return (prevRotateAngleHead + (rotateAngleHead - prevRotateAngleHead) * f) * ((looksWithInterestAXIS ? 0.08F : -0.08F) * (float)Math.PI);
@@ -1580,12 +1585,12 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	@Override
 	protected void damageEntity(DamageSource par1DamageSource, float par2) {
 		// ダメージソースに応じて音声変更
-		if (par1DamageSource == DamageSource.fall) {
+		if (par1DamageSource == DamageSource.FALL) {
 			setMaidDamegeSound(EnumSound.hurt_fall);
 			if (isContractEX() && par2>=19 && par2<getHealth()) {
 				EntityPlayer player;
 				if ((player = getMaidMasterEntity()) != null)
-					player.addStat(AchievementsLMRE.ac_Ashikubi);
+					AchievementsLMRE.grantAdvancement(player, "ashikubi");
 			}
 		}
 		if(!par1DamageSource.isUnblockable() && isBlocking()) {
@@ -1618,14 +1623,14 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 
 	@Override
 	public boolean attackEntityFrom(DamageSource par1DamageSource, float par2) {
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			return false;
 		}
 
-		Entity entity = par1DamageSource.getEntity();
+		Entity entity = par1DamageSource.getTrueSource();
 		boolean force = true;
 
-		if(par1DamageSource.getSourceOfDamage() instanceof EntitySnowball) force = false;
+		if(par1DamageSource.getImmediateSource() instanceof EntitySnowball) force = false;
 
 		if(par1DamageSource.getDamageType().equalsIgnoreCase("thrown"))
 		{
@@ -1639,7 +1644,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 
 		// ダメージソースを特定して音声の設定
 		setMaidDamegeSound(EnumSound.hurt);
-		if (par1DamageSource == DamageSource.inFire || par1DamageSource == DamageSource.onFire || par1DamageSource == DamageSource.lava) {
+		if (par1DamageSource == DamageSource.IN_FIRE || par1DamageSource == DamageSource.ON_FIRE || par1DamageSource == DamageSource.LAVA) {
 			setMaidDamegeSound(EnumSound.hurt_fire);
 		}
 		for (EntityModeBase lm : maidEntityModeList) {
@@ -1660,21 +1665,21 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			// Removed cooltime for continuous damage
 			ticksSinceLastDamage = 15;
 
-			if(worldObj.getDifficulty() == EnumDifficulty.PEACEFUL) {
+			if(world.getDifficulty() == EnumDifficulty.PEACEFUL) {
 				par2 = 0;
 			}
-			if(worldObj.getDifficulty() == EnumDifficulty.EASY && par2 > 0) {
+			if(world.getDifficulty() == EnumDifficulty.EASY && par2 > 0) {
 				par2 = par2 / 2 + 1;
 				ticksSinceLastDamage = 12;
 			}
-			if(worldObj.getDifficulty() == EnumDifficulty.HARD) {
-				par2 = MathHelper.floor_float(par2 * 1.5f);
+			if(world.getDifficulty() == EnumDifficulty.HARD) {
+				par2 = MathHelper.floor(par2 * 1.5f);
 				ticksSinceLastDamage = 18;
 			}
 		}
 
 		// EXP penalty
-		if (par1DamageSource.getEntity() instanceof EntityPlayer || par1DamageSource.getDamageType().equals("inWall") ||
+		if (par1DamageSource.getTrueSource() instanceof EntityPlayer || par1DamageSource.getDamageType().equals("inWall") ||
 				par1DamageSource.getDamageType().equals("inFire") || par1DamageSource.getDamageType().equals("inLava") ||
 				par1DamageSource.getDamageType().equals("anvil") || par1DamageSource.getDamageType().equals("fall") ||
 				par1DamageSource.getDamageType().equals("cactus") || par1DamageSource.getDamageType().equals("onFire")) {
@@ -1701,7 +1706,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 					//fleeingTick = 0;
 					return true;
 				}
-			} else if (maidInventory.getCurrentItem() == null) {
+			} else if (maidInventory.getCurrentItem().isEmpty()) {
 				return true;
 			}
 			//1.8検討
@@ -1709,7 +1714,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 //			entityToAttack = entity;
 			/*
 			if (entity != null) {
-				setPathToEntity(worldObj.getPathEntityToEntity(this, entityToAttack, 16F, true, false, false, true));
+				setPathToEntity(world.getPathEntityToEntity(this, entityToAttack, 16F, true, false, false, true));
 			}
 			if (maidMode == mmode_Healer && entity instanceof EntityLiving) {
 				// ヒーラーは薬剤で攻撃
@@ -1729,9 +1734,9 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	 */
 	public void usePotionTotarget(EntityLivingBase entityliving) {
 		ItemStack itemstack = maidInventory.getCurrentItem();
-		if (itemstack != null && itemstack.getItem() instanceof ItemPotion) {
+		if (!itemstack.isEmpty() && itemstack.getItem() instanceof ItemPotion) {
 			// ポーション効果の発動
-			itemstack.stackSize--;
+			itemstack.shrink(1);
 			List list = PotionUtils.getEffectsFromStack(itemstack);
 			if (list != null) {
 				PotionEffect potioneffect;
@@ -1740,8 +1745,8 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 					addMaidExperience(0.49f*(potioneffect.getDuration()==0?240:potioneffect.getDuration())/20);
 				}
 			}
-			if(itemstack.stackSize <= 0) {
-				maidInventory.setInventoryCurrentSlotContents(null);
+			if(itemstack.getCount() <= 0) {
+				maidInventory.setInventoryCurrentSlotContents(ItemStack.EMPTY);
 			}
 			maidInventory.addItemStackToInventory(new ItemStack(Items.GLASS_BOTTLE));
 		}
@@ -1800,7 +1805,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	@Override
 	public void onEntityUpdate() {
 		//音声再生
-		if(worldObj.isRemote&&!playingSound.isEmpty()){
+		if(world.isRemote&&!playingSound.isEmpty()){
 			Iterator<EnumSound> iterator = playingSound.iterator();
 			while(iterator.hasNext()){
 				EnumSound enumsound = iterator.next();
@@ -1808,7 +1813,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 
 				if (!SoundLoader.isFoundSoundpack()) {
 					playSound(enumsound.DefaultValue, 1.0f);
-//					worldObj.playSound(posX, posY, posZ, SoundEvent.REGISTRY.getObject(new ResourceLocation(enumsound.DefaultValue)), SoundCategory.VOICE, getSoundVolume(), lpitch, false);
+//					world.playSound(posX, posY, posZ, SoundEvent.REGISTRY.getObject(new ResourceLocation(enumsound.DefaultValue)), SoundCategory.VOICE, getSoundVolume(), lpitch, false);
 					playingSound.remove(enumsound);
 					continue;
 				}
@@ -1835,10 +1840,10 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 				LittleMaidReengaged.Debug(String.format("id:%d, se:%04x-%s (%s)", getEntityId(), enumsound.index, enumsound.name(), sname));
 
 //				playSound(LittleMaidReengaged.DOMAIN+":"+sname, lpitch);
-				worldObj.playSound(posX, posY, posZ, new SoundEvent(new ResourceLocation(LittleMaidReengaged.DOMAIN+":"+sname)), getSoundCategory(), getSoundVolume(), 1f, false);
+				world.playSound(posX, posY, posZ, new SoundEvent(new ResourceLocation(LittleMaidReengaged.DOMAIN+":"+sname)), getSoundCategory(), getSoundVolume(), 1f, false);
 				playingSound.remove(enumsound);
 			}
-//			LMM_LittleMaidMobNX.proxy.playLittleMaidSound(worldObj, posX, posY, posZ, playingSound, getSoundVolume(), lpitch, false);
+//			LMM_LittleMaidMobNX.proxy.playLittleMaidSound(world, posX, posY, posZ, playingSound, getSoundVolume(), lpitch, false);
 		}
 		super.onEntityUpdate();
 	}
@@ -1847,7 +1852,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	 * 埋葬対策コピー
 	 */
 	private boolean isBlockTranslucent(int par1, int par2, int par3) {
-		IBlockState iState = worldObj.getBlockState(new BlockPos(par1, par2, par3));
+		IBlockState iState = world.getBlockState(new BlockPos(par1, par2, par3));
 		return iState.getBlock().isNormalCube(iState);
 	}
 
@@ -1857,9 +1862,9 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	@Override
 	protected boolean pushOutOfBlocks(double par1, double par3, double par5) {
 		// EntityPlayerSPのを引っ張ってきた
-		int var7 = MathHelper.floor_double(par1);
-		int var8 = MathHelper.floor_double(par3);
-		int var9 = MathHelper.floor_double(par5);
+		int var7 = MathHelper.floor(par1);
+		int var8 = MathHelper.floor(par3);
+		int var9 = MathHelper.floor(par5);
 		double var10 = par1 - var7;
 		double var12 = par5 - var9;
 
@@ -1923,7 +1928,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	public void onLivingUpdate() {
 		float lhealth = getHealth();
 		if (lhealth > 0) {
-			if (!worldObj.isRemote) {
+			if (!world.isRemote) {
 				if (getSwingStatusDominant().canAttack()) {
 					// 通常時は回復優先
 					HEALPHASE: if (lhealth < getMaxHealth() && ticksSinceLastDamage <= 0) {
@@ -1935,7 +1940,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 
 					// つまみ食い
 					float jobFactor = getActiveModeClass() != null ? getActiveModeClass().getSugarSpeed() : 1;
-					if (rand.nextInt(MathHelper.floor_float(
+					if (rand.nextInt(MathHelper.floor(
 							50000 / jobFactor / (getExpBooster() * (1.05f+0.005f*getExpBooster())))) == 0) {
 						consumeSugar(EnumConsumeSugar.OTHER);
 					}
@@ -1952,11 +1957,11 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		}
 
 		//雪合戦試験
-		if ((isFreedom() || !isContractEX()) && worldObj.isDaytime() && !isPlaying() && (maidMode.equals("Wild")||maidMode.equals("Escort"))){
+		if ((isFreedom() || !isContractEX()) && world.isDaytime() && !isPlaying() && (maidMode.equals("Wild")||maidMode.equals("Escort"))){
 			if(EntityMode_Playing.checkSnows(
-						MathHelper.floor_double(posX),
-						MathHelper.floor_double(posY),
-						MathHelper.floor_double(posZ), worldObj)){
+						MathHelper.floor(posX),
+						MathHelper.floor(posY),
+						MathHelper.floor(posZ), world)){
 				setPlayingRole(PlayRole.QUICKSHOOTER);
 			}else{
 				setPlayingRole(PlayRole.NOTPLAYING);
@@ -1976,11 +1981,11 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 
 		((PathNavigateGround)navigator).setCanSwim(true);
 
-		if(!worldObj.isRemote) maidInventory.decrementAnimations();
+		if(!world.isRemote) maidInventory.decrementAnimations();
 
-		if(!worldObj.isRemote){
+		if(!world.isRemote){
 //			float rot = getRotationYawHead();
-			int py = MathHelper.floor_double(getEntityBoundingBox().minY);
+			int py = MathHelper.floor(getEntityBoundingBox().minY);
 
 			/*
 			float movespeed = getAIMoveSpeed();
@@ -1988,8 +1993,8 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			BlockPos targetPos = new BlockPos(px+XBOUND_BLOCKOFFS[pitchindex], py, pz+ZBOUND_BLOCKOFFS[pitchindex]);
 			// TODO BETA
 			if(movespeed!=0 && !isMaidWait() && isCollidedHorizontally && (onGround&&!isInWater()) &&
-					PathNodeType.BLOCKED == WalkNodeProcessor.func_186330_a(worldObj, targetPos.getX(), targetPos.getY()  , targetPos.getZ()) &&
-					PathNodeType.WALKABLE == WalkNodeProcessor.func_186330_a(worldObj, targetPos.getX(), targetPos.getY()+1, targetPos.getZ())){
+					PathNodeType.BLOCKED == WalkNodeProcessor.func_186330_a(world, targetPos.getX(), targetPos.getY()  , targetPos.getZ()) &&
+					PathNodeType.WALKABLE == WalkNodeProcessor.func_186330_a(world, targetPos.getX(), targetPos.getY()+1, targetPos.getZ())){
 				//段差にギリ載せ
 				setLocationAndAngles(posX+0.05*XBOUND_BLOCKOFFS[pitchindex], posY+1D, posZ+0.05*ZBOUND_BLOCKOFFS[pitchindex], rotationYaw, rotationPitch);
 			}
@@ -1998,7 +2003,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			// 埋まった
 			OPAQUE: if(isEntityInsideOpaqueBlock()){
 				if(!isInsideOpaque) for(int i=2;i<10;i++){
-					if(!worldObj.getBlockState(new BlockPos(posX, py+i, posZ)).getBlock().isVisuallyOpaque()&&!worldObj.getBlockState(new BlockPos(posX, py+i+1, posZ)).getBlock().isVisuallyOpaque()){
+					if(!world.getBlockState(new BlockPos(posX, py+i, posZ)).getMaterial().isOpaque() && !world.getBlockState(new BlockPos(posX, py+i+1, posZ)).getMaterial().isOpaque()) {
 						setLocationAndAngles(posX, py+i, posZ, rotationYaw, rotationPitch);
 						break OPAQUE;
 					}
@@ -2012,14 +2017,14 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		if(lhealth > 0) {
 			// 近接監視の追加はここ
 			// アイテムの回収
-			if (!worldObj.isRemote) {
-				List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, getEntityBoundingBox().expand(1.0D, 0.0D, 1.0D));
+			if (!world.isRemote) {
+				List list = world.getEntitiesWithinAABBExcludingEntity(this, getEntityBoundingBox().grow(1.0D, 0.0D, 1.0D));
 				if (list != null) {
 					for (int i = 0; i < list.size(); i++) {
 						Entity entity = (Entity)list.get(i);
 						if (!entity.isDead) {
 							if (entity instanceof EntityArrow &&
-									(worldObj.getDifficulty() == EnumDifficulty.HARD ? ((EntityArrow) entity).shootingEntity == this : true)) {
+									(world.getDifficulty() == EnumDifficulty.HARD ? ((EntityArrow) entity).shootingEntity == this : true)) {
 								// 特殊回収
 								((EntityArrow)entity).pickupStatus = PickupStatus.ALLOWED;
 							}
@@ -2032,7 +2037,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			// TODO:多分この辺りの処理はおかしい
 			if (isContractEX() && mstatClockMaid) {
 				// ゲーム内時間に合わせた音声の再生
-				mstatTime = (int)(worldObj.getWorldTime() % 24000);
+				mstatTime = (int)(world.getWorldTime() % 24000);
 				if (mstatMasterEntity != null) {
 					boolean b = mstatMasterEntity.isPlayerSleeping();
 
@@ -2071,12 +2076,12 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 					mstatSwingStatus[li].attackTime--;
 				}
 				if (maidOverDriveTime.isEnable()) {
-					worldObj.spawnParticle(EnumParticleTypes.REDSTONE, (posX + rand.nextFloat() * width * 2.0F) - width, posY + 0.5D + rand.nextFloat() * height, (posZ + rand.nextFloat() * width * 2.0F) - width, 1.2D, 0.4D, 0.4D);
+					world.spawnParticle(EnumParticleTypes.REDSTONE, (posX + rand.nextFloat() * width * 2.0F) - width, posY + 0.5D + rand.nextFloat() * height, (posZ + rand.nextFloat() * width * 2.0F) - width, 1.2D, 0.4D, 0.4D);
 				}
-				if (!worldObj.isRemote) {
+				if (!world.isRemote) {
 					Entity lattackentity = getAttackTarget();
 					if (lattackentity == null) {
-						lattackentity = getAITarget();
+						lattackentity = getRevengeTarget();
 					}
 					if (lattackentity != null) {
 						Path pe = getNavigator().getPathToEntityLiving(lattackentity);//getPathEntityToEntity(this, lattackentity, 16F, true, false, false, true);
@@ -2084,7 +2089,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 							pe.incrementPathIndex();
 							if (!pe.isFinished()) {
 								Vec3d v = pe.getPosition(this);
-								setPosition(v.xCoord, v.yCoord, v.zCoord);
+								setPosition(v.x, v.y, v.z);
 							}
 						}
 					}
@@ -2111,8 +2116,8 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		if (registerTick.isDelay()){
 			registerTick.onUpdate();
 
-			if (!registerTick.isEnable() && registerTick.getValue() == 0 && !worldObj.isRemote) {
-				getMaidMasterEntity().addChatMessage(new TextComponentTranslation("littleMaidMob.chat.text.cancelregistration").setStyle(new Style().setColor(TextFormatting.DARK_RED)));
+			if (!registerTick.isEnable() && registerTick.getValue() == 0 && !world.isRemote) {
+				getMaidMasterEntity().sendMessage(new TextComponentTranslation("littleMaidMob.chat.text.cancelregistration").setStyle(new Style().setColor(TextFormatting.DARK_RED)));
 			}
 		}
 
@@ -2123,7 +2128,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		// 主の確認など
 		mstatMasterEntity = getMaidMasterEntity();
 		if (mstatMasterEntity != null) {
-			mstatMasterDistanceSq = getDistanceSqToEntity(mstatMasterEntity);
+			mstatMasterDistanceSq = getDistanceSq(mstatMasterEntity);
 		}
 		// モデルサイズのリアルタイム変更有り？
 		textureData.onUpdate();
@@ -2131,7 +2136,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		getExperienceHandler().onUpdate();
 
 		// リアルタイム変動値をアップデート
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			// クライアント側
 			boolean lupd = false;
 			lupd |= updateMaidContract();
@@ -2155,7 +2160,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			litemuse = dataManager.get(EntityLittleMaid.dataWatch_ItemUse);
 			for (int li = 0; li < mstatSwingStatus.length; li++) {
 				ItemStack lis = mstatSwingStatus[li].getItemStack(this);
-				if ((litemuse & (1 << li)) > 0 && lis != null) {
+				if ((litemuse & (1 << li)) > 0 && !lis.isEmpty()) {
 					mstatSwingStatus[li].setItemInUse(lis, lis.getMaxItemUseDuration(), this);
 				} else {
 					mstatSwingStatus[li].stopUsingItem(this);
@@ -2166,7 +2171,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			// ClientサイドにおいてthePlayerが取得できるまでに時間がかかる？ので待機
 			// サーバーの方が先に起動するのでクライアント側が更新を受け取れない
 			if (firstload > 0) {
-				if (Minecraft.getMinecraft().theWorld != null && Minecraft.getMinecraft().thePlayer != null) {
+				if (Minecraft.getMinecraft().world != null && Minecraft.getMinecraft().player != null) {
 					syncNet(LMRMessage.EnumPacketMode.SERVER_REQUEST_MODEL, null);
 					syncNet(LMRMessage.EnumPacketMode.REQUEST_CURRENT_ITEM, null);
 					firstload = 0;
@@ -2204,7 +2209,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			// 属性を解除
 			latt.removeModifier(attCombatSpeed);
 			if (isContract()) {
-				if (!isFreedom() || (getAITarget() != null || getAttackTarget() != null)) {
+				if (!isFreedom() || (getRevengeTarget() != null || getAttackTarget() != null)) {
 					// 属性を設定
 					latt.applyModifier(attCombatSpeed);
 				}
@@ -2264,7 +2269,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			rotateAngleHead = rotateAngleHead + (0.0F - rotateAngleHead) * 0.4F;
 		}
 
-		if (getAttackTarget() != null || getAITarget() != null) {
+		if (getAttackTarget() != null || getRevengeTarget() != null) {
 			setWorking(true);
 		}
 		// お仕事カウンター
@@ -2286,12 +2291,12 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		isSwingInProgress = maidAvatar.isSwingInProgress = lmss.isSwingInProgress;
 
 		// 持ち物の確認
-		if (maidInventory.inventoryChanged) {
+		if (maidInventory.getTimesChanged() != timesInventoryChanged) {
 			onInventoryChanged();
-			maidInventory.inventoryChanged = false;
+			timesInventoryChanged = maidInventory.getTimesChanged();
 		}
 
-		if (!worldObj.isRemote) {
+		if (!world.isRemote) {
 			// サーバー側処理
 			// アイテム使用状態の更新
 			dataManager.set(EntityLittleMaid.dataWatch_ItemUse, litemuse);
@@ -2317,7 +2322,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			// 属性を解除
 			latt.removeModifier(attAxeAmp);
 			ItemStack lis = getCurrentEquippedItem();
-			if (lis != null && lis.getItem() instanceof ItemAxe) {
+			if (!lis.isEmpty() && lis.getItem() instanceof ItemAxe) {
 				// 属性を設定
 				latt.applyModifier(attAxeAmp);
 			}
@@ -2338,16 +2343,16 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 
 		// 紐で拉致
 		if(mstatgotcha != null) {
-			double d = mstatgotcha.getDistanceSqToEntity(this);
+			double d = mstatgotcha.getDistanceSq(this);
 			if (getAttackTarget() == null) {
 				// インコムごっこ用
 				if (d > 4D) {
 //					setPathToEntity(null);
-					getNavigator().clearPathEntity();
+					getNavigator().clearPath();
 					getLookHelper().setLookPositionWithEntity(mstatgotcha, 15F, 15F);
 				}
 				if (d > 12.25D) {
-//					setPathToEntity(worldObj.getPathEntityToEntity(mstatgotcha, this, 16F, true, false, false, true));
+//					setPathToEntity(world.getPathEntityToEntity(mstatgotcha, this, 16F, true, false, false, true));
 					getNavigator().tryMoveToXYZ(mstatgotcha.posX, mstatgotcha.posY, mstatgotcha.posZ, 1.0F);
 					getLookHelper().setLookPositionWithEntity(mstatgotcha, 15F, 15F);
 				}
@@ -2376,7 +2381,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 				playSound("random.drr");
 			}
 			if(rand.nextInt(16) == 0) {
-				List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, getEntityBoundingBox().expand(8D, 8D, 8D));
+				List list = world.getEntitiesWithinAABBExcludingEntity(this, getEntityBoundingBox().grow(8D, 8D, 8D));
 				for (int k = 0; k < list.size(); k++) {
 					Entity entity = (Entity)list.get(k);
 					if (!(entity instanceof EntityMob)) {
@@ -2396,16 +2401,16 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 
 	@Override
 	public void onDeath(DamageSource par1DamageSource) {
-		if (worldObj.isRemote || getExperienceHandler().onDeath(par1DamageSource)) {
+		if (world.isRemote || getExperienceHandler().onDeath(par1DamageSource)) {
 			return;
 		}
 
 		super.onDeath(par1DamageSource);
 
 		// 死因を表示
-//		if (!worldObj.isRemote) {
+//		if (!world.isRemote) {
 			if (LittleMaidReengaged.cfg_DeathMessage && getMaidMasterEntity() != null) {
-				getMaidMasterEntity().addChatMessage(new TextComponentTranslation("littleMaidMob.chat.text.death", CommonHelper.getDeadSource(par1DamageSource)));
+				getMaidMasterEntity().sendMessage(new TextComponentTranslation("littleMaidMob.chat.text.death", CommonHelper.getDeadSource(par1DamageSource)));
 			}
 //		}
 	}
@@ -2417,7 +2422,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 
 	@Override
 	protected void onDeathUpdate() {
-		if (!worldObj.isRemote) {
+		if (!world.isRemote) {
 			if (getExperienceHandler().onDeathUpdate()) {
 				return;
 			}
@@ -2470,7 +2475,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	public void onInventoryChanged() {
 		checkClockMaid();
 		checkHeadMount();
-		if (getActiveModeClass() != null && getHandSlotForModeChange() != null)
+		if (getActiveModeClass() != null && !getHandSlotForModeChange().isEmpty())
 			if (maidInventory.isChanged(InventoryLittleMaid.handInventoryOffset) ||
 					maidInventory.isChanged(InventoryLittleMaid.handInventoryOffset + 1)) {
 				setMaidModeAuto(getMaidMasterEntity());
@@ -2528,7 +2533,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	public void getWeaponStatus() {
 		// 飛び道具用の特殊処理
 		ItemStack is = maidInventory.getCurrentItem();
-		if (is == null) return;
+		if (is.isEmpty()) return;
 
 		try {
 			Method me = is.getItem().getClass().getMethod("isWeaponReload", ItemStack.class, EntityPlayer.class);
@@ -2568,7 +2573,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 
 	@Override
 	public Iterable<ItemStack> getArmorInventoryList() {
-		return Arrays.asList(maidInventory.armorInventory);
+		return maidInventory.armorInventory;
 	}
 
 	@Override
@@ -2584,9 +2589,9 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		if (slotIn == EntityEquipmentSlot.MAINHAND) {
 			return getHeldItem(EnumHand.MAIN_HAND);
 		} else if (slotIn.getSlotType() == EntityEquipmentSlot.Type.ARMOR) {
-			return maidInventory.armorInventory[slotIn.getIndex()];
+			return maidInventory.armorInventory.get(slotIn.getIndex());
 		} else {
-			return null;
+			return ItemStack.EMPTY;
 		}
 	}
 
@@ -2657,7 +2662,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	 * メットを被ってるか
 	 */
 	public boolean isMaskedMaid() {
-		return getItemStackFromSlot(EntityEquipmentSlot.HEAD) != null;//mstatMaskSelect > -1;
+		return !getItemStackFromSlot(EntityEquipmentSlot.HEAD).isEmpty();//mstatMaskSelect > -1;
 	}
 
 	protected void checkHeadMount() {
@@ -2711,7 +2716,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	 * 手持ちアイテムの破壊
 	 */
 	public void destroyCurrentEquippedItem() {
-		maidInventory.setInventoryCurrentSlotContents(null);
+		maidInventory.setInventoryCurrentSlotContents(ItemStack.EMPTY);
 	}
 
 	/**
@@ -2719,9 +2724,9 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	 * @param pEntityPlayer
 	 */
 	public void displayGUIMaidInventory(EntityPlayer pEntityPlayer) {
-		if (!worldObj.isRemote) {
+		if (!world.isRemote) {
 			GuiHandler.maidServer = this;
-			pEntityPlayer.openGui(LittleMaidReengaged.instance, GuiHandler.GUI_ID_INVVENTORY, worldObj,
+			pEntityPlayer.openGui(LittleMaidReengaged.instance, GuiHandler.GUI_ID_INVVENTORY, world,
 					(int)posX, (int)posY, (int)posZ);
 		}
 		else
@@ -2731,8 +2736,9 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	}
 
 	@Override
-	public boolean processInteract(EntityPlayer par1EntityPlayer, EnumHand par2Hand, ItemStack par3ItemStack) {
-		LittleMaidReengaged.Debug(worldObj.isRemote, "LMM_EntityLittleMaid.interact:"+par1EntityPlayer.getGameProfile().getName());
+	public boolean processInteract(EntityPlayer par1EntityPlayer, EnumHand par2Hand) {
+		LittleMaidReengaged.Debug(world.isRemote, "LMM_EntityLittleMaid.interact:"+par1EntityPlayer.getGameProfile().getName());
+		ItemStack par3ItemStack = par1EntityPlayer.getHeldItem(par2Hand);
 		float lhealth = getHealth();
 
 		// プラグインでの処理を先に行う
@@ -2753,7 +2759,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		}
 
 		if (mstatgotcha == null && par1EntityPlayer.fishEntity == null) {
-			if(par3ItemStack != null && par3ItemStack.getItem() == Items.LEAD) {
+			if(!par3ItemStack.isEmpty() && par3ItemStack.getItem() == Items.LEAD) {
 				// 紐で繋ぐ
 				setGotcha(par1EntityPlayer.getEntityId());
 				mstatgotcha = par1EntityPlayer;
@@ -2764,11 +2770,11 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 
 			if (isContract()) {
 				// Issue #35: 契約失効時の処理を優先化
-				if(!isRemainsContract() && par3ItemStack != null){
+				if(!isRemainsContract() && !par3ItemStack.isEmpty()){
 					// ストライキ
 					if (par3ItemStack.getItem() == Items.SUGAR) {
 						// 受取拒否
-						worldObj.setEntityState(this, (byte)10);
+						world.setEntityState(this, (byte)10);
 						return true;
 					} else if (par3ItemStack.getItem() == Items.CAKE) {
 						// 再契約
@@ -2782,12 +2788,12 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 							// あんなご主人なんか捨てて、僕のもとへおいで(洗脳)
 							OwnableEntityHelper.setOwner(this, CommonHelper.getPlayerUUID(par1EntityPlayer));
 							playLittleMaidSound(EnumSound.getCake, true);
-							worldObj.setEntityState(this, (byte)7);
+							world.setEntityState(this, (byte)7);
 							maidContractLimit = (24000 * 7);
-							maidAnniversary = worldObj.getTotalWorldTime();
+							maidAnniversary = world.getTotalWorldTime();
 						}else{
 							// ごめんねメイドちゃん
-							worldObj.setEntityState(this, (byte)11);
+							world.setEntityState(this, (byte)11);
 							playLittleMaidSound(EnumSound.Recontract, true);
 
 						}
@@ -2797,7 +2803,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 				}
 				// 契約状態
 				if (/*lhealth > 0F && */isMaidContractOwner(par1EntityPlayer)) {
-					if (par3ItemStack != null) {
+					if (!par3ItemStack.isEmpty()) {
 						// 追加分の処理
 						// プラグインでの処理を先に行う
 						for (int li = 0; li < maidEntityModeList.size(); li++) {
@@ -2811,16 +2817,16 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 								// モード切替
 								boolean cmode = true;
 								if(par3ItemStack.getItem() instanceof IItemSpecialSugar){
-									cmode = ((IItemSpecialSugar)par3ItemStack.getItem()).onSugarInteract(worldObj, par1EntityPlayer, par3ItemStack, this);
+									cmode = ((IItemSpecialSugar)par3ItemStack.getItem()).onSugarInteract(world, par1EntityPlayer, par3ItemStack, this);
 								}
 								CommonHelper.decPlayerInventory(par1EntityPlayer, -1, 1);
 								eatSugar(false, true, false);
 								if(!cmode) return true;
-								worldObj.setEntityState(this, (byte)11);
+								world.setEntityState(this, (byte)11);
 
 								// TODO 口開くよ…
-								LittleMaidReengaged.Debug("give suger." + worldObj.isRemote);
-								if (!worldObj.isRemote) {
+								LittleMaidReengaged.Debug("give suger." + world.isRemote);
+								if (!world.isRemote) {
 									setFreedom(isFreedom());
 									if (isMaidWait()) {
 										// 動作モードの切替
@@ -2834,11 +2840,11 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 								return true;
 							}
 							else if (par3ItemStack.getItem()==LittleMaidReengaged.registerKey &&
-									!par1EntityPlayer.worldObj.isRemote) {
+									!par1EntityPlayer.world.isRemote) {
 								// トリガーセット
 								if (registerTick.isEnable()) {
 									registerTick.setEnable(false);
-									par1EntityPlayer.addChatComponentMessage(new TextComponentTranslation("littleMaidMob.chat.text.cancelregistration").setStyle(new Style().setColor(TextFormatting.DARK_RED)));
+									par1EntityPlayer.sendMessage(new TextComponentTranslation("littleMaidMob.chat.text.cancelregistration").setStyle(new Style().setColor(TextFormatting.DARK_RED)));
 									return true;
 								}
 
@@ -2857,26 +2863,26 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 								}
 								tagCompound.setInteger(ItemTriggerRegisterKey.RK_COUNT, count);
 
-								par1EntityPlayer.addChatComponentMessage(new TextComponentTranslation("littleMaidMob.chat.text.readyregistration", registerMode));
+								par1EntityPlayer.sendMessage(new TextComponentTranslation("littleMaidMob.chat.text.readyregistration", registerMode));
 								if(count >= ItemTriggerRegisterKey.RK_MAX_COUNT-10){
 									if(count<ItemTriggerRegisterKey.RK_MAX_COUNT){
-										par1EntityPlayer.addChatComponentMessage(new TextComponentTranslation("littleMaidMob.chat.text.warningcount",
+										par1EntityPlayer.sendMessage(new TextComponentTranslation("littleMaidMob.chat.text.warningcount",
 												(ItemTriggerRegisterKey.RK_MAX_COUNT-count)).setStyle(new Style().setColor(TextFormatting.YELLOW)));
 									} else {
-										par1EntityPlayer.addChatComponentMessage(new TextComponentTranslation("littleMaidMob.chat.text.endcount")
+										par1EntityPlayer.sendMessage(new TextComponentTranslation("littleMaidMob.chat.text.endcount")
 												.setStyle(new Style().setColor(TextFormatting.DARK_RED)));
 									}
 								}
 
 								return true;
-							} else if (registerTick.isEnable() && !par1EntityPlayer.worldObj.isRemote) {
+							} else if (registerTick.isEnable() && !par1EntityPlayer.world.isRemote) {
 								// TODO Trigger Save each maid
 								registerTick.setEnable(false);
 								return true;
 							} else if (par3ItemStack.getItem() == Items.DYE) {
 								// カラーメイド
 								if (canChangeModel()) {
-									if (!worldObj.isRemote) {
+									if (!world.isRemote) {
 										setColor((byte)(15 - par3ItemStack.getItemDamage()));
 									}
 									CommonHelper.decPlayerInventory(par1EntityPlayer, -1, 1);
@@ -2888,28 +2894,38 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 							else if (par3ItemStack.getItem() == Items.FEATHER) {
 								// 自由行動
 //								MMM_Helper.decPlayerInventory(par1EntityPlayer, -1, 1);
-								if(!worldObj.isRemote){
+								if(!world.isRemote){
 									setFreedom(!isFreedom());
-									worldObj.setEntityState(this, isFreedom() ? (byte)12 : (byte)13);
+									world.setEntityState(this, isFreedom() ? (byte)12 : (byte)13);
 								}
 								return true;
+							} else if (par3ItemStack.getItem() == Items.SADDLE) {
+									// 肩車
+									if (getRidingEntity() == par1EntityPlayer) {
+										dismountRidingEntity();
+									} else {
+										startRiding(par1EntityPlayer, true);
+									}
+									clearTilePosAll();
+									getNavigator().clearPath();
+									return true;
 							} else if (par3ItemStack.getItem() == Items.GUNPOWDER) {
 								// test TNT-D
-								maidOverDriveTime.setValue(par3ItemStack.stackSize * 10);
+								maidOverDriveTime.setValue(par3ItemStack.getCount() * 10);
 								playSound("mob.zombie.infect");
-								if (par3ItemStack.stackSize == 64) {
-									getMaidMasterEntity().addStat(AchievementsLMRE.ac_Boost);
+								if (par3ItemStack.getCount() == 64) {
+									AchievementsLMRE.grantAdvancement(getMaidMasterEntity(), "boost");
 								}
-								CommonHelper.decPlayerInventory(par1EntityPlayer, -1, par3ItemStack.stackSize);
+								CommonHelper.decPlayerInventory(par1EntityPlayer, -1, par3ItemStack.getCount());
 								return true;
 							}
 							else if (par3ItemStack.getItem() == Items.BOOK) {
 								// IFFのオープン
 //								MMM_Helper.decPlayerInventory(par1EntityPlayer, -1, 1);
-//								if (worldObj.isRemote) {
+//								if (world.isRemote) {
 									par1EntityPlayer.openGui(LittleMaidReengaged.instance,
 											GuiHandler.GUI_ID_IFF,
-											worldObj,
+											world,
 											(int)posX,
 											(int)posY,
 											(int)posZ);
@@ -2919,7 +2935,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 							else if ((itemstack1.getItem() == Items.glass_bottle) && (experienceValue >= 5)) {
 								// Expボトル
 								MMM_Helper.decPlayerInventory(par1EntityPlayer, -1, 1);
-								if (!worldObj.isRemote) {
+								if (!world.isRemote) {
 									entityDropItem(new ItemStack(Items.experience_bottle), 0.5F);
 									experienceValue -= 5;
 									if (maidAvatar != null) {
@@ -2930,7 +2946,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 							}*/
 							else if (par3ItemStack.getItem() instanceof ItemPotion) {
 								// ポーション
-								if(!worldObj.isRemote) {
+								if(!world.isRemote) {
 									List list = PotionUtils.getEffectsFromStack(par3ItemStack);
 									if (list != null) {
 										PotionEffect potioneffect;
@@ -2948,9 +2964,9 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 								setMaidWait(false);
 								setTracer(!isTracer());
 								if (isTracer()) {
-									worldObj.setEntityState(this, (byte)14);
+									world.setEntityState(this, (byte)14);
 								} else {
-									worldObj.setEntityState(this, (byte)12);
+									world.setEntityState(this, (byte)12);
 								}
 								return true;
 							}else if(par3ItemStack.getItem() == Items.STICK){
@@ -2965,9 +2981,9 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 					}
 					// メイドインベントリ
 					OwnableEntityHelper.setOwner(this, CommonHelper.getPlayerUUID(par1EntityPlayer));
-					getNavigator().clearPathEntity();
+					getNavigator().clearPath();
 					isJumping = false;
-					if(!worldObj.isRemote){
+					if(!world.isRemote){
 						syncMaidArmorVisible();
 						syncExpBoost();
 					}
@@ -2976,27 +2992,25 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 				}
 			} else {
 				// 未契約
-				if (par3ItemStack != null) {
+				if (!par3ItemStack.isEmpty()) {
 					if (par3ItemStack.getItem() == Items.CAKE) {
 						// 契約
 						CommonHelper.decPlayerInventory(par1EntityPlayer, -1, 1);
 
 						deathTime = 0;
-						if (!worldObj.isRemote) {
-							if (AchievementsLMRE.ac_Contract != null) {
-								par1EntityPlayer.addStat(AchievementsLMRE.ac_Contract);
-							}
+						if (!world.isRemote) {
+							AchievementsLMRE.grantAdvancement(par1EntityPlayer, "contract");
 							setContract(true);
-							getNavigator().clearPathEntity();
+							getNavigator().clearPath();
 							OwnableEntityHelper.setOwner(this, CommonHelper.getPlayerUUID(par1EntityPlayer));
 
 							playLittleMaidSound(EnumSound.getCake, true);
 //							playLittleMaidSound(LMM_EnumSound.getCake, true);
 //							playTameEffect(true);
-							worldObj.setEntityState(this, (byte)7);
+							world.setEntityState(this, (byte)7);
 							// 契約記念日と、初期契約期間
 							maidContractLimit = (24000 * 7);
-							maidAnniversary = worldObj.getTotalWorldTime();
+							maidAnniversary = world.getTotalWorldTime();
 
 							setHealth(20);
 							setPlayingRole(PlayRole.NOTPLAYING);
@@ -3009,13 +3023,13 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 						}
 						return true;
 					}
-//					worldObj.setEntityState(this, (byte)6);
+//					world.setEntityState(this, (byte)6);
 				}
 			}
 		} else if (/*lhealth > 0F && */mstatgotcha != null) {
-			if (!worldObj.isRemote) {
-				EntityItem entityitem = new EntityItem(worldObj, mstatgotcha.posX, mstatgotcha.posY, mstatgotcha.posZ, new ItemStack(Items.STRING));
-				worldObj.spawnEntityInWorld(entityitem);
+			if (!world.isRemote) {
+				EntityItem entityitem = new EntityItem(world, mstatgotcha.posX, mstatgotcha.posY, mstatgotcha.posZ, new ItemStack(Items.STRING));
+				world.spawnEntity(entityitem);
 				setGotcha(0);
 				mstatgotcha = null;
 			}
@@ -3049,7 +3063,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 
 		if (!orgnMode.equals(getMaidModeString())) {
 			clearTilePosAll();
-			getNavigator().clearPathEntity();
+			getNavigator().clearPath();
 			setAttackTarget(null);
 			return true;
 		}
@@ -3062,7 +3076,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		return isContract();
 	}
 	public boolean isContract() {
-//		return worldObj.isRemote ? maidContract : super.isTamed();
+//		return world.isRemote ? maidContract : super.isTamed();
 		return super.isTamed();
 	}
 	public boolean isContractEX() {
@@ -3142,7 +3156,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 				} else {
 					lname = CommonHelper.getPlayerUUID(clientPlayer);
 				}
-				entityplayer = worldObj.getPlayerEntityByUUID(lname);
+				entityplayer = world.getPlayerEntityByUUID(lname);
 				// とりあえず主の名前を入れてみる
 				// TODO:再設定は不可になったので経過観察
 //				maidAvatar.username = lname;
@@ -3186,18 +3200,18 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		setAttackTarget(null);
 		setRevengeTarget(null);
 		//setPathToEntity(null);
-		getNavigator().clearPathEntity();
+		getNavigator().clearPath();
 		setPlayingRole(PlayRole.NOTPLAYING);
 		if(pflag){
 			//setMaidModeAITasks(null,null);
 			setWorking(false);
-			getNavigator().clearPathEntity();
+			getNavigator().clearPath();
 			clearTilePosAll();
 			/*
 			setHomePosAndDistance(
-					new BlockPos(MathHelper.floor_double(lastTickPosX),
-					MathHelper.floor_double(lastTickPosY),
-					MathHelper.floor_double(lastTickPosZ)), 0);
+					new BlockPos(MathHelper.floor(lastTickPosX),
+					MathHelper.floor(lastTickPosY),
+					MathHelper.floor(lastTickPosZ)), 0);
 					*/
 		}else{
 			setMaidMode(maidMode,false);
@@ -3249,7 +3263,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		if (!weaponFullAuto) {
 			setSwinging(pArm, enumsound, force);
 		}
-		if (!worldObj.isRemote) {
+		if (!world.isRemote) {
 			NBTTagCompound tagCompound = new NBTTagCompound();
 			tagCompound.setByte("Arm", (byte) pArm);
 			tagCompound.setInteger("Sound", enumsound.index);
@@ -3325,12 +3339,12 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	 * @param mode EnumConsumeSugar型の定数
 	 */
 	protected void consumeSugar(EnumConsumeSugar mode){
-		ItemStack[] stacklist = maidInventory.mainInventory;
-		ItemStack stack = null;
+		NonNullList<ItemStack> stacklist = maidInventory.mainInventory;
+		ItemStack stack = ItemStack.EMPTY;
 		Item item = null;
 		int index = -1;
-		for(int i = 0; i < stacklist.length; i++){
-			ItemStack ts = stacklist[i];
+		for(int i = 0; i < stacklist.size(); i++){
+			ItemStack ts = stacklist.get(i);
 			if (ts == null)continue;
 			Item ti = ts.getItem();
 			if (ItemHelper.isSugar(ti)){
@@ -3340,7 +3354,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 				break;
 			}
 		}
-		if(item == null || stack == null || index == -1) return;
+		if(item == null || stack.isEmpty() || index == -1) return;
 		if(item == Items.SUGAR){
 			eatSugar(true, true, mode==EnumConsumeSugar.RECONTRACT);
 		}else if(item instanceof IItemSpecialSugar){
@@ -3370,7 +3384,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		}
 		hurtResistantTime = h;
 		playSound("entity.item.pickup");
-		LittleMaidReengaged.Debug(("eat Sugar." + worldObj.isRemote));
+		LittleMaidReengaged.Debug(("eat Sugar." + world.isRemote));
 
 		if (recontract) {
 			// 契約期間の延長
@@ -3379,10 +3393,10 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 				maidContractLimit = 168000;	// 24000 * 7
 			}
 
-			if (worldObj.getTotalWorldTime() - maidAnniversary > 24000 * 365) {
+			if (world.getTotalWorldTime() - maidAnniversary > 24000 * 365) {
 				EntityPlayer player;
 				if ((player = getMaidMasterEntity()) != null)
-					player.addStat(AchievementsLMRE.ac_MyFavorite);
+					AchievementsLMRE.grantAdvancement(player, "myfavorite");
 			}
 		}
 
@@ -3463,7 +3477,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	public void setFreedom(boolean pFlag) {
 		// AI関連のリセットもここで。
 		maidFreedom = pFlag;
-		if (!worldObj.isRemote) {
+		if (!world.isRemote) {
 			aiRestrictRain.setEnable(pFlag);
 			aiFreeRain.setEnable(pFlag);
 			aiWander.setEnable(pFlag);
@@ -3489,7 +3503,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	@Override
 	public float getMaximumHomeDistance() {
 		if (getActiveModeClass() != null) {
-			return MathHelper.sqrt_double(getActiveModeClass().getFreedomTrackingRangeSq());
+			return MathHelper.sqrt(getActiveModeClass().getFreedomTrackingRangeSq());
 		}
 		return 20f;
 	}
@@ -3503,7 +3517,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	}
 
 	public boolean isHeadMount(){
-		return ItemUtil.isHelm(maidInventory.armorInventory[3]);
+		return ItemUtil.isHelm(maidInventory.armorInventory.get(3));
 	}
 
 	/**
@@ -3530,7 +3544,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	 * @param value
 	 */
 	public void addMaidExperience(float value) {
-		if (!isContractEX() || worldObj.isRemote) {
+		if (!isContractEX() || world.isRemote) {
 			return;
 		}
 
@@ -3675,9 +3689,9 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		if (mstatgotcha != null && mstatgotcha.getEntityId() == lid) {
 			return;
 		}
-		for (int li = 0; li < worldObj.loadedEntityList.size(); li++) {
-			if (((Entity)worldObj.loadedEntityList.get(li)).getEntityId() == lid) {
-				mstatgotcha = (Entity)worldObj.loadedEntityList.get(li);
+		for (int li = 0; li < world.loadedEntityList.size(); li++) {
+			if (((Entity)world.loadedEntityList.get(li)).getEntityId() == lid) {
+				mstatgotcha = (Entity)world.loadedEntityList.get(li);
 				break;
 			}
 		}
@@ -3779,7 +3793,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	 */
 	public void setTextureNames() {
 		textureData.setTextureNames();
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			textureNameMain = textureData.getTextureName(0);
 			textureNameArmor = textureData.getTextureName(1);
 		}
@@ -3837,7 +3851,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	}
 
 	private TextureBoxBase modelBoxAutoSelect(String pName) {
-		return worldObj.isRemote ? ModelManager.instance.getTextureBox(pName) : ModelManager.instance.getTextureBoxServer(pName);
+		return world.isRemote ? ModelManager.instance.getTextureBox(pName) : ModelManager.instance.getTextureBoxServer(pName);
 	}
 
 	@Override
@@ -3891,7 +3905,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	}
 
 	public boolean isEqualTile() {
-		return worldObj.getTileEntity(new BlockPos(maidTile[0], maidTile[1], maidTile[2])) == maidTileEntity;
+		return world.getTileEntity(new BlockPos(maidTile[0], maidTile[1], maidTile[2])) == maidTileEntity;
 	}
 
 	public boolean isTilePos() {
@@ -3954,11 +3968,11 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	}
 
 	public TileEntity getTileEntity() {
-		return maidTileEntity = worldObj.getTileEntity(new BlockPos(maidTile[0], maidTile[1], maidTile[2]));
+		return maidTileEntity = world.getTileEntity(new BlockPos(maidTile[0], maidTile[1], maidTile[2]));
 	}
 	public TileEntity getTileEntity(int pIndex) {
 		if (pIndex < maidTiles.length && maidTiles[pIndex] != null) {
-			TileEntity ltile = worldObj.getTileEntity(new BlockPos(
+			TileEntity ltile = world.getTileEntity(new BlockPos(
 					maidTiles[pIndex][0], maidTiles[pIndex][1], maidTiles[pIndex][2]));
 			if (ltile == null) {
 				clearTilePos(pIndex);

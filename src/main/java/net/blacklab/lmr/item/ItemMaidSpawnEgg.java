@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -28,15 +29,17 @@ public class ItemMaidSpawnEgg extends Item
 		setHasSubtypes(true);
 		setCreativeTab(CreativeTabs.MISC);
 		setUnlocalizedName(LittleMaidReengaged.DOMAIN + ":spawn_littlemaid_egg");
+		setRegistryName(getUnlocalizedName());
 	}
 
 	@Override
-	public EnumActionResult onItemUse(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World, BlockPos par46X, EnumHand pHand, EnumFacing par7, float par8, float par9, float par10)
+	public EnumActionResult onItemUse(EntityPlayer par2EntityPlayer, World par3World, BlockPos par46X, EnumHand pHand, EnumFacing par7, float par8, float par9, float par10)
 	{
 		if (par3World.isRemote)
 		{
 			return EnumActionResult.SUCCESS;
 		}
+		ItemStack par1ItemStack = par2EntityPlayer.getHeldItem(pHand);
 		Block block = par3World.getBlockState(par46X).getBlock();
 		int par4 = par46X.getX(); int par5 = par46X.getY() + 1; int par6 = par46X.getZ();
 		/*
@@ -62,7 +65,7 @@ public class ItemMaidSpawnEgg extends Item
 
 			if (!par2EntityPlayer.capabilities.isCreativeMode)
 			{
-				--par1ItemStack.stackSize;
+				par1ItemStack.shrink(1);
 			}
 		}
 
@@ -78,7 +81,7 @@ public class ItemMaidSpawnEgg extends Item
 			entityliving.setLocationAndAngles(par2, par4, par6, (par0World.rand.nextFloat() * 360.0F) - 180.0F, 0.0F);
 //			((LMM_EntityLittleMaid)entityliving).setTextureNames();
 			((EntityLittleMaid) entityliving).onSpawnWithEgg();
-			par0World.spawnEntityInWorld(entityliving);
+			par0World.spawnEntity(entityliving);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -88,9 +91,9 @@ public class ItemMaidSpawnEgg extends Item
 
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void getSubItems(Item par1, CreativeTabs par2, List par3)
+	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
 	{
-		par3.add(new ItemStack(par1, 1));
+		items.add(new ItemStack(this, 1));
 	}
 
 }

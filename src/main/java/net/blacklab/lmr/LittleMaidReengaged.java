@@ -30,16 +30,22 @@ import net.blacklab.lmr.util.manager.ModelManager;
 import net.blacklab.lmr.util.manager.StabilizerManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResourcePack;
+import net.minecraft.client.resources.SimpleReloadableResourceManager;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.BiomeDictionary;
-//github.com/Verclene/LittleMaidReengaged.git
 import net.minecraftforge.common.MinecraftForge;
+//TODO <<<<<<< HEAD
 import net.minecraftforge.common.config.Configuration;
+/*TODO =======
+import net.minecraftforge.event.RegistryEvent;
+>>>>>>> v8.0.1.66-unofficial-1.12.2 */
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -48,9 +54,12 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.registries.IForgeRegistry;
 
 @Mod(
 		modid = LittleMaidReengaged.DOMAIN,
@@ -63,8 +72,8 @@ public class LittleMaidReengaged {
 
 	public static final String DOMAIN = "lmreengaged";
 	public static final String VERSION = "8.1.6.141";
-	public static final String ACCEPTED_MCVERSION = "[1.9.4,1.10.2]";
-	public static final String DEPENDENCIES = "required-after:Forge@[1.9.4-12.17.0.1976,);"
+	public static final String ACCEPTED_MCVERSION = "[1.12.2]";
+	public static final String DEPENDENCIES = "required-after:Forge@[1.12.2-14.23.0.2517,);"
 			+ "required-after:net.blacklab.lib@[6.1.5.8,)";
 
 	/*
@@ -211,12 +220,14 @@ public class LittleMaidReengaged {
 
 //		latestVersion = Version.getLatestVersion("http://mc.el-blacklab.net/lmmnxversion.txt", 10000);
 
-		EntityRegistry.registerModEntity(EntityLittleMaid.class,
+		EntityRegistry.registerModEntity(new ResourceLocation(DOMAIN, "LittleMaid"), EntityLittleMaid.class,
 				"LittleMaid", 0, instance, 80, 1, true);
 
 		spawnEgg = new ItemMaidSpawnEgg();
-		GameRegistry.<Item>register(spawnEgg, new ResourceLocation(DOMAIN, "spawn_littlemaid_egg"));
-		GameRegistry.addRecipe(
+		ForgeRegistries.ITEMS.register(spawnEgg);
+		GameRegistry.addShapedRecipe(
+				new ResourceLocation(DOMAIN, "spawn_littlemaid_egg"),
+				null,
 				new ItemStack(spawnEgg, 1),
 				"scs", "sbs", " e ", Character.valueOf('s'),
 				Items.SUGAR, Character.valueOf('c'),
@@ -225,17 +236,20 @@ public class LittleMaidReengaged {
 				Character.valueOf('e'), Items.EGG);
 
 		registerKey = new ItemTriggerRegisterKey();
-		GameRegistry.<Item>register(registerKey, new ResourceLocation(DOMAIN, "registerkey"));
+		ForgeRegistries.ITEMS.register(registerKey);
 
-		GameRegistry.addShapelessRecipe(new ItemStack(registerKey), Items.EGG,
-				Items.SUGAR, Items.NETHER_WART);
+		GameRegistry.addShapelessRecipe(
+			new ResourceLocation(DOMAIN, "registerkey"),
+			null,
+			new ItemStack(registerKey),
+			Ingredient.fromItem(Items.EGG),
+			Ingredient.fromItem(Items.SUGAR),
+			Ingredient.fromItem(Items.NETHER_WART)
+		);
 
 		maidPorter = new ItemMaidPorter();
-		GameRegistry.register(maidPorter, new ResourceLocation(DOMAIN, "maidporter"));
-
-		// 実績追加
-		AchievementsLMRE.initAchievements();
-
+		ForgeRegistries.ITEMS.register(maidPorter);
+		
 		// AIリストの追加
 		EntityModeManager.init();
 
@@ -253,11 +267,10 @@ public class LittleMaidReengaged {
 		NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiHandler());
 
 		if (CommonHelper.isClient) {
-			List<IResourcePack> defaultResourcePacks = ObfuscationReflectionHelper
-					.getPrivateValue(Minecraft.class, Minecraft.getMinecraft(),
-							"defaultResourcePacks", "field_110449_ao");
-			defaultResourcePacks.add(new SoundResourcePack());
-			defaultResourcePacks.add(new OldZipTexturesWrapper());
+			SimpleReloadableResourceManager resourceManager = ((SimpleReloadableResourceManager)Minecraft.getMinecraft().getResourceManager());
+			resourceManager.reloadResourcePack(new SoundResourcePack());
+			resourceManager.reloadResourcePack(new OldZipTexturesWrapper());
+			Minecraft.getMinecraft().getSoundHandler().onResourceManagerReload(resourceManager);
 		}
 
 		MinecraftForge.EVENT_BUS.register(new EventHookLMRE());
@@ -282,19 +295,19 @@ public class LittleMaidReengaged {
 
 				if(biome != null &&
 						(
-								(BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.HOT) ||
-//										BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.COLD) ||
-										BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.WET) ||
-										BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.DRY) ||
-										BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.SAVANNA) ||
-										BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.CONIFEROUS) ||
-//										BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.LUSH) ||
-										BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.MUSHROOM) ||
-										BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.FOREST) ||
-										BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.PLAINS) ||
-										BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.SANDY) ||
-//										BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.SNOWY) ||
-										BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.BEACH))
+								(BiomeDictionary.hasType(biome, BiomeDictionary.Type.HOT) ||
+//										BiomeDictionary.hasType(biome, BiomeDictionary.Type.COLD) ||
+										BiomeDictionary.hasType(biome, BiomeDictionary.Type.WET) ||
+										BiomeDictionary.hasType(biome, BiomeDictionary.Type.DRY) ||
+										BiomeDictionary.hasType(biome, BiomeDictionary.Type.SAVANNA) ||
+										BiomeDictionary.hasType(biome, BiomeDictionary.Type.CONIFEROUS) ||
+//										BiomeDictionary.hasType(biome, BiomeDictionary.Type.LUSH) ||
+										BiomeDictionary.hasType(biome, BiomeDictionary.Type.MUSHROOM) ||
+										BiomeDictionary.hasType(biome, BiomeDictionary.Type.FOREST) ||
+										BiomeDictionary.hasType(biome, BiomeDictionary.Type.PLAINS) ||
+										BiomeDictionary.hasType(biome, BiomeDictionary.Type.SANDY) ||
+//										BiomeDictionary.hasType(biome, BiomeDictionary.Type.SNOWY) ||
+										BiomeDictionary.hasType(biome, BiomeDictionary.Type.BEACH))
 								)
 						)
 				{

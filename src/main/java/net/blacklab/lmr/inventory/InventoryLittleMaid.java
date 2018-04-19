@@ -53,7 +53,7 @@ public class InventoryLittleMaid extends InventoryPlayer {
 	/**
 	 * Hand Slots
 	 */
-	public final ItemStack mainHandInventory[] = new ItemStack[1];
+	public final ItemStack mainHandInventory[] = new ItemStack[] { ItemStack.EMPTY };
 
 	/**
 	 * オーナー
@@ -73,6 +73,9 @@ public class InventoryLittleMaid extends InventoryPlayer {
 		// TODO InventoryPlayer.mainInventory became 'final'. S**t
 //		mainInventory = new ItemStack[maxInventorySize];
 		prevItems = new ItemStack[getSizeInventory()];
+		for (int i = 0; i < prevItems.length; i++) {
+			prevItems[i] = ItemStack.EMPTY;
+		}
 	}
 
 	@Override
@@ -80,22 +83,18 @@ public class InventoryLittleMaid extends InventoryPlayer {
 		for (int i = 0; i < par1nbtTagList.tagCount(); i++) {
 			NBTTagCompound nbttagcompound = par1nbtTagList.getCompoundTagAt(i);
 			int j = nbttagcompound.getByte("Slot") & 0xff;
-			ItemStack itemstack = ItemStack.loadItemStackFromNBT(nbttagcompound);
-
-			if (itemstack == null) {
-				continue;
-			}
+			ItemStack itemstack = new ItemStack(nbttagcompound);
 
 			if (j >= 0 && j < InventoryLittleMaid.maxInventorySize) {
-				mainInventory[j] = itemstack;
+				mainInventory.set(j, itemstack);
 			}
 
-			if (j >= 100 && j < armorInventory.length + 100) {
-				armorInventory[j - 100] = itemstack;
+			if (j >= 100 && j < armorInventory.size() + 100) {
+				armorInventory.set(j - 100, itemstack);
 			}
 
-			if (j >= 150 && j < armorInventory.length + 150) {
-				offHandInventory[j - 150] = itemstack;
+			if (j >= 150 && j < armorInventory.size() + 150) {
+				offHandInventory.set(j - 150, itemstack);
 			}
 
 			if (j >= 200 && j < mainHandInventory.length + 200) {
@@ -109,7 +108,7 @@ public class InventoryLittleMaid extends InventoryPlayer {
 		NBTTagList result = super.writeToNBT(nbtTagListIn);
 
 		for (int k = 0; k < mainHandInventory.length; ++k) {
-			if (this.mainHandInventory[k] != null) {
+			if (!this.mainHandInventory[k].isEmpty()) {
 				NBTTagCompound nbttagcompound2 = new NBTTagCompound();
 				nbttagcompound2.setByte("Slot", (byte)(k + 200));
 				mainHandInventory[k].writeToNBT(nbttagcompound2);
@@ -142,12 +141,12 @@ public class InventoryLittleMaid extends InventoryPlayer {
 
 	public void decrementAnimations() {
 		for (int li = 0; li < getSizeInventory(); ++li) {
-			if (getStackInSlot(li) != null) {
+			if (!getStackInSlot(li).isEmpty()) {
 				try {
-					getStackInSlot(li).updateAnimation(this.player.worldObj,
+					getStackInSlot(li).updateAnimation(this.player.world,
 							entityLittleMaid, li, this.currentItem == li);
 				} catch (ClassCastException e) {
-					getStackInSlot(li).updateAnimation(this.player.worldObj,
+					getStackInSlot(li).updateAnimation(this.player.world,
 							entityLittleMaid.maidAvatar, li, this.currentItem == li);
 				}
 			}
@@ -179,12 +178,12 @@ public class InventoryLittleMaid extends InventoryPlayer {
 	public void damageArmor(float pDamage) {
 		pDamage = Math.max(pDamage/4, 1);
 
-		for (int i = 0; i < armorInventory.length; ++i) {
-			if (armorInventory[i] != null && armorInventory[i].getItem() instanceof ItemArmor) {
-				armorInventory[i].damageItem((int)pDamage, player);
+		for (int i = 0; i < armorInventory.size(); ++i) {
+			if (!armorInventory.get(i).isEmpty() && armorInventory.get(i).getItem() instanceof ItemArmor) {
+				armorInventory.get(i).damageItem((int)pDamage, player);
 
-				if (armorInventory[i].stackSize == 0) {
-					armorInventory[i] = null;
+				if (armorInventory.get(i).getCount() == 0) {
+					armorInventory.set(i, ItemStack.EMPTY);
 				}
 			}
 		}
@@ -216,26 +215,26 @@ public class InventoryLittleMaid extends InventoryPlayer {
 		Explosion lexp = null;
 		if (detonator) {
 			// Mobによる破壊の是非
-			lexp = new Explosion(entityLittleMaid.worldObj, entityLittleMaid,
-					entityLittleMaid.posX, entityLittleMaid.posY, entityLittleMaid.posZ, 3F, false, entityLittleMaid.worldObj.getGameRules().getBoolean("mobGriefing"));
+			lexp = new Explosion(entityLittleMaid.world, entityLittleMaid,
+					entityLittleMaid.posX, entityLittleMaid.posY, entityLittleMaid.posZ, 3F, false, entityLittleMaid.world.getGameRules().getBoolean("mobGriefing"));
 		}
 
 //		armorInventory[3] = null;
 		for (int i = 0; i < getSizeInventory(); i++) {
 			ItemStack it = getStackInSlot(i);
-			if (it != null) {
+			if (!it.isEmpty()) {
 				if (detonator && isItemExplord(i)) {
 					Item j = it.getItem();
-					for (int l = 0; l < it.stackSize; l++) {
+					for (int l = 0; l < it.getCount(); l++) {
 						// 爆薬ぶちまけ
 						((BlockTNT)Block.getBlockFromItem(j)).onBlockDestroyedByExplosion(
-								entityLittleMaid.worldObj,
+								entityLittleMaid.world,
 								new BlockPos(
-									MathHelper.floor_double(entityLittleMaid.posX)
+									MathHelper.floor(entityLittleMaid.posX)
 									+ entityLittleMaid.getRNG().nextInt(7) - 3,
-									MathHelper.floor_double(entityLittleMaid.posY)
+									MathHelper.floor(entityLittleMaid.posY)
 									+ entityLittleMaid.getRNG().nextInt(7) - 3,
-									MathHelper.floor_double(entityLittleMaid.posZ)
+									MathHelper.floor(entityLittleMaid.posZ)
 									+ entityLittleMaid.getRNG().nextInt(7) - 3
 								), lexp);
 					}
@@ -243,7 +242,7 @@ public class InventoryLittleMaid extends InventoryPlayer {
 					entityLittleMaid.entityDropItem(it, 0F);
 				}
 			}
-			setInventorySlotContents(i, null);
+			setInventorySlotContents(i, ItemStack.EMPTY);
 		}
 		if (detonator) {
 			lexp.doExplosionA();
@@ -256,29 +255,29 @@ public class InventoryLittleMaid extends InventoryPlayer {
 	}
 
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
+	public boolean isUsableByPlayer(EntityPlayer entityplayer) {
 		if (entityLittleMaid.isDead) {
 			return false;
 		}
-		return entityplayer.getDistanceSqToEntity(entityLittleMaid) <= 64D;
+		return entityplayer.getDistanceSq(entityLittleMaid) <= 64D;
 	}
 
 	public ItemStack getCurrentItem() {
 		if (currentItem >= handInventoryOffset + 1) {
-			return offHandInventory[currentItem - (handInventoryOffset + 1)];
+			return offHandInventory.get(currentItem - (handInventoryOffset + 1));
 		}
 		if (currentItem >= handInventoryOffset) {
 			return mainHandInventory[currentItem - handInventoryOffset];
 		}
 		if (currentItem >= 0 && currentItem < InventoryLittleMaid.maxInventorySize) {
-			return mainInventory[currentItem];
+			return mainInventory.get(currentItem);
 		}
-		return null;
+		return ItemStack.EMPTY;
 	}
 
 	@Override
 	public boolean addItemStackToInventory(final ItemStack par1ItemStack) {
-		if (par1ItemStack == null) {
+		if (par1ItemStack.isEmpty()) {
 			return false;
 		}
 
@@ -286,15 +285,15 @@ public class InventoryLittleMaid extends InventoryPlayer {
 
 		// Picking up items
 		ItemStack buffer = par1ItemStack;
-		int originalStackSize = buffer.stackSize;
+		int originalStackSize = buffer.getCount();
 
 		// Can be merged to dedicated slots
 		for (int i=0; i < getSizeInventory(); i++) {
 			ItemStack targetStack = getStackInSlot(i);
 
-			if (targetStack != null && targetStack.getItem() == buffer.getItem()) {
+			if (!targetStack.isEmpty() && targetStack.getItem() == buffer.getItem()) {
 				int maxStackSize = targetStack.getItem().getItemStackLimit(targetStack);
-				if (targetStack.stackSize == maxStackSize) continue;
+				if (targetStack.getCount() == maxStackSize) continue;
 
 				// Check item damage and NBT
 				boolean flag = true;
@@ -305,28 +304,28 @@ public class InventoryLittleMaid extends InventoryPlayer {
 				if (!flag) continue;
 
 				// Merge stack
-				int floorSize = targetStack.stackSize + buffer.stackSize - maxStackSize;
+				int floorSize = targetStack.getCount() + buffer.getCount() - maxStackSize;
 				if (floorSize > 0) {
-					targetStack.stackSize = maxStackSize;
-					targetStack.animationsToGo = 5;
-					buffer.stackSize = floorSize;
+					targetStack.setCount(maxStackSize);
+					targetStack.setAnimationsToGo(5);
+					buffer.setCount(floorSize);
 				} else {
-					targetStack.stackSize = floorSize + maxStackSize;
-					targetStack.animationsToGo = 5;
-					buffer.stackSize = 0;
+					targetStack.setCount(floorSize + maxStackSize);
+					targetStack.setAnimationsToGo(5);
+					buffer.setCount(0);
 					break;
 				}
 			}
 		}
 
-		if (buffer.stackSize > 0 && empty >= 0) {
-			setInventorySlotContents(empty, ItemStack.copyItemStack(buffer));
-			buffer.stackSize = 0;
+		if (buffer.getCount() > 0 && empty >= 0) {
+			setInventorySlotContents(empty, buffer.copy());
+			buffer.setCount(0);
 		}
 
-		if (buffer.stackSize < originalStackSize) {
+		if (buffer.getCount() < originalStackSize) {
 			markDirty();
-			return buffer.stackSize <= 0;
+			return buffer.getCount() <= 0;
 		}
 
 		return false;
@@ -341,7 +340,7 @@ public class InventoryLittleMaid extends InventoryPlayer {
 	public int getInventorySlotContainItem(Item item) {
 		// 指定されたアイテムIDの物を持っていれば返す
 		for (int j = 0; j < getSizeInventory(); j++) {
-			if (getStackInSlot(j) != null && getStackInSlot(j).getItem() == item) {
+			if (!getStackInSlot(j).isEmpty() && getStackInSlot(j).getItem() == item) {
 				return j;
 			}
 		}
@@ -355,7 +354,7 @@ public class InventoryLittleMaid extends InventoryPlayer {
 			// if (mainInventory[j] != null &&
 			// mainInventory[j].getItem().getClass().isAssignableFrom(itemClass))
 			// {
-			if (getStackInSlot(j) != null
+			if (!getStackInSlot(j).isEmpty()
 					&& itemClass.isAssignableFrom(getStackInSlot(j).getItem().getClass())) {
 				return j;
 			}
@@ -370,7 +369,7 @@ public class InventoryLittleMaid extends InventoryPlayer {
 		}
 
 		for (int i = 0; i < getSizeInventory(); i++) {
-			if (getStackInSlot(i) != null && getStackInSlot(i).getItem() == item
+			if (!getStackInSlot(i).isEmpty() && getStackInSlot(i).getItem() == item
 					&& getStackInSlot(i).getItemDamage() == damege) {
 				return i;
 			}
@@ -382,13 +381,13 @@ public class InventoryLittleMaid extends InventoryPlayer {
 	protected ItemStack getInventorySlotContainItemStack(Item item) {
 		// いらんかも？
 		int j = getInventorySlotContainItem(item);
-		return j > -1 ? mainInventory[j] : null;
+		return j > -1 ? mainInventory.get(j) : ItemStack.EMPTY;
 	}
 
 	protected ItemStack getInventorySlotContainItemStackAndDamege(Item item, int damege) {
 		// いらんかも？
 		int j = getInventorySlotContainItemAndDamage(item, damege);
-		return j > -1 ? mainInventory[j] : null;
+		return j > -1 ? mainInventory.get(j) : ItemStack.EMPTY;
 	}
 
 	public int getInventorySlotContainItemFood() {
@@ -396,7 +395,7 @@ public class InventoryLittleMaid extends InventoryPlayer {
 		if (ItemUtil.getFoodAmount(mainHandInventory[0]) > 0) {
 			return getSizeInventory() - 2;
 		}
-		if (ItemUtil.getFoodAmount(offHandInventory[0]) > 0) {
+		if (ItemUtil.getFoodAmount(offHandInventory.get(0)) > 0) {
 			return getSizeInventory() - 1;
 		}
 		for (int j = 0; j < getSizeInventory(); j++) {
@@ -412,7 +411,7 @@ public class InventoryLittleMaid extends InventoryPlayer {
 		// 調理可能アイテムを返す
 		for (int i = 0; i < entityLittleMaid.maidInventory.getSizeInventory(); i++) {
 			if (isItemSmelting(i) && i != currentItem) {
-				ItemStack mi = mainInventory[i];
+				ItemStack mi = mainInventory.get(i);
 				if (mi.getMaxDamage() > 0 && mi.getItemDamage() == 0) {
 					// 修復レシピ対策
 					continue;
@@ -429,9 +428,9 @@ public class InventoryLittleMaid extends InventoryPlayer {
 		// flag = true: 攻撃・デバフ系、 false: 回復・補助系
 		// potionID: 要求ポーションのID
 		for (int j = 0; j < getSizeInventory(); j++) {
-			if (mainInventory[j] != null
-					&& mainInventory[j].getItem() instanceof ItemPotion) {
-				ItemStack is = mainInventory[j];
+			if (!mainInventory.get(j).isEmpty()
+					&& mainInventory.get(j).getItem() instanceof ItemPotion) {
+				ItemStack is = mainInventory.get(j);
 				List list = PotionUtils.getEffectsFromStack(is);
 				nextPotion: if (list != null) {
 					PotionEffect potioneffect;
@@ -460,7 +459,7 @@ public class InventoryLittleMaid extends InventoryPlayer {
 
 	public int getFirstEmptyStack() {
 		for (int i = 0; i < InventoryLittleMaid.maxInventorySize; i++) {
-			if (mainInventory[i] == null) {
+			if (mainInventory.get(i).isEmpty()) {
 				return i;
 			}
 		}
@@ -504,7 +503,7 @@ public class InventoryLittleMaid extends InventoryPlayer {
 	public void resetChanged(int pIndex) {
 		// 処理済みのチェック
 		ItemStack lis = getStackInSlot(pIndex);
-		prevItems[pIndex] = (lis == null ? null : lis.copy());
+		prevItems[pIndex] = (lis.isEmpty() ? ItemStack.EMPTY : lis.copy());
 	}
 
 	public void clearChanged() {
@@ -529,18 +528,18 @@ public class InventoryLittleMaid extends InventoryPlayer {
 	public ItemStack getStackInSlot(int index) {
 		ItemStack pItemStack = null;
 		if (index == handInventoryOffset + 1) {
-			pItemStack = offHandInventory[0];
+			pItemStack = offHandInventory.get(0);
 		} else if (index == handInventoryOffset) {
 			pItemStack = mainHandInventory[0];
 		} else if (index >= maxInventorySize && index < handInventoryOffset) {
-			pItemStack = armorInventory[index-maxInventorySize];
+			pItemStack = armorInventory.get(index-maxInventorySize);
 		} else if (index < maxInventorySize) {
-			pItemStack = mainInventory[index];
+			pItemStack = mainInventory.get(index);
 		}
 
-		if (pItemStack != null && pItemStack.stackSize <= 0) {
-			setInventorySlotContents(index, null);
-			pItemStack = null;
+		if (!pItemStack.isEmpty() && pItemStack.getCount() <= 0) {
+			setInventorySlotContents(index, ItemStack.EMPTY);
+			pItemStack = ItemStack.EMPTY;
 		}
 
 		return pItemStack;
@@ -548,15 +547,15 @@ public class InventoryLittleMaid extends InventoryPlayer {
 
 	@Override
 	public ItemStack decrStackSize(int index, int count) {
-		ItemStack target, returned = null;
-		if ((target = getStackInSlot(index)) != null) {
+		ItemStack target, returned = ItemStack.EMPTY;
+		if (!(target = getStackInSlot(index)).isEmpty()) {
 			returned = target.splitStack(count);
-			if (target.stackSize == 0) {
-				setInventorySlotContents(index, null);
+			if (target.getCount() == 0) {
+				setInventorySlotContents(index, ItemStack.EMPTY);
 			}
 			return returned;
 		}
-		return null;
+		return ItemStack.EMPTY;
 	}
 
 	@Override
@@ -564,19 +563,19 @@ public class InventoryLittleMaid extends InventoryPlayer {
 		markDirty();
 		ItemStack aStack;
 		if (index >= handInventoryOffset + 1) {
-			aStack = ItemStack.copyItemStack(offHandInventory[index - (handInventoryOffset + 1)]);
-			offHandInventory[index - (handInventoryOffset + 1)] = null;
+			aStack = offHandInventory.get(index - (handInventoryOffset + 1)).copy();
+			offHandInventory.set(index - (handInventoryOffset + 1), ItemStack.EMPTY);
 		}
 		if (index >= handInventoryOffset) {
-			aStack = ItemStack.copyItemStack(mainHandInventory[index - handInventoryOffset]);
-			mainHandInventory[index - handInventoryOffset] = null;
+			aStack = mainHandInventory[index - handInventoryOffset].copy();
+			mainHandInventory[index - handInventoryOffset] = ItemStack.EMPTY;
 		}
 		if (index >= maxInventorySize) {
-			aStack = ItemStack.copyItemStack(armorInventory[index - maxInventorySize]);
-			armorInventory[index - maxInventorySize] = null;
+			aStack = armorInventory.get(index - maxInventorySize).copy();
+			armorInventory.set(index - maxInventorySize, ItemStack.EMPTY);
 		} else {
-			aStack = ItemStack.copyItemStack(mainInventory[index]);
-			mainInventory[index] = null;
+			aStack = mainInventory.get(index).copy();
+			mainInventory.set(index, ItemStack.EMPTY);
 		}
 		return aStack;
 	}
@@ -585,13 +584,13 @@ public class InventoryLittleMaid extends InventoryPlayer {
 	public void setInventorySlotContents(int index, ItemStack stack) {
 		if (isItemValidForSlot(index, stack)) {
 			if (index >= handInventoryOffset + 1) {
-				offHandInventory[index - (handInventoryOffset + 1)] = stack;
+				offHandInventory.set(index - (handInventoryOffset + 1), stack);
 			} else if (index >= handInventoryOffset) {
 				mainHandInventory[index - handInventoryOffset] = stack;
 			} else if (index >= maxInventorySize) {
-				armorInventory[index - maxInventorySize] = stack;
+				armorInventory.set(index - maxInventorySize, stack);
 			} else {
-				mainInventory[index] = stack;
+				mainInventory.set(index, stack);
 			}
 		}
 	}
@@ -603,7 +602,7 @@ public class InventoryLittleMaid extends InventoryPlayer {
 
 	@Override
 	public boolean isItemValidForSlot(int index, ItemStack stack) {
-		if (stack != null && index >= maxInventorySize && index < handInventoryOffset) {
+		if (!stack.isEmpty() && index >= maxInventorySize && index < handInventoryOffset) {
 			int armorSlotIndex = index - maxInventorySize;
 			for (EntityEquipmentSlot slot: EntityEquipmentSlot.values()) {
 				if (slot.getSlotType()==EntityEquipmentSlot.Type.ARMOR && slot.getIndex() == armorSlotIndex) {
@@ -637,7 +636,7 @@ public class InventoryLittleMaid extends InventoryPlayer {
 	@Override
 	public void clear() {
 		for (int i=0; i<getSizeInventory(); i++) {
-			setInventorySlotContents(i, null);
+			setInventorySlotContents(i, ItemStack.EMPTY);
 		}
 	}
 
