@@ -73,7 +73,7 @@ public class LittleMaidReengaged {
 	public static final String DOMAIN = "lmreengaged";
 	public static final String VERSION = "8.1.6.141";
 	public static final String ACCEPTED_MCVERSION = "[1.12.2]";
-	public static final String DEPENDENCIES = "required-after:Forge@[1.12.2-14.23.0.2517,);"
+	public static final String DEPENDENCIES = "required-after:forge@[14.23.0.2517,);"
 			+ "required-after:net.blacklab.lib@[6.1.5.8,)";
 
 	/*
