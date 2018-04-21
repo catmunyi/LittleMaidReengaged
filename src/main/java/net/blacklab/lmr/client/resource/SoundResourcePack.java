@@ -1,11 +1,18 @@
 package net.blacklab.lmr.client.resource;
 
 import java.awt.image.BufferedImage;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipFile;
 
 import javax.imageio.ImageIO;
 
@@ -23,7 +30,7 @@ import net.minecraft.util.ResourceLocation;
 /**
  * サウンドパック用
  */
-public class SoundResourcePack implements IResourcePack {
+public class SoundResourcePack implements IResourcePack, Closeable {
 
 	public SoundResourcePack() {
 	}
@@ -42,10 +49,28 @@ public class SoundResourcePack implements IResourcePack {
 	private InputStream getResourceStream(ResourceLocation resource) {
 		InputStream lis = null;
 		if (resource.getResourcePath().endsWith("sounds.json")) {
-			return LittleMaidReengaged.class.getClassLoader().getResourceAsStream("LittleMaidReengaged/sounds.json");
+			//return LittleMaidReengaged.class.getClassLoader().getResourceAsStream("LittleMaidReengaged/sounds.json");
+			File jsonDir = new File(FileList.dirMods, "LittleMaidReengaged");
+			if (!jsonDir.exists()) {
+				return null;
+			}
+			File jsonFile = new File(jsonDir, "sounds.json");
+			if (!jsonFile.exists() || !jsonFile.canRead()) {
+				return null;
+			}
+			try {
+				lis = new FileInputStream(jsonFile);
+			} catch (FileNotFoundException e) {
+				;
+			}
 		}
 		if (resource.getResourcePath().endsWith(".ogg")) {
-			lis = LittleMaidReengaged.class.getClassLoader().getResourceAsStream(decodePathGetPath(resource));
+			//lis = LittleMaidReengaged.class.getClassLoader().getResourceAsStream(decodePathGetPath(resource));
+			String f = decodePathGetName(resource);
+			if (!SoundRegistry.isSoundNameRegistered(f)) {
+				return null;
+			}
+			return SoundRegistry.getSoundStream(f);
 		}
 		return lis;
 	}
@@ -54,6 +79,14 @@ public class SoundResourcePack implements IResourcePack {
 	public boolean resourceExists(ResourceLocation resource) {
 		LittleMaidReengaged.Debug("RESOURCE CHECK %s", resource.getResourcePath());
 		if (resource.getResourcePath().endsWith("sounds.json")) {
+			File jsonDir = new File(FileList.dirMods, "LittleMaidReengaged");
+			if (!jsonDir.exists()) {
+				return false;
+			}
+			File jsonFile = new File(jsonDir, "sounds.json");
+			if (!jsonFile.exists()) {
+				return false;
+			}
 			return true;
 		}
 		if (resource.getResourcePath().endsWith(".ogg")) {
@@ -117,4 +150,8 @@ public class SoundResourcePack implements IResourcePack {
 		return "SoundPackLMR";
 	}
 
+	@Override
+	public void close() throws IOException {
+		SoundRegistry.close();
+	}
 }

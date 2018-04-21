@@ -148,7 +148,7 @@ public class SoundLoader {
 				}
 				if (entry.getName().endsWith(".ogg")) {
 					String fString = entry.getName().substring(entry.getName().startsWith("/") ? 1 : 0);
-					pathStore.add(fString);
+					pathStore.add(zipname + ".zip/" + fString);
 				}
 			}
 			zipInputStream.close();

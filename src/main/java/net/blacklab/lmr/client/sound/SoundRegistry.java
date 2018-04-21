@@ -1,5 +1,7 @@
 package net.blacklab.lmr.client.sound;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,6 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import net.blacklab.lib.obj.Pair;
 import net.blacklab.lib.obj.SinglePair;
@@ -29,6 +34,8 @@ public class SoundRegistry {
 
 	// ロックされたテクスチャ
 	private List<String> markedTexture = new ArrayList<String>();
+
+	private HashMap<String, ZipFile> resourcepackZipfiles = new HashMap<>();
 
 	private static SoundRegistry instR = new SoundRegistry();
 
@@ -184,11 +191,53 @@ public class SoundRegistry {
 	public static InputStream getSoundStream(String name) {
 		String aString = getPathFromRegisteredName(name.toLowerCase());
 		LittleMaidReengaged.Debug("GETSTREAM %s", aString);
+
+		String[] s = aString.split("/", 2);
+		if (s.length > 0 && s[0].endsWith(".zip")) {
+			// Load from zip
+			ZipFile zipFile = instR.getZipResourcepack(s[0]);
+			if (zipFile != null) {
+				ZipEntry zipEntry = zipFile.getEntry(s[1]);
+				if (zipEntry != null) {
+					try {
+						return zipFile.getInputStream(zipEntry);
+					} catch (IOException e) {
+						;
+					}
+				}
+			}
+		}
+
 		return LittleMaidReengaged.class.getClassLoader().getResourceAsStream(aString);
 	}
 
 	public static InputStream getSoundStream(EnumSound sound, String texture, Integer color) {
 		return getSoundStream(getSoundRegisteredName(sound, texture, color));
+	}
+
+	public static void close() {
+		instR.resourcepackZipfiles.forEach((s, zipFile) -> {
+			try {
+				zipFile.close();
+			} catch (IOException e) {
+				;
+			}
+			instR.resourcepackZipfiles.remove(s);
+		});
+	}
+
+	private ZipFile getZipResourcepack(String name) {
+		if (resourcepackZipfiles.containsKey(name)) return resourcepackZipfiles.get(name);
+
+		File zipPath = new File("mods", name);
+		if (!zipPath.exists()) return null;
+		try {
+			ZipFile zipFile = new ZipFile(zipPath);
+			resourcepackZipfiles.put(name, zipFile);
+			return zipFile;
+		} catch (IOException e) {
+			return null;
+		}
 	}
 
 }
