@@ -83,11 +83,19 @@ public class Transformer implements IClassTransformer, Opcodes {
 	}
 
 	public static List<String> ignoreNameSpace = Lists.newArrayList(
-		"modchu.model",
-		"modchu.lib",
-		"net.minecraft.src.mod_Modchu_ModchuLib",
-		"modchu.pflm",
-		"modchu.pflmf");
+			"modchu.model",
+			"modchu.lib",
+			"net.minecraft.src.mod_Modchu_ModchuLib",
+			"modchu.pflm",
+			"modchu.pflmf",
+			"net.minecraft",
+			"net.minecraftforge",
+			"com.google.gson",
+			"joptsimple",
+			"com.mojang",
+			"io.netty",
+			"com.sun.",			"oshi.",			"gnu."
+	);
 
 	@Override
 	public byte[] transform(String name, String transformedName, byte[] basicClass) {

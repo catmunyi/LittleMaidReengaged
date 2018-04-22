@@ -1,19 +1,17 @@
 package net.blacklab.lmr.client.resource;
 
+import com.google.common.collect.ImmutableSet;
+import net.blacklab.lmr.LittleMaidReengaged;
+import net.minecraft.client.resources.IResourcePack;
+import net.minecraft.client.resources.data.IMetadataSection;
+import net.minecraft.client.resources.data.MetadataSerializer;
+import net.minecraft.util.ResourceLocation;
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Set;
-
-import com.google.common.collect.ImmutableSet;
-
-import net.blacklab.lmr.LittleMaidReengaged;
-import net.blacklab.lmr.util.FileList;
-import net.minecraft.client.resources.IResourcePack;
-import net.minecraft.client.resources.data.IMetadataSection;
-import net.minecraft.client.resources.data.MetadataSerializer;
-import net.minecraft.util.ResourceLocation;
 
 public class OldZipTexturesWrapper implements IResourcePack {
 

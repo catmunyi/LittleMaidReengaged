@@ -1,9 +1,9 @@
 package net.blacklab.lmr.util.coremod;
 
-import java.util.Map;
-
+import net.blacklab.lmr.util.helper.CommonHelper;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
-import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.TransformerExclusions;
+
+import java.util.Map;
 
 public class LMRECoremod implements IFMLLoadingPlugin{
 
