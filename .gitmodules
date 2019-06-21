@@ -1,2 +1,3 @@
 [submodule "EBLib"]
 	path = EBLib
+	url = https://github.com/Velaseriat/EBLib.git
