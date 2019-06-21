@@ -1,8 +1,5 @@
 package net.blacklab.lmr.entity.littlemaid.mode;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import net.blacklab.lib.minecraft.vector.VectorUtil;
 import net.blacklab.lmr.achievements.AchievementsLMRE;
 import net.blacklab.lmr.entity.littlemaid.EntityLittleMaid;
@@ -13,7 +10,6 @@ import net.blacklab.lmr.util.helper.MaidHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MaterialLiquid;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -28,6 +24,9 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class EntityMode_TorchLayer extends EntityModeBase {
 
@@ -86,8 +85,7 @@ public class EntityMode_TorchLayer extends EntityModeBase {
 
 	@Override
 	public boolean setMode(String pMode) {
-		switch (pMode) {
-		case mmode_Torcher :
+        if (mmode_Torcher.equals(pMode)) {
 			owner.setBloodsuck(false);
 			owner.aiAttack.setEnable(false);
 			owner.aiShooting.setEnable(false);
@@ -107,8 +105,7 @@ public class EntityMode_TorchLayer extends EntityModeBase {
 		ItemStack litemstack;
 
 		// モードに応じた識別判定、速度優先
-		switch (pMode) {
-		case mmode_Torcher :
+        if (mmode_Torcher.equals(pMode)) {
 			for (li = 0; li < owner.maidInventory.getSizeInventory(); li++) {
 				litemstack = owner.maidInventory.getStackInSlot(li);
 				if (litemstack.isEmpty()) continue;
@@ -118,7 +115,6 @@ public class EntityMode_TorchLayer extends EntityModeBase {
 					return li;
 				}
 			}
-			break;
 		}
 
 		return -1;
@@ -174,10 +170,8 @@ public class EntityMode_TorchLayer extends EntityModeBase {
 
 		int v = getBlockLighting(px, py, pz);
 		if (v < 8 && VectorUtil.canBlockBeSeen(owner, px, py - 1, pz, true, true, true) && !owner.isMaidWait()) {
-			if (owner.getNavigator().tryMoveToXYZ(px, py, pz, 1.0F) ) {
-				//owner.playLittleMaidSound(LMM_EnumSound.findTarget_D, true);
-				return true;
-			}
+            //owner.playLittleMaidSound(LMM_EnumSound.findTarget_D, true);
+            return owner.getNavigator().tryMoveToXYZ(px, py, pz, 1.0F);
 		}
 		return false;
 	}
@@ -235,11 +229,11 @@ public class EntityMode_TorchLayer extends EntityModeBase {
 		}
 
 		IBlockState iState = par1World.getBlockState(new BlockPos(par2, par3, par4));
-		if (iState.getBlock().getMaterial(iState) instanceof MaterialLiquid) {
+        if (iState.getMaterial() instanceof MaterialLiquid) {
 			return false;
 		}
 
-		return par1World.mayPlace(Block.getBlockFromItem(pItemBlock), new BlockPos(par2, par3, par4), false, par5, (Entity)null);
+        return par1World.mayPlace(Block.getBlockFromItem(pItemBlock), new BlockPos(par2, par3, par4), false, par5, null);
 	}
 
 	@Override

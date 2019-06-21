@@ -1,25 +1,23 @@
 package net.blacklab.lmr.util.manager;
 
+import net.blacklab.lib.classutil.FileClassUtil;
+import net.blacklab.lmr.util.DevMode;
+import net.blacklab.lmr.util.FileList;
+import org.apache.logging.log4j.Level;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import net.blacklab.lib.classutil.FileClassUtil;
-import net.blacklab.lmr.LittleMaidReengaged;
-import net.blacklab.lmr.util.DevMode;
-import net.blacklab.lmr.util.FileList;
-import net.minecraftforge.fml.common.FMLLog;
-import org.apache.logging.log4j.Level;
+import static net.blacklab.lmr.LittleMaidReengaged.log;
 
 /**
  * Searches for classes or resources.
@@ -70,7 +68,7 @@ public class LoaderSearcher {
 			}
 			zFile.close();
 		} catch (IOException e) {
-			FMLLog.log(Level.ERROR, "Cannot %s as zip package.", file.getName());
+            log(Level.ERROR, "Cannot %s as zip package.", file.getName());
 			if (DevMode.DEVELOPMENT_DEBUG_MODE) {
 				e.printStackTrace();
 			}

@@ -1,29 +1,20 @@
 package net.blacklab.lmr.entity.littlemaid.trigger;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.Map.Entry;
-
-import javax.annotation.Nonnull;
-
 import net.blacklab.lmr.LittleMaidReengaged;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.util.Constants.NBT;
+
+import javax.annotation.Nonnull;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class ModeTrigger implements Serializable {
 	
@@ -31,11 +22,10 @@ public class ModeTrigger implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	public static enum Status {
-		NOT_REGISTERED,
-		TRIGGER,
-		NON_TRIGGER
+
+    public boolean isTriggerable(String pSelector, Item pItem, boolean pArgument) {
+        Status tStatus = getTriggerStatus(pSelector, pItem);
+        return tStatus != Status.NON_TRIGGER && (pArgument || tStatus == Status.TRIGGER);
 	}
 
 	private static List<String> selector = new ArrayList<>();
@@ -115,10 +105,38 @@ public class ModeTrigger implements Serializable {
 		}
 		return tStatus;
 	}
-	
-	public boolean isTriggerable(String pSelector, Item pItem, boolean pArgument) {
-		Status tStatus = getTriggerStatus(pSelector, pItem);
-		return tStatus == Status.NON_TRIGGER ? false : pArgument || tStatus == Status.TRIGGER;
+
+    public void readFromNBT(NBTTagCompound pCompound) {
+        NBTTagCompound targetCompound = pCompound.getCompoundTag(LittleMaidReengaged.DOMAIN + ":MODETRIGGER");
+
+        if (targetCompound.isEmpty()) {
+            return;
+        }
+
+        // Process Each Selector
+        for (String pSelector : getSelectorList()) {
+            NBTTagList targetList = targetCompound.getTagList(pSelector, 9);
+
+            // Process Each Item
+            for (int i = 0; i < targetList.tagCount(); i++) {
+                NBTTagString tItemTag = (NBTTagString) targetList.get(i);
+                String itemName = tItemTag.getString();
+
+                // Trigger or Non-Trigger?
+                Status triggerStatus = Status.NOT_REGISTERED;
+                if (itemName.startsWith("-")) {
+                    triggerStatus = Status.NON_TRIGGER;
+                    itemName = itemName.substring(1);
+                }
+                else {
+                    triggerStatus = Status.TRIGGER;
+                }
+
+                // Set
+                Item item = Item.REGISTRY.getObject(new ResourceLocation(itemName));
+                setTriggerStatus(pSelector, item, triggerStatus);
+            }
+        }
 	}
 	
 	public boolean isTriggerable(String pSelector, ItemStack pStack, Class<?> itemClass) {
@@ -170,48 +188,27 @@ public class ModeTrigger implements Serializable {
 		pCompound.setTag(LittleMaidReengaged.DOMAIN + ":MODETRIGGER", tagCompound);
 	}
 	
-	public void readFromNBT(NBTTagCompound pCompound) {
-		NBTTagCompound targetCompound = pCompound.getCompoundTag(LittleMaidReengaged.DOMAIN + ":MODETRIGGER");
-		
-		if (targetCompound.hasNoTags()) {
-			return;
-		}
-		
-		// Process Each Selector
-		for (String pSelector : getSelectorList()) {
-			NBTTagList targetList = targetCompound.getTagList(pSelector, 9);
-			
-			// Process Each Item
-			for (int i = 0; i < targetList.tagCount(); i++) {
-				NBTTagString tItemTag = (NBTTagString) targetList.get(i);
-				String itemName = tItemTag.getString();
-				
-				// Trigger or Non-Trigger?
-				Status triggerStatus = Status.NOT_REGISTERED;
-				if (itemName.startsWith("-")) {
-					triggerStatus = Status.NON_TRIGGER;
-					itemName = itemName.substring(1);
-				} else {
-					triggerStatus = Status.TRIGGER;
-				}
-				
-				// Set
-				Item item = Item.REGISTRY.getObject(new ResourceLocation(itemName));
-				setTriggerStatus(pSelector, item, triggerStatus);
-			}
-		}
-	}
-	
 	@Override
 	protected ModeTrigger clone() {
+        try {
+            ModeTrigger modeTrigger = (ModeTrigger) super.clone();
+        }
+        catch (CloneNotSupportedException ignored) {
+        }
 		ModeTrigger result = new ModeTrigger();
-		
+
 		for (String tSelector : getSelectorList()) {
 			Map<Item, Status> tMap = defaultTrigger.getTriggerMap(tSelector);
 			result.appendTriggerMap(tSelector, new HashMap<>(tMap));
 		}
-		
-		return result;
+
+        return result;
 	}
+
+    public enum Status {
+        NOT_REGISTERED,
+        TRIGGER,
+        NON_TRIGGER
+    }
 
 }

@@ -74,7 +74,7 @@ public class LMRMessage implements IMessage
 		return tag;
 	}
 
-	public static enum EnumPacketMode {
+    public enum EnumPacketMode {
 		// Be sent to server
 		/*
 		 * 0x0*	:	Server-side general configures
@@ -122,7 +122,7 @@ public class LMRMessage implements IMessage
 		public byte modeByte;
 		public boolean withEntity;
 
-		private EnumPacketMode(int pByte, boolean pBool) {
+        EnumPacketMode(int pByte, boolean pBool) {
 			modeByte = (byte) pByte;
 			withEntity = pBool;
 		}

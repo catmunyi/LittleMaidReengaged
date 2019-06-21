@@ -65,16 +65,15 @@ public class EntityMode_Cooking extends EntityModeBlockBase {
 
 	@Override
 	public boolean setMode(String pMode) {
-		switch (pMode) {
-		case mmode_Cooking :
-			owner.setBloodsuck(false);
+        if (mmode_Cooking.equals(pMode)) {
+            owner.setBloodsuck(false);
 //			owner.aiJumpTo.setEnable(false);
-			owner.aiFollow.setEnable(false);
-			owner.aiAvoidPlayer.setEnable(false);
-			owner.aiAttack.setEnable(false);
-			owner.aiShooting.setEnable(false);
-			return true;
-		}
+            owner.aiFollow.setEnable(false);
+            owner.aiAvoidPlayer.setEnable(false);
+            owner.aiAttack.setEnable(false);
+            owner.aiShooting.setEnable(false);
+            return true;
+        }
 
 		return false;
 	}
@@ -83,17 +82,15 @@ public class EntityMode_Cooking extends EntityModeBlockBase {
 	public int getNextEquipItem(String pMode) {
 		int li;
 		// モードに応じた識別判定、速度優先
-		switch (pMode) {
-		case mmode_Cooking :
-			for (li = 0; li < owner.maidInventory.getSizeInventory(); li++) {
-				// 調理
-				if (owner.maidInventory.isItemBurned(li)) {
-					swapItemIntoMainHandSlot(li);
-					return InventoryLittleMaid.handInventoryOffset;
-				}
-			}
-			break;
-		}
+        if (mmode_Cooking.equals(pMode)) {
+            for (li = 0; li < owner.maidInventory.getSizeInventory(); li++) {
+                // 調理
+                if (owner.maidInventory.isItemBurned(li)) {
+                    swapItemIntoMainHandSlot(li);
+                    return InventoryLittleMaid.handInventoryOffset;
+                }
+            }
+        }
 
 		return -1;
 	}

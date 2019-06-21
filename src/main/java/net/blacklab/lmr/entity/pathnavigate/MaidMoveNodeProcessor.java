@@ -1,7 +1,6 @@
 package net.blacklab.lmr.entity.pathnavigate;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.pathfinding.WalkNodeProcessor;
@@ -31,7 +30,7 @@ public class MaidMoveNodeProcessor extends WalkNodeProcessor {
 	public PathNodeType getPathNodeType(IBlockAccess x, int y, int z, int p_186330_4_) {
 		PathNodeType pathNodeType1 = super.getPathNodeType(x, y, z, p_186330_4_);
 		if (pathNodeType1 == PathNodeType.RAIL) {
-			pathNodeType1 = pathNodeType1.WALKABLE;
+            pathNodeType1 = PathNodeType.WALKABLE;
 		}
 		return pathNodeType1;
 	}
@@ -51,7 +50,7 @@ public class MaidMoveNodeProcessor extends WalkNodeProcessor {
 			int i = 0;
 
 			for (EnumFacing enumfacing : EnumFacing.values()) {
-				PathPoint pathpoint = this.getSafePoint(entity, currentPoint.x + enumfacing.getFrontOffsetX(), currentPoint.y + enumfacing.getFrontOffsetY(), currentPoint.z + enumfacing.getFrontOffsetZ());
+                PathPoint pathpoint = this.getSafePoint(entity, currentPoint.x + enumfacing.getXOffset(), currentPoint.y + enumfacing.getYOffset(), currentPoint.z + enumfacing.getZOffset());
 
 				if (pathpoint != null && !pathpoint.visited && pathpoint.distanceTo(targetPoint) < maxDistance) {
 					pathOptions[i++] = pathpoint;

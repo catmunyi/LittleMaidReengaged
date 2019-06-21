@@ -1,14 +1,13 @@
 package net.blacklab.lmr.entity.littlemaid;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.blacklab.lmr.LittleMaidReengaged;
 import net.blacklab.lmr.util.helper.CommonHelper;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * マーカーを表示します。
@@ -24,8 +23,15 @@ public class EntityMarkerDummy extends Entity {
 	 */
 	public static boolean isEnable = false;
 
-	public static List<EntityMarkerDummy> appendList = new ArrayList<EntityMarkerDummy>();
+    public static List<EntityMarkerDummy> appendList = new ArrayList<>();
 
+    public EntityMarkerDummy(World world) {
+        super(world);
+        livecount = maxlivecount;
+        entityColor = 1;
+//		setSize(1F, 1F);
+        entityOwner = null;
+    }
 
 	public EntityMarkerDummy(World world, int color, Entity owner) {
 		super(world);

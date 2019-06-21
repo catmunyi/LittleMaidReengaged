@@ -1,10 +1,7 @@
 package net.blacklab.lmr.entity.ai;
 
-import java.util.Random;
-
 import net.blacklab.lmr.LittleMaidReengaged;
 import net.blacklab.lmr.entity.littlemaid.EntityLittleMaid;
-import net.blacklab.lmr.entity.littlemaid.mode.EntityModeBase;
 import net.blacklab.lmr.util.helper.MaidHelper;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -12,6 +9,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+
+import java.util.Random;
 
 public class EntityAILMFleeRain extends EntityAIBase implements IEntityAILM {
 
@@ -67,8 +66,7 @@ public class EntityAILMFleeRain extends EntityAIBase implements IEntityAILM {
 
 	@Override
 	public boolean shouldContinueExecuting() {
-		return theMaid.getNavigator().noPath() ? false :
-			theWorld.canBlockSeeSky(theMaid.getPosition());
+        return !theMaid.getNavigator().noPath() && theWorld.canBlockSeeSky(theMaid.getPosition());
 	}
 
 	@Override

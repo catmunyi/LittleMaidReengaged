@@ -1,13 +1,12 @@
 package net.blacklab.lmr.util.manager;
 
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
-
 import net.blacklab.lmr.entity.maidmodel.EquippedStabilizer;
 import net.blacklab.lmr.entity.maidmodel.ModelBase;
 import net.blacklab.lmr.entity.maidmodel.ModelStabilizerBase;
-import net.blacklab.lmr.util.FileList;
+
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 /**
  * 追加パーツたるスタビライザーを管理する
@@ -15,7 +14,7 @@ import net.blacklab.lmr.util.FileList;
 public class StabilizerManager extends ManagerBase {
 
 	public static final String preFix = "ModelStabilizer";
-	public static Map<String, ModelStabilizerBase> stabilizerList = new TreeMap<String, ModelStabilizerBase>();
+    public static Map<String, ModelStabilizerBase> stabilizerList = new TreeMap<>();
 	
 	
 	public static void init() {
@@ -41,7 +40,8 @@ public class StabilizerManager extends ManagerBase {
 			ModelStabilizerBase lms = (ModelStabilizerBase)pclass.newInstance();
 			stabilizerList.put(lms.getName(), lms);
 			return true;
-		} catch (Exception e) {
+        }
+        catch (Exception ignored) {
 		}
 		
 		return false;

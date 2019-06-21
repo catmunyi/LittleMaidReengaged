@@ -1,13 +1,12 @@
 package net.blacklab.lmr.util.coremod;
 
-import java.util.Arrays;
-
 import com.google.common.eventbus.EventBus;
-
 import net.blacklab.lmr.LittleMaidReengaged;
 import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.LoadController;
 import net.minecraftforge.fml.common.ModMetadata;
+
+import java.util.Collections;
 
 public class LMRECoreModContainer extends DummyModContainer {
 
@@ -18,7 +17,7 @@ public class LMRECoreModContainer extends DummyModContainer {
 		lmeta.modId		= "OldModelLoader";
 		lmeta.name		= "LMR OldModelLoader";
 		lmeta.version	= LittleMaidReengaged.VERSION;
-		lmeta.authorList	= Arrays.asList("Verclene");
+		lmeta.authorList = Collections.singletonList("Verclene");
 		lmeta.description	= "The MultiModel before 1.6.2 is read.";
 		lmeta.url			= "";
 		lmeta.credits		= "";

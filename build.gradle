@@ -1,37 +1,73 @@
-sourceSets.main {
-	java.srcDirs project.projectDir.name
-	resources.srcDirs project.projectDir.name
+// Variiables
+def mod_version = "8.1.7.145"
+def build_number = "1"
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+dependencies {
+	compile project(':EBLib')
 }
+buildscript {
+	repositories {
+		jcenter()
+		maven {
+			name = "forge"
+			url = "http://files.minecraftforge.net/maven"
+		}
+	}
+	dependencies {
+		classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+	}
+}
+
+
+/*
+// for people who want stable - not yet functional for MC 1.8.8 - we require the forgegradle 2.1 snapshot
+plugins {
+    id "net.minecraftforge.gradle.forge" version "2.0.2"
+}
+*/
+
+version = "${mod_version}.${build_number}"
+group= "lmreengaged"
+archivesBaseName = "LittleMaidReengaged"
+
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+compileJava {
+	sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+// avoid building errors with Japanese Comment
+[compileJava, compileTestJava].each{ it.options.encoding = 'UTF-8' }
+
+minecraft {
+	version = "1.12.2-14.23.5.2768"
+	runDir = "run"
+	replace 'GRADLE:VERSION', version
+	replaceIn 'LittleMaidReengaged.java'
+	mappings = "stable_39"
+}
+
 jar {
-	doFirst {
-		archivesBaseName = "[1.12.2]LittleMaidReengaged"
-	}
-	
-	manifest {
-		attributes 'FMLCorePlugin' : 'net.blacklab.lmr.util.coremod.LMRECoremod'
-		attributes 'FMLCorePluginContainsFMLMod' : 'true'
-	}
 }
 
-task generateChangeLog << {
-	exec {
-		executable "bash"
-		args '-c', '"git log --date=short --pretty=format:\'%ad %an<%ae>%nHASH=%H%n%s%n%b%n\'' +
-				' | sed -E \'s/HASH=(.+)/\\* \\1/g\'' +
-				' | sed -E \'s/(.+)/\\t\\*\\t\\1/g\'' +
-				' | sed -E \'s/\\t\\*\\t([0-9]+-[0-9]+-[0-9]+.+)/\\1/g\' > ChangeLog"'
-	}
-}
+processResources
+		{
+			// this will ensure that this task is redone when the versions change.
+			inputs.property "version", project.version
+			inputs.property "mcversion", project.minecraft.version
 
-// Set arguments -PgenCL to generate ChangeLog(git configure required)
-if (project.hasProperty('genCL')) {
-	generateChangeLog.execute()
-}
+			// replace stuff in mcmod.info, nothing else
+			from(sourceSets.main.resources.srcDirs) {
+				include 'mcmod.info'
 
-tasks.withType(Jar) {compileJava.options.encoding = 'UTF-8'}
-tasks.withType(Jar) {compileApiJava.options.encoding = 'UTF-8'}
+				// replace version and mcversion
+				expand 'version':project.version, 'mcversion':project.minecraft.version
+			}
 
-// Replace ':EBLib***' to the project of EBLib in your workspace 
-dependencies { compile project(':EBLib') }
+			// copy everything else, thats not the mcmod.info
+			from(sourceSets.main.resources.srcDirs) {
+				exclude 'mcmod.info'
+			}
+		}
 
-version = "8.1.6.141"
+defaultTasks 'clean', 'build'

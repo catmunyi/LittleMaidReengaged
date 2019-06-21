@@ -115,7 +115,7 @@ public class EventHookLMRE
 	public static boolean deleteDoppelganger(boolean loading, World world, Entity entity) {
 		// ドッペル対策
 		for (int i = 0; i < world.loadedEntityList.size(); i++) {
-			Entity entity1 = (Entity)world.loadedEntityList.get(i);
+            Entity entity1 = world.loadedEntityList.get(i);
 				if (!entity1.isDead && entity1 instanceof EntityLivingBase) {
 				EntityLivingBase elm = (EntityLivingBase)entity1;
 				if (elm.equals(entity)) continue;

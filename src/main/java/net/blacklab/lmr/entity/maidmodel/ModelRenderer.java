@@ -1,15 +1,5 @@
 package net.blacklab.lmr.entity.maidmodel;
 
-import static net.blacklab.lmr.entity.maidmodel.IModelCaps.caps_Actions;
-import static net.blacklab.lmr.entity.maidmodel.IModelCaps.caps_Entity;
-import static net.blacklab.lmr.entity.maidmodel.IModelCaps.caps_HeadMount;
-import static net.blacklab.lmr.entity.maidmodel.IModelCaps.caps_Items;
-
-import java.lang.reflect.Constructor;
-import java.nio.FloatBuffer;
-import java.util.ArrayList;
-import java.util.List;
-
 import net.blacklab.lmr.util.helper.RendererHelper;
 import net.minecraft.client.model.TextureOffset;
 import net.minecraft.client.renderer.GLAllocation;
@@ -18,15 +8,16 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.tileentity.TileEntitySkullRenderer;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.item.EnumAction;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemBow;
-import net.minecraft.item.ItemSkull;
-import net.minecraft.item.ItemStack;
-
+import net.minecraft.item.*;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+
+import java.lang.reflect.Constructor;
+import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
+import static net.blacklab.lmr.entity.maidmodel.IModelCaps.*;
 
 public class ModelRenderer {
 
@@ -101,7 +92,7 @@ public class ModelRenderer {
 		showModel = true;
 		isHidden = false;
 		isRendering = true;
-		cubeList = new ArrayList<ModelBoxBase>();
+        cubeList = new ArrayList<>();
 		baseModel = pModelBase;
 		pModelBase.boxList.add(this);
 		boxName = pName;
@@ -128,7 +119,7 @@ public class ModelRenderer {
 	}
 
 	public ModelRenderer(ModelBase pModelBase) {
-		this(pModelBase, (String)null);
+        this(pModelBase, null);
 	}
 
 	public ModelRenderer(ModelBase pModelBase, int px, int py, float pScaleX, float pScaleY, float pScaleZ) {
@@ -149,7 +140,7 @@ public class ModelRenderer {
 
 	public void addChild(ModelRenderer pModelRenderer) {
 		if (childModels == null) {
-			childModels = new ArrayList<ModelRenderer>();
+            childModels = new ArrayList<>();
 		}
 		childModels.add(pModelRenderer);
 		pModelRenderer.pearent = this;
@@ -253,9 +244,9 @@ public class ModelRenderer {
 		displayList = GLAllocation.generateDisplayLists(1);
 		GL11.glNewList(displayList, GL11.GL_COMPILE);
 		Tessellator tessellator = Tessellator.getInstance();
-		
-		for (int i = 0; i < cubeList.size(); i++) {
-			cubeList.get(i).render(tessellator, par1);
+
+        for (ModelBoxBase modelBoxBase : cubeList) {
+            modelBoxBase.render(tessellator, par1);
 		}
 		
 		GL11.glEndList();
@@ -291,17 +282,15 @@ public class ModelRenderer {
 	}
 
 	protected Object[] getArg(Object ... pArg) {
-		Object lobject[] = new Object[pArg.length + 2];
+        Object[] lobject = new Object[pArg.length + 2];
 		lobject[0] = textureOffsetX;
 		lobject[1] = textureOffsetY;
-		for (int li = 0; li < pArg.length; li++) {
-			lobject[2 + li] = pArg[li];
-		}
+        System.arraycopy(pArg, 0, lobject, 2, pArg.length);
 		return lobject;
 	}
 
 	public ModelRenderer addParts(Class<? extends ModelBoxBase> pModelBoxBase, String pName, Object ... pArg) {
-		pName = (new StringBuilder()).append(boxName).append(".").append(pName).toString();
+        pName = boxName + "." + pName;
 		TextureOffset ltextureoffset = baseModel.getTextureOffset(pName);
 		setTextureOffset(ltextureoffset.textureOffsetX, ltextureoffset.textureOffsetY);
 		addCubeList(getModelBoxBase(pModelBoxBase, getArg(pArg)).setBoxName(pName));
@@ -318,7 +307,7 @@ public class ModelRenderer {
 	 * コンストラクタへそのまま値を渡します。
 	 */
 	public ModelRenderer addPartsTexture(Class<? extends ModelBoxBase> pModelBoxBase, String pName, Object ... pArg) {
-		pName = (new StringBuilder()).append(boxName).append(".").append(pName).toString();
+        pName = boxName + "." + pName;
 		addCubeList(getModelBoxBase(pModelBoxBase, pArg).setBoxName(pName));
 		return this;
 	}
@@ -638,8 +627,8 @@ public class ModelRenderer {
 		}
 		
 		if (childModels != null) {
-			for (int li = 0; li < childModels.size(); li++) {
-				childModels.get(li).render(par1, pRendering);
+            for (ModelRenderer childModel : childModels) {
+                childModel.render(par1, pRendering);
 			}
 		}
 	}

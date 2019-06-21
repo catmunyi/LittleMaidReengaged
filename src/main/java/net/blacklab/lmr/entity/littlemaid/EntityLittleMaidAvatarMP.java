@@ -1,8 +1,5 @@
 package net.blacklab.lmr.entity.littlemaid;
 
-import java.util.Collection;
-import java.util.List;
-
 import net.blacklab.lmr.LittleMaidReengaged;
 import net.blacklab.lmr.inventory.ContainerInventoryLittleMaid;
 import net.blacklab.lmr.util.EnumSound;
@@ -31,6 +28,8 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+
+import java.util.Collection;
 
 
 

@@ -1,20 +1,15 @@
 package net.blacklab.lmr.inventory;
 
-import java.util.Iterator;
-import java.util.List;
-
 import net.blacklab.lib.minecraft.item.ItemUtil;
 import net.blacklab.lmr.entity.littlemaid.EntityLittleMaid;
 import net.blacklab.lmr.util.helper.ItemHelper;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockTNT;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
-import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -29,6 +24,8 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.Explosion;
 import net.minecraftforge.oredict.OreDictionary;
 
+import java.util.List;
+
 public class InventoryLittleMaid extends InventoryPlayer {
 
 	/**
@@ -40,30 +37,30 @@ public class InventoryLittleMaid extends InventoryPlayer {
 	 */
 	public static final int handInventoryOffset = maxInventorySize + 4;
 
-	/**
-	 * Inventory "inside skirt"
+	/*
+	  Inventory "inside skirt"
 	 */
 //	public ItemStack mainInventory[] = new ItemStack[maxInventorySize];
 
-	/**
-	 * Armor Inventory
+	/*
+	  Armor Inventory
 	 */
 //	private ItemStack armorInventory[] = new ItemStack[4];
 
-	/**
-	 * Hand Slots
-	 */
-	public final ItemStack mainHandInventory[] = new ItemStack[] { ItemStack.EMPTY };
+    /**
+     * Hand Slots
+     */
+    public final ItemStack[] mainHandInventory = new ItemStack[]{ItemStack.EMPTY};
 
 	/**
 	 * オーナー
 	 */
 	public EntityLittleMaid entityLittleMaid;
 
-	/**
-	 * スロット変更チェック用
-	 */
-	public ItemStack prevItems[];
+    /**
+     * スロット変更チェック用
+     */
+    public ItemStack[] prevItems;
 
 	public InventoryLittleMaid(EntityLittleMaid par1EntityLittleMaid) {
 		super(par1EntityLittleMaid.maidAvatar);
@@ -227,7 +224,7 @@ public class InventoryLittleMaid extends InventoryPlayer {
 					Item j = it.getItem();
 					for (int l = 0; l < it.getCount(); l++) {
 						// 爆薬ぶちまけ
-						((BlockTNT)Block.getBlockFromItem(j)).onBlockDestroyedByExplosion(
+                        Block.getBlockFromItem(j).onExplosionDestroy(
 								entityLittleMaid.world,
 								new BlockPos(
 									MathHelper.floor(entityLittleMaid.posX)
@@ -434,19 +431,20 @@ public class InventoryLittleMaid extends InventoryPlayer {
 				List list = PotionUtils.getEffectsFromStack(is);
 				nextPotion: if (list != null) {
 					PotionEffect potioneffect;
-					for (Iterator iterator = list.iterator(); iterator
-							.hasNext();) {
-						potioneffect = (PotionEffect) iterator.next();
+                    for (Object o : list) {
+                        potioneffect = (PotionEffect) o;
 						if (Potion.getIdFromPotion(potioneffect.getPotion()) == potionID) break;
 						if (Potion.getIdFromPotion(potioneffect.getPotion()) == 6) {
 							if ((!flag && isUndead) || (flag && !isUndead)) {
 								break nextPotion;
 							}
-						} else if (Potion.getIdFromPotion(potioneffect.getPotion()) == 7) {
+                        }
+                        else if (Potion.getIdFromPotion(potioneffect.getPotion()) == 7) {
 							if ((flag && isUndead) || (!flag && !isUndead)) {
 								break nextPotion;
 							}
-						} else if (potioneffect.getPotion().isBadEffect() != flag) {
+                        }
+                        else if (potioneffect.getPotion().isBadEffect() != flag) {
 							break nextPotion;
 						}
 					}
@@ -611,9 +609,8 @@ public class InventoryLittleMaid extends InventoryPlayer {
 					}
 				}
 			}
-		} else if (index >= 0 && index < getSizeInventory()) {
-			return true;
-		}
+        }
+        else return index >= 0 && index < getSizeInventory();
 		return false;
 	}
 

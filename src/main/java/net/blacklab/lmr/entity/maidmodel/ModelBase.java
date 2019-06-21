@@ -1,14 +1,10 @@
 package net.blacklab.lmr.entity.maidmodel;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
 import net.minecraft.client.model.TextureOffset;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.util.math.MathHelper;
+
+import java.util.*;
 
 public abstract class ModelBase extends AbstractModelBase {
 	
@@ -19,12 +15,12 @@ public abstract class ModelBase extends AbstractModelBase {
 	// ModelBaseとある程度互換
 	public int textureWidth = 64;
 	public int textureHeight = 32;
-	public float onGrounds[] = new float[] {0.0F, 0.0F};
+    public float[] onGrounds = new float[]{0.0F, 0.0F};
 	public int dominantArm = 0;
 	public boolean isRiding = false;
 	public boolean isChild = true;
-	public List<ModelRenderer> boxList = new ArrayList<ModelRenderer>();
-	private Map<String, TextureOffset> modelTextureMap = new HashMap<String, TextureOffset>();
+    public List<ModelRenderer> boxList = new ArrayList<>();
+    private Map<String, TextureOffset> modelTextureMap = new HashMap<>();
 
 
 
@@ -119,7 +115,7 @@ public abstract class ModelBase extends AbstractModelBase {
 	}
 
 	public static final boolean mh_stringNullOrLengthZero(String s) {
-		return s==null||s=="";
+        return s == null || "".equals(s);
 	}
 
 	public static final int mh_getRandomIntegerInRange(Random random, int minimum, int maximum) {

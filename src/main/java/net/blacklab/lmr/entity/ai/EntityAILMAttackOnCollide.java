@@ -210,7 +210,6 @@ public class EntityAILMAttackOnCollide extends EntityAIBase implements IEntityAI
 			theMaid.setRevengeTarget(null);
 			theMaid.getNavigator().clearPath();
 		}
-		return;
 	}
 
 	@Override

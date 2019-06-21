@@ -55,8 +55,8 @@ public class EntityAILMSwimming extends EntityAISwimming {
 				// Main AI
 				if(pathEntity!=null){
 					pathPoint = pathEntity.getFinalPathPoint();
-					theMaid.motionX = ((pathPoint.x>x)?1:(pathPoint.x<x)?-1:0) * theMaid.getAIMoveSpeed()/5d;
-					theMaid.motionZ = ((pathPoint.z>z)?1:(pathPoint.z<z)?-1:0) * theMaid.getAIMoveSpeed()/5d;
+                    theMaid.motionX = (Integer.compare(pathPoint.x, x)) * theMaid.getAIMoveSpeed() / 5d;
+                    theMaid.motionZ = (Integer.compare(pathPoint.z, z)) * theMaid.getAIMoveSpeed() / 5d;
 					totalmotionY +=		((pathPoint.y>=y)?1:-1) * theMaid.getAIMoveSpeed()/3d;
 				}
 
@@ -71,8 +71,8 @@ public class EntityAILMSwimming extends EntityAISwimming {
 					
 					// Going ashore
 					if (pathPoint != null && Math.abs(pathPoint.y - yd) < 3d && Math.pow(pathPoint.x - xd, 2) + Math.pow(pathPoint.z - zd, 2) < 9d &&
-							(iState = theMaid.world.getBlockState(new BlockPos(pathPoint.x, pathPoint.y + 1, pathPoint.z)))
-							.getBlock().getMaterial(iState) != Material.WATER) {
+                            (theMaid.world.getBlockState(new BlockPos(pathPoint.x, pathPoint.y + 1, pathPoint.z)))
+                                    .getMaterial() != Material.WATER) {
 						totalmotionY += 0.05D;
 					}
 					theMaid.motionY = totalmotionY;

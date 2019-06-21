@@ -29,15 +29,15 @@ public class EntityMode_BookDecorder extends EntityModeBase {
 		if (pitemstack.getItem() instanceof ItemWritableBook) {
 			if (ItemWritableBook.isNBTValid(pitemstack.getTagCompound())) {
 				NBTTagList llist = pitemstack.getTagCompound().getTagList("pages", 8);
-				String ls = "";
+                StringBuilder ls = new StringBuilder();
 				for (int li = 0; li < llist.tagCount(); li++) {
 //					NBTTagString ltex = (NBTTagString)llist.tagAt(li);
-					ls += llist.getStringTagAt(li);
+                    ls.append(llist.getStringTagAt(li));
 				}
-				
-				String lcommands[] = ls.split(";");
-				String lcom[];
-				TextureBoxBase lboxs[] = new TextureBoxBase[] {
+
+                String[] lcommands = ls.toString().split(";");
+                String[] lcom;
+                TextureBoxBase[] lboxs = new TextureBoxBase[]{
 						owner.textureData.textureBox[0],
 						owner.textureData.textureBox[1]
 				};
@@ -50,27 +50,31 @@ public class EntityMode_BookDecorder extends EntityModeBase {
 						lcom[1] = lcom[1].trim();
 						
 						try {
-							if (lcom[0].equals("color")) {
-								lcolor = Integer.valueOf(lcom[1]) & 0x0f;
-								lflag = true;
-							}
-							else if (lcom[0].equals("texture")) {
-								TextureBoxBase lbox = ModelManager.instance.getTextureBox(lcom[1]);
-								if (lbox != null) {
-									lboxs[0] = lbox;
-									lflag = true;
-								}
-							}
-							else if (lcom[0].equals("armor")) {
-								TextureBoxBase lbox = ModelManager.instance.getTextureBox(lcom[1]);
-								if (lbox != null) {
-									lboxs[1] = lbox;
-									lflag = true;
-								}
-							}
-							else if (lcom[0].equals("dominantArm")) {
-								int li = Integer.valueOf(lcom[1]);
-								owner.setDominantArm(li);
+                            switch (lcom[0]) {
+                                case "color":
+                                    lcolor = Integer.valueOf(lcom[1]) & 0x0f;
+                                    lflag = true;
+                                    break;
+                                case "texture": {
+                                    TextureBoxBase lbox = ModelManager.instance.getTextureBox(lcom[1]);
+                                    if (lbox != null) {
+                                        lboxs[0] = lbox;
+                                        lflag = true;
+                                    }
+                                    break;
+                                }
+                                case "armor": {
+                                    TextureBoxBase lbox = ModelManager.instance.getTextureBox(lcom[1]);
+                                    if (lbox != null) {
+                                        lboxs[1] = lbox;
+                                        lflag = true;
+                                    }
+                                    break;
+                                }
+                                case "dominantArm":
+                                    int li = Integer.valueOf(lcom[1]);
+                                    owner.setDominantArm(li);
+                                    break;
 							}
 							
 						} catch (Exception e) {

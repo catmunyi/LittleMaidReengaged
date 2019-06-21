@@ -1,8 +1,5 @@
 package net.blacklab.lmr.entity.littlemaid.mode;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.blacklab.lib.vevent.VEventBus;
 import net.blacklab.lmr.LittleMaidReengaged;
 import net.blacklab.lmr.api.event.EventLMRE;
@@ -29,6 +26,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class EntityMode_Basic extends EntityModeBlockBase {
 
 	public static final String mmode_Wild			= "Wild";
@@ -46,7 +46,7 @@ public class EntityMode_Basic extends EntityModeBlockBase {
 	 */
 	public EntityMode_Basic(EntityLittleMaid pEntity) {
 		super(pEntity);
-		fusedTiles = new ArrayList<IInventory>();
+        fusedTiles = new ArrayList<>();
 //		myTile = null;
 	}
 
@@ -486,7 +486,7 @@ public class EntityMode_Basic extends EntityModeBlockBase {
 						if (pitemstack.getItem() instanceof ItemAppleGold) {
 							// ゴールデンアッポー
 							if(!owner.world.isRemote) {
-								((ItemAppleGold)pitemstack.getItem()).onItemUseFinish(pitemstack, owner.world, owner.maidAvatar);
+                                pitemstack.getItem().onItemUseFinish(pitemstack, owner.world, owner.maidAvatar);
 							}
 							return true;
 						}

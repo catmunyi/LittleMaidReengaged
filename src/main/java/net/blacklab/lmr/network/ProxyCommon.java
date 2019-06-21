@@ -14,9 +14,11 @@ public class ProxyCommon
 	public EntityPlayer getClientPlayer(){ return null; }
 	public void loadSounds(){}
 	public void runCountThread() {}
-	public void onClientCustomPayLoad(LMRMessage lmrMessage) {};
-	
-	public boolean isSinglePlayer()
+
+    public void onClientCustomPayLoad(LMRMessage lmrMessage) {
+    }
+
+    public boolean isSinglePlayer()
 	{
 		return FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer();
 	}

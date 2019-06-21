@@ -1,13 +1,10 @@
 package net.blacklab.lmr.item;
 
-import java.util.List;
-
 import net.blacklab.lmr.LittleMaidReengaged;
 import net.blacklab.lmr.entity.littlemaid.EntityLittleMaid;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -28,8 +25,25 @@ public class ItemMaidSpawnEgg extends Item
 	{
 		setHasSubtypes(true);
 		setCreativeTab(CreativeTabs.MISC);
-		setUnlocalizedName(LittleMaidReengaged.DOMAIN + ":spawn_littlemaid_egg");
-		setRegistryName(getUnlocalizedName());
+		setTranslationKey(LittleMaidReengaged.DOMAIN + ":spawn_littlemaid_egg");
+		setRegistryName(getTranslationKey());
+	}
+
+	public static Entity spawnMaid(World par0World, double par2, double par4, double par6) {
+		EntityLittleMaid entityliving = null;
+		try {
+			entityliving = new EntityLittleMaid(par0World);
+
+			entityliving.setLocationAndAngles(par2, par4, par6, (par0World.rand.nextFloat() * 360.0F) - 180.0F, 0.0F);
+//			((LMM_EntityLittleMaid)entityliving).setTextureNames();
+			entityliving.onSpawnWithEgg();
+			par0World.spawnEntity(entityliving);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return entityliving;
 	}
 
 	@Override
@@ -60,7 +74,7 @@ public class ItemMaidSpawnEgg extends Item
 		{
 			if (entity instanceof EntityLivingBase && par1ItemStack.hasDisplayName())
 			{
-				((EntityLiving)entity).setCustomNameTag(par1ItemStack.getDisplayName());
+				entity.setCustomNameTag(par1ItemStack.getDisplayName());
 			}
 
 			if (!par2EntityPlayer.capabilities.isCreativeMode)
@@ -70,23 +84,6 @@ public class ItemMaidSpawnEgg extends Item
 		}
 
 		return EnumActionResult.SUCCESS;
-	}
-
-	public static Entity spawnMaid(World par0World, double par2, double par4, double par6)
-	{
-		EntityLiving entityliving = null;
-		try {
-			entityliving = new EntityLittleMaid(par0World);
-
-			entityliving.setLocationAndAngles(par2, par4, par6, (par0World.rand.nextFloat() * 360.0F) - 180.0F, 0.0F);
-//			((LMM_EntityLittleMaid)entityliving).setTextureNames();
-			((EntityLittleMaid) entityliving).onSpawnWithEgg();
-			par0World.spawnEntity(entityliving);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return entityliving;
 	}
 
 	@SideOnly(Side.CLIENT)

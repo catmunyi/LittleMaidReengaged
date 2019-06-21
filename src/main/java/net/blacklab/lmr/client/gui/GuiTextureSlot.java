@@ -1,11 +1,5 @@
 package net.blacklab.lmr.client.gui;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-
 import net.blacklab.lmr.client.entity.EntityLittleMaidForTexSelect;
 import net.blacklab.lmr.entity.maidmodel.ModelMultiBase;
 import net.blacklab.lmr.entity.maidmodel.TextureBox;
@@ -20,6 +14,11 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GuiTextureSlot extends GuiSlot {
 
@@ -29,15 +28,15 @@ public class GuiTextureSlot extends GuiSlot {
 	public List<TextureBox> indexTexture;
 	public List<TextureBox> indexArmor;
 	public boolean mode;
-	public int texsel[] = new int[2];
+    public int[] texsel = new int[2];
 	public byte color;
 	public byte selectColor;
-	private ItemStack armors[] = new ItemStack[] {
-			new ItemStack(Items.LEATHER_BOOTS),
-			new ItemStack(Items.LEATHER_LEGGINGS),
-			new ItemStack(Items.LEATHER_CHESTPLATE),
-			new ItemStack(Items.LEATHER_HELMET)
-	};
+    private ItemStack[] armors = new ItemStack[]{
+            new ItemStack(Items.LEATHER_BOOTS),
+            new ItemStack(Items.LEATHER_LEGGINGS),
+            new ItemStack(Items.LEATHER_CHESTPLATE),
+            new ItemStack(Items.LEATHER_HELMET)
+    };
 	protected boolean isContract;
 	protected static TextureBox blankBox;
 
@@ -53,11 +52,11 @@ public class GuiTextureSlot extends GuiSlot {
 
 		texsel[0] = 0;//-1;
 		texsel[1] = 0;//-1;
-		indexTexture = new ArrayList<TextureBox>();
-		indexArmor = new ArrayList<TextureBox>();
+        indexTexture = new ArrayList<>();
+        indexArmor = new ArrayList<>();
 		isContract = owner.target.isContract();
 		entity.setContract(isContract);
-		TextureBoxBase ltbox[] = owner.target.getTextureBox();
+        TextureBoxBase[] ltbox = owner.target.getTextureBox();
 		for (int li = 0; li < ModelManager.instance.getTextureCount(); li++) {
 			TextureBox lbox = ModelManager.getTextureList().get(li);
 			if (isContract) {

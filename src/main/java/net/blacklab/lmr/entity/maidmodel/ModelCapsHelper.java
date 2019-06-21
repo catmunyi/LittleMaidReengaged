@@ -38,7 +38,7 @@ public class ModelCapsHelper {
 	}
 
 	public static boolean setCapsValue(IModelCaps pOwner, String pCapsName, Object... pArg) {
-		return pOwner == null ? false : pOwner.setCapsValue(pOwner.getModelCaps().get(pCapsName), pArg);
+        return pOwner != null && pOwner.setCapsValue(pOwner.getModelCaps().get(pCapsName), pArg);
 	}
 
 }

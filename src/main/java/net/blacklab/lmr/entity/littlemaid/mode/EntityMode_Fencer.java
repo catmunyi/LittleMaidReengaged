@@ -1,8 +1,5 @@
 package net.blacklab.lmr.entity.littlemaid.mode;
 
-import java.util.HashMap;
-import java.util.UUID;
-
 import net.blacklab.lmr.LittleMaidReengaged;
 import net.blacklab.lmr.achievements.AchievementsLMRE;
 import net.blacklab.lmr.entity.ai.EntityAILMHurtByTarget;
@@ -24,6 +21,9 @@ import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemSpade;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
+
+import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * 独自基準としてモード定数は0x0080は平常、0x00c0は血まみれモードと区別。
@@ -173,7 +173,7 @@ public class EntityMode_Fencer extends EntityModeBase {
 				try {
 					lld = CommonHelper.getAttackVSEntity(litemstack);
 				}
-				catch (Exception e) {
+                catch (Exception ignored) {
 				}
 				if (lld > ld) {
 					ll = li;
@@ -196,7 +196,7 @@ public class EntityMode_Fencer extends EntityModeBase {
 				try {
 					lld = CommonHelper.getAttackVSEntity(litemstack);
 				}
-				catch (Exception e) {
+                catch (Exception ignored) {
 				}
 				if (lld > ld) {
 					ll = li;
@@ -244,7 +244,7 @@ public class EntityMode_Fencer extends EntityModeBase {
 		}
 
 		if (pEntity instanceof EntityCreeper) {
-			if (owner.getMaidMasterEntity() == null ? true : !owner.getMaidMasterEntity().equals(((EntityCreeper) pEntity).getAttackTarget())) {
+            if (owner.getMaidMasterEntity() == null || !owner.getMaidMasterEntity().equals(((EntityCreeper) pEntity).getAttackTarget())) {
 				return false;
 			}
 		}

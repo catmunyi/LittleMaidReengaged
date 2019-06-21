@@ -1,28 +1,17 @@
 package net.blacklab.lmr.util.coremod;
 
+import com.google.common.collect.Lists;
+import net.blacklab.lmr.LittleMaidReengaged;
+import net.minecraft.launchwrapper.IClassTransformer;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.*;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.FieldNode;
-import org.objectweb.asm.tree.InvokeDynamicInsnNode;
-import org.objectweb.asm.tree.LocalVariableNode;
-import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.MultiANewArrayInsnNode;
-import org.objectweb.asm.tree.TypeInsnNode;
-
-import com.google.common.collect.Lists;
-
-import net.blacklab.lmr.LittleMaidReengaged;
-import net.minecraft.launchwrapper.IClassTransformer;
 
 
 /**
@@ -191,7 +180,7 @@ public class Transformer implements IClassTransformer, Opcodes {
 
 	private String checkMMM(String pText) {
 		for (Entry<String, String> le : targets.entrySet()) {
-			if (pText.indexOf(le.getKey()) > -1) {
+            if (pText.contains(le.getKey())) {
 				String result = pText.replace(le.getKey(), le.getValue());
 //				Debug("%d Hit and Replace: %s -> %s", debugOut, pText, result);
 				isChange = true;

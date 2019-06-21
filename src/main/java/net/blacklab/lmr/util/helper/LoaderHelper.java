@@ -1,8 +1,6 @@
 package net.blacklab.lmr.util.helper;
 
 import net.blacklab.lmr.LittleMaidReengaged;
-import net.minecraft.item.Item;
-import scala.language;
 
 public class LoaderHelper {
 	
@@ -12,8 +10,8 @@ public class LoaderHelper {
 	 * @return
 	 */
 	public static String getLinuxAntiDotName(String par1){
-		par1 = par1.replace("\\", "/").replace("/./", "/");
-		if(par1.endsWith("/.")) par1.substring(0, par1.lastIndexOf("/."));
+        par1 = par1.replace("\\", "/").replace("/./", "/");
+        if (par1.endsWith("/.")) par1 = par1.substring(0, par1.lastIndexOf("/."));
 		return par1;
 	}
 	

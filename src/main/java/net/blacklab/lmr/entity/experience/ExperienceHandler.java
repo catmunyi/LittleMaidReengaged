@@ -1,7 +1,5 @@
 package net.blacklab.lmr.entity.experience;
 
-import java.util.UUID;
-
 import net.blacklab.lmr.LittleMaidReengaged;
 import net.blacklab.lmr.entity.littlemaid.EntityLittleMaid;
 import net.blacklab.lmr.entity.littlemaid.mode.EntityMode_Basic;
@@ -20,6 +18,8 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentTranslation;
+
+import java.util.UUID;
 
 public class ExperienceHandler {
 
@@ -106,7 +106,7 @@ public class ExperienceHandler {
 				theMaid.playSound("mob.ghast.death");
 				theMaid.playSound("dig.glass");
 				if (theMaid.getMaidMasterEntity() != null) {
-					theMaid.getMaidMasterEntity().sendMessage(new TextComponentTranslation("littleMaidMob.chat.text.timedeath", CommonHelper.getDeadSource(deadCause)));
+                    theMaid.getMaidMasterEntity().sendMessage(new TextComponentTranslation("littleMaidMob.chat.text.timedeath", theMaid.getDisplayName(), CommonHelper.getDeadSource(deadCause)));
 				}
 			}
 

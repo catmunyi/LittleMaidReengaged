@@ -59,8 +59,7 @@ public enum EnumSound {
 	public final String DefaultValue;
 
 
-
-	private EnumSound(int findex, String finfo, String fdefault) {
+    EnumSound(int findex, String finfo, String fdefault) {
 		index = findex;
 		info = finfo;
 		DefaultValue = fdefault;

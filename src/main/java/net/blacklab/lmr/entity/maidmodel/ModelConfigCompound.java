@@ -22,56 +22,8 @@ public class ModelConfigCompound  {
 	public EntityLivingBase owner;
 	public IModelCaps entityCaps;
 
-	/**
-	 * 使用されるテクスチャリソースのコンテナ
-	 *
-	 */
-	public static class TextureCompound {
-		private ResourceLocation[][] textures;
-
-		public TextureCompound() {
-			textures = new ResourceLocation[][] {
-				/**
-				 * 基本、発光
-				 */
-				{ null, null },
-				/**
-				 * アーマー内：頭、胴、腰、足
-				 */
-				{ null, null, null, null },
-				/**
-				 * アーマー外：頭、胴、腰、足
-				 */
-				{ null, null, null, null },
-				/**
-				 * アーマー内発光：頭、胴、腰、足
-				 */
-				{ null, null, null, null },
-				/**
-				 * アーマー外発光：頭、胴、腰、足
-				 */
-				{ null, null, null, null }
-			};
-		}
-
-		public ResourceLocation getMainTexture(EnumTextureType type) {
-			return textures[0][type.index];
-		}
-
-		public void setMainTexture(EnumTextureType type, ResourceLocation resourceLocation) {
-			textures[0][type.index] = resourceLocation;
-		}
-
-		public ResourceLocation getArmorTexture(EnumTextureType type, EnumArmorRenderParts parts) {
-			return textures[type.index*2 + parts.layerIndex][parts.textureIndex];
-		}
-
-		public void setArmorTexture(EnumTextureType type, EnumArmorRenderParts parts, ResourceLocation pLocation) {
-			textures[type.index*2 + parts.layerIndex][parts.textureIndex] = pLocation;
-		}
-	}
-
-	public ResourceLocation textures[][];
+    public ResourceLocation[][] textures;
+    public TextureBoxBase[] textureBox;
 	/**
 	 * 選択色
 	 */
@@ -80,45 +32,30 @@ public class ModelConfigCompound  {
 	 * 契約テクスチャを選択するかどうか
 	 */
 	public boolean contract;
-
-	public TextureBoxBase textureBox[];
-	public ModelMultiBase textureModel[];
-
-	/**
-	 * 表示制御に使うフラグ群<br>
-	 * int型32bitで保存。
-	 */
-	public int selectValue;
-
-
-	public int data_Color	= 19;
-	public int data_Texture	= 20;
-	public int data_Value	= 21;
-
-
+    public ModelMultiBase[] textureModel;
 	public ModelConfigCompound(EntityLivingBase pEntity, IModelCaps pCaps) {
 		owner = pEntity;
 		entityCaps = pCaps;
 		textures = new ResourceLocation[][] {
-				/**
-				 * 基本、発光
-				 */
+                /*
+                  基本、発光
+                 */
 				{ null, null },
-				/**
-				 * アーマー内：頭、胴、腰、足
-				 */
+                /*
+                  アーマー内：頭、胴、腰、足
+                 */
 				{ null, null, null, null },
-				/**
-				 * アーマー外：頭、胴、腰、足
-				 */
+                /*
+                  アーマー外：頭、胴、腰、足
+                 */
 				{ null, null, null, null },
-				/**
-				 * アーマー内発光：頭、胴、腰、足
-				 */
+                /*
+                  アーマー内発光：頭、胴、腰、足
+                 */
 				{ null, null, null, null },
-				/**
-				 * アーマー外発光：頭、胴、腰、足
-				 */
+                /*
+                  アーマー外発光：頭、胴、腰、足
+                 */
 				{ null, null, null, null }
 		};
 		color = 12;
@@ -127,6 +64,24 @@ public class ModelConfigCompound  {
 		textureBox[0] = textureBox[1] = ModelManager.instance.getDefaultTexture(owner.getClass());
 		textureModel = new ModelMultiBase[3];
 	}
+
+    /**
+     * 表示制御に使うフラグ群<br>
+     * int型32bitで保存。
+     */
+    public int selectValue;
+
+
+    public int data_Color = 19;
+    public int data_Texture = 20;
+    public int data_Value = 21;
+
+    //	@Override
+    public void setTexturePackName(TextureBox[] pTextureBox) {
+        // Client
+        System.arraycopy(pTextureBox, 0, textureBox, 0, pTextureBox.length);
+        setSize();
+    }
 
 	/**
 	 * テクスチャリソースを現在値に合わせて設定する。
@@ -307,37 +262,72 @@ public class ModelConfigCompound  {
 		}
 	}
 
-	public void setSize() {
+    public void setSize() {
 
-		if(textureBox!=null && textureBox.length>0 && textureBox[0]!=null)
-		{
-			// サイズの変更
-	//		owner.setSize(textureBox[0].getWidth(entityCaps), textureBox[0].getHeight(entityCaps));
-			if(owner instanceof EntityLittleMaid)
-			{
-				((EntityLittleMaid)owner).setSize2(textureBox[0].getWidth(entityCaps), textureBox[0].getHeight(entityCaps));
-			}
-			else if(owner instanceof EntityLittleMaidForTexSelect)
-			{
-				((EntityLittleMaidForTexSelect)owner).setSize(textureBox[0].getWidth(entityCaps), textureBox[0].getHeight(entityCaps));
-			}
+        if(textureBox!=null && textureBox.length>0 && textureBox[0]!=null) {
+            // サイズの変更
+            //		owner.setSize(textureBox[0].getWidth(entityCaps), textureBox[0].getHeight(entityCaps));
+            if(owner instanceof EntityLittleMaid) {
+                ((EntityLittleMaid)owner).setSize2(textureBox[0].getWidth(entityCaps), textureBox[0].getHeight(entityCaps));
+            }
+            else if(owner instanceof EntityLittleMaidForTexSelect) {
+                ((EntityLittleMaidForTexSelect)owner).setSize(textureBox[0].getWidth(entityCaps), textureBox[0].getHeight(entityCaps));
+            }
 
-			if (owner instanceof EntityAgeable) {
-				// EntityAgeableはこれをしないと大きさ変更しないようになってる、くそう。
-				((EntityAgeable)owner).setScaleForAge(owner.isChild());
-			}
-		}
-	}
+            if (owner instanceof EntityAgeable) {
+                // EntityAgeableはこれをしないと大きさ変更しないようになってる、くそう。
+                ((EntityAgeable)owner).setScaleForAge(owner.isChild());
+            }
+        }
+    }
 
+    /**
+     * 使用されるテクスチャリソースのコンテナ
+     */
+    public static class TextureCompound {
+        private ResourceLocation[][] textures;
 
-//	@Override
-	public void setTexturePackName(TextureBox[] pTextureBox) {
-		// Client
-		for (int li = 0; li < pTextureBox.length; li++) {
-			textureBox[li] = pTextureBox[li];
-		}
-		setSize();
-	}
+        public TextureCompound() {
+            textures = new ResourceLocation[][]{
+                    /*
+                      基本、発光
+                     */
+                    {null, null},
+                    /*
+                      アーマー内：頭、胴、腰、足
+                     */
+                    {null, null, null, null},
+                    /*
+                      アーマー外：頭、胴、腰、足
+                     */
+                    {null, null, null, null},
+                    /*
+                      アーマー内発光：頭、胴、腰、足
+                     */
+                    {null, null, null, null},
+                    /*
+                      アーマー外発光：頭、胴、腰、足
+                     */
+                    {null, null, null, null}
+            };
+        }
+
+        public ResourceLocation getMainTexture(EnumTextureType type) {
+            return textures[0][type.index];
+        }
+
+        public void setMainTexture(EnumTextureType type, ResourceLocation resourceLocation) {
+            textures[0][type.index] = resourceLocation;
+        }
+
+        public ResourceLocation getArmorTexture(EnumTextureType type, EnumArmorRenderParts parts) {
+            return textures[type.index * 2 + parts.layerIndex][parts.textureIndex];
+        }
+
+        public void setArmorTexture(EnumTextureType type, EnumArmorRenderParts parts, ResourceLocation pLocation) {
+            textures[type.index * 2 + parts.layerIndex][parts.textureIndex] = pLocation;
+        }
+    }
 
 //	@Override
 	public boolean setColor(byte pColor) {

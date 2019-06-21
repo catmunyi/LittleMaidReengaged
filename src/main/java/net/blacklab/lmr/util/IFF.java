@@ -11,17 +11,18 @@ import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.entity.passive.EntityTameable;
-//TODO <<<<<<< HEAD
-/*TODO =======
-import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
->>>>>>> v8.0.1.66-unofficial-1.12.2 */
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.FMLInjectionData;
 
 import java.io.*;
 import java.util.*;
+
+//TODO <<<<<<< HEAD
+/*TODO =======
+import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
+>>>>>>> v8.0.1.66-unofficial-1.12.2 */
 
 /**
  * IFFを管理するためのクラス、ほぼマルチ用。
@@ -55,8 +56,7 @@ public class IFF {
 
 		if (!UserIFF.containsKey(pUsername)) {
 			// IFFがないので作成
-			Map<String, Byte> lmap = new HashMap<>();
-			lmap.putAll(DefaultIFF);
+			Map<String, Byte> lmap = new HashMap<>(DefaultIFF);
 			UserIFF.put(pUsername, lmap);
 		}
 		// 既にある
@@ -83,13 +83,13 @@ public class IFF {
 					break;
 				case 1:
 					// 自分の契約者
-					pName = (new StringBuilder()).append(pName).append(":Contract").toString();
+					pName = pName + ":Contract";
 					((EntityLittleMaid) pEntity).setContract(true);
 					liff = IFF.iff_Friendry;
 					break;
 				case 2:
 					// 他人の契約者
-					pName = (new StringBuilder()).append(pName).append(":Others").toString();
+					pName = pName + ":Others";
 					((EntityLittleMaid) pEntity).setContract(true);
 					liff = IFF.iff_Friendry;
 					break;
@@ -101,7 +101,7 @@ public class IFF {
 					break;
 				case 1:
 					// 自分の家畜
-					pName = (new StringBuilder()).append(pName).append(":Tame").toString();
+					pName = pName + ":Tame";
 					if (pEntity instanceof EntityTameable) {
 						((EntityTameable) pEntity).setTamed(true);
 					}
@@ -109,7 +109,7 @@ public class IFF {
 					break;
 				case 2:
 					// 他人の家畜
-					pName = (new StringBuilder()).append(pName).append(":Others").toString();
+					pName = pName + ":Others";
 					if (pEntity instanceof EntityTameable) {
 						((EntityTameable) pEntity).setTamed(true);
 					}
@@ -166,13 +166,11 @@ public class IFF {
 			}
 			Entity lentity = EntityList.createEntityByIDFromName(new ResourceLocation(entityname), world);
 			li = 0;
-			if (entityname.indexOf(":Contract") > -1) {
+			if (entityname.contains(":Contract")) {
 				li = 1;
-			} else
-			if (entityname.indexOf(":Tame") > -1) {
+			} else if (entityname.contains(":Tame")) {
 				li = 1;
-			} else
-			if (entityname.indexOf(":Others") > -1) {
+			} else if (entityname.contains(":Others")) {
 				li = 2;
 			}
 			lt = checkEntityStatic(ls, lentity, li, null);
@@ -201,11 +199,11 @@ public class IFF {
 			if (((EntityLittleMaid) entity).isContract()) {
 				if (((EntityLittleMaid) entity).getMaidMasterUUID().equals(pUsername)) {
 					// 自分の
-					lcname = (new StringBuilder()).append(lename).append(":Contract").toString();
+					lcname = lename + ":Contract";
 					li = 1;
 				} else {
 					// 他人の
-					lcname = (new StringBuilder()).append(lename).append(":Others").toString();
+					lcname = lename + ":Others";
 					li = 2;
 				}
 			}
@@ -213,11 +211,11 @@ public class IFF {
 			UUID loname = OwnableEntityHelper.getOwner((IEntityOwnable)entity);
 			if (loname.equals(pUsername)) {
 				// 自分の
-				lcname = (new StringBuilder()).append(lename).append(":Tame").toString();
+				lcname = lename + ":Tame";
 				li = 1;
 			} else {
 				// 他人の
-				lcname = (new StringBuilder()).append(lename).append(":Others").toString();
+				lcname = lename + ":Others";
 				li = 2;
 			}
 		}
@@ -277,7 +275,7 @@ public class IFF {
 
 			String s;
 			while ((s = br.readLine()) != null) {
-				String t[] = s.split("=");
+				String[] t = s.split("=");
 				if (t.length > 1) {
 					byte i = Byte.valueOf(t[1]);
 					if (i > 2) {

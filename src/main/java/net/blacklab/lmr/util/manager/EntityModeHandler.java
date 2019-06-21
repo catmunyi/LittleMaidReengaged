@@ -1,14 +1,14 @@
 package net.blacklab.lmr.util.manager;
 
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-
 import net.blacklab.lib.classutil.FileClassUtil;
 import net.blacklab.lmr.LittleMaidReengaged;
 import net.blacklab.lmr.entity.littlemaid.EntityLittleMaid;
 import net.blacklab.lmr.entity.littlemaid.mode.EntityModeBase;
+
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EntityModeHandler extends LoaderHandler {
 	
@@ -22,10 +22,7 @@ public class EntityModeHandler extends LoaderHandler {
 	@Override
 	public boolean isHandled(String pName) {
 		// The classes starts with "EntityMode"
-		if (pName.endsWith(".class") && FileClassUtil.getFileName(pName).startsWith("EntityMode")) {
-			return true;
-		}
-		return false;
+        return pName.endsWith(".class") && FileClassUtil.getFileName(pName).startsWith("EntityMode");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -43,9 +40,12 @@ public class EntityModeHandler extends LoaderHandler {
 						(EntityModeBase) tClass.getConstructor(EntityLittleMaid.class).newInstance((EntityLittleMaid)null);
 				tBase.init();
 			}
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+        }
+        catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
-		}
+        }
+        catch (InstantiationException ignored) {
+        }
 	}
 	
 	public List<EntityModeBase> getModeList(EntityLittleMaid pMaid) {
@@ -75,7 +75,8 @@ public class EntityModeHandler extends LoaderHandler {
 			} catch (IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
 				e.printStackTrace();
-			} catch (InstantiationException e) {
+            }
+            catch (InstantiationException ignored) {
 			}
 		}
 		return result;

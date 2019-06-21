@@ -77,7 +77,7 @@ public class EntityAILMAvoidPlayer extends EntityAIBase implements
 		}
 
 		PathPoint pathpoint = avoidPath.getFinalPathPoint();
-		return pathpoint == null ? false : pathpoint.x == (int)vec3d.x && pathpoint.z == (int)vec3d.z;
+        return pathpoint != null && (pathpoint.x == (int) vec3d.x && pathpoint.z == (int) vec3d.z);
 	}
 
 	@Override

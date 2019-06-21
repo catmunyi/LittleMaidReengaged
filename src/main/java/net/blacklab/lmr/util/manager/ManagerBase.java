@@ -1,16 +1,16 @@
 package net.blacklab.lmr.util.manager;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.lang.reflect.Modifier;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
 import net.blacklab.lib.classutil.FileClassUtil;
 import net.blacklab.lmr.LittleMaidReengaged;
 import net.blacklab.lmr.util.DevMode;
 import net.blacklab.lmr.util.FileList;
 import net.minecraftforge.fml.relauncher.FMLInjectionData;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.lang.reflect.Modifier;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public abstract class ManagerBase {
 
@@ -78,7 +78,7 @@ public abstract class ManagerBase {
 		for (File lf : pfile.listFiles()) {
 			if (lf.isFile()) {
 				String lname = lf.getName();
-				if (lname.indexOf(getPreFix()) >= 0 && lname.endsWith(".class")) {
+                if (lname.contains(getPreFix()) && lname.endsWith(".class")) {
 					// 対象クラスファイルなのでロード
 					//ディレクトリはパスを自動で治してくれないので、手動で。
 					loadClass(FileClassUtil.getClassName(
@@ -106,7 +106,7 @@ public abstract class ManagerBase {
 				}
 				if (!zipentry.isDirectory()) {
 					String lname = zipentry.getName();
-					if (lname.indexOf(getPreFix()) >= 0 && lname.endsWith(".class")) {
+                    if (lname.contains(getPreFix()) && lname.endsWith(".class")) {
 						loadClass(zipentry.getName());
 					}
 				}

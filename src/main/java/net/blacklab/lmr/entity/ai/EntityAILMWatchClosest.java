@@ -22,7 +22,9 @@ public class EntityAILMWatchClosest extends EntityAIWatchClosest {
 		// サイレンサー
 		try {
 			return super.shouldContinueExecuting();
-		} catch (NullPointerException exception) {}
+        }
+        catch (NullPointerException ignored) {
+        }
 		return false;
 	}
 

@@ -15,11 +15,7 @@ import net.blacklab.lmr.util.DevMode;
 import net.blacklab.lmr.util.FileList;
 import net.blacklab.lmr.util.IFF;
 import net.blacklab.lmr.util.helper.CommonHelper;
-import net.blacklab.lmr.util.manager.EntityModeHandler;
-import net.blacklab.lmr.util.manager.EntityModeManager;
-import net.blacklab.lmr.util.manager.LoaderSearcher;
-import net.blacklab.lmr.util.manager.ModelManager;
-import net.blacklab.lmr.util.manager.StabilizerManager;
+import net.blacklab.lmr.util.manager.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.SimpleReloadableResourceManager;
 import net.minecraft.entity.EnumCreatureType;
@@ -44,9 +40,10 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.util.Iterator;
 import java.util.Random;
 
 @Mod(
@@ -59,10 +56,10 @@ import java.util.Random;
 public class LittleMaidReengaged {
 
 	public static final String DOMAIN = "lmreengaged";
-	public static final String VERSION = "8.1.6.141";
+	public static final String VERSION = "8.1.6.145";
 	public static final String ACCEPTED_MCVERSION = "[1.12.2]";
-	public static final String DEPENDENCIES = "required-after:forge@[14.23.0.2517,);"
-			+ "required-after:net.blacklab.lib@[6.1.5.8,)";
+	public static final String DEPENDENCIES = "required-after:forge@[14.23.5.2768,);"
+			+ "required-after:net.blacklab.lib@[6.1.7.1,)";
 
 	/*
 	 * public static String[] cfg_comment = {
@@ -114,6 +111,8 @@ public class LittleMaidReengaged {
 	@Instance(DOMAIN)
 	public static LittleMaidReengaged instance;
 
+	//Logger
+	private static Logger logger;
 	// Item
 	public static ItemMaidSpawnEgg spawnEgg;
 	public static ItemTriggerRegisterKey registerKey;
@@ -134,6 +133,15 @@ public class LittleMaidReengaged {
 		return "LittleMaidReengaged";
 	}
 
+	public static void log(Level level, String format, Object... data) {
+		if (logger != null) {
+			logger.log(level, String.format(format, data));
+		}
+		else {
+			throw new IllegalStateException("YOU MUST USE Logger AFTER FMLPreInitialization!");
+		}
+	}
+
 	public static Random randomSoundChance;
 
 	@EventHandler
@@ -142,6 +150,7 @@ public class LittleMaidReengaged {
 		// ClassLoaderを初期化
 
 		// Find classpath dir
+		logger = evt.getModLog();
 		String classpath = System.getProperty("java.class.path");
 		String separator = System.getProperty("path.separator");
 
@@ -217,11 +226,11 @@ public class LittleMaidReengaged {
 				new ResourceLocation(DOMAIN, "spawn_littlemaid_egg"),
 				null,
 				new ItemStack(spawnEgg, 1),
-				"scs", "sbs", " e ", Character.valueOf('s'),
-				Items.SUGAR, Character.valueOf('c'),
+				"scs", "sbs", " e ", 's',
+				Items.SUGAR, 'c',
 				new ItemStack(Items.DYE, 1, 3),
-				Character.valueOf('b'), Items.SLIME_BALL,
-				Character.valueOf('e'), Items.EGG);
+				'b', Items.SLIME_BALL,
+				'e', Items.EGG);
 
 		registerKey = new ItemTriggerRegisterKey();
 		ForgeRegistries.ITEMS.register(registerKey);
@@ -282,11 +291,8 @@ public class LittleMaidReengaged {
 		// MMM_TextureManager.instance.getTextureBox("default_Orign"));
 
 		if (cfg_spawnWeight > 0) {
-			Iterator<Biome> biomeIterator = Biome.REGISTRY.iterator();
-			while(biomeIterator.hasNext()) {
-				Biome biome = biomeIterator.next();
-
-				if(biome != null &&
+			for (Biome biome : Biome.REGISTRY) {
+				if (biome != null &&
 						(
 								(BiomeDictionary.hasType(biome, BiomeDictionary.Type.HOT) ||
 //										BiomeDictionary.hasType(biome, BiomeDictionary.Type.COLD) ||
@@ -301,12 +307,11 @@ public class LittleMaidReengaged {
 										BiomeDictionary.hasType(biome, BiomeDictionary.Type.SANDY) ||
 //										BiomeDictionary.hasType(biome, BiomeDictionary.Type.SNOWY) ||
 										BiomeDictionary.hasType(biome, BiomeDictionary.Type.BEACH))
-								)
 						)
-				{
+				) {
 					EntityRegistry.addSpawn(EntityLittleMaid.class, cfg_spawnWeight, cfg_minGroupSize, cfg_maxGroupSize, EnumCreatureType.CREATURE, biome);
-					System.out.println("Registering spawn in " + biome.toString());
-					Debug("Registering maids to spawn in " + biome.toString());
+					//System.out.println("Registering spawn in " + biome.toString());
+					//Debug("Registering maids to spawn in " + biome.toString());
 				}
 			}
 		}

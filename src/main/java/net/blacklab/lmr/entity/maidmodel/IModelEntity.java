@@ -10,7 +10,7 @@ public interface IModelEntity {
 	/**
 	 * Client用。
 	 * TextureManagerがクライアント側のEntityへテクスチャ変更の通知を行う。
-	 * @param pPackName
+     * @param pTextureBox
 	 * 設定されるテクスチャパックの名称（TextureBoxClient）
 	 */
 	void setTexturePackName(TextureBox[] pTextureBox);

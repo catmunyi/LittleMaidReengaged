@@ -1,32 +1,9 @@
 package net.blacklab.lmr.util.manager;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Modifier;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Random;
-import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
 import net.blacklab.lib.classutil.FileClassUtil;
 import net.blacklab.lmr.LittleMaidReengaged;
 import net.blacklab.lmr.client.resource.OldZipTexturesWrapper;
-import net.blacklab.lmr.entity.maidmodel.IModelEntity;
-import net.blacklab.lmr.entity.maidmodel.ModelMultiBase;
-import net.blacklab.lmr.entity.maidmodel.TextureBox;
-import net.blacklab.lmr.entity.maidmodel.TextureBoxBase;
-import net.blacklab.lmr.entity.maidmodel.TextureBoxServer;
+import net.blacklab.lmr.entity.maidmodel.*;
 import net.blacklab.lmr.util.DevMode;
 import net.blacklab.lmr.util.FileList;
 import net.blacklab.lmr.util.helper.CommonHelper;
@@ -34,6 +11,19 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class ModelManager {
 
@@ -62,45 +52,42 @@ public class ModelManager {
 	/**
 	 * 旧タイプのファイル名
 	 */
-	protected static String defNames[] = {
-		"mob_littlemaid0.png", "mob_littlemaid1.png",
-		"mob_littlemaid2.png", "mob_littlemaid3.png",
-		"mob_littlemaid4.png", "mob_littlemaid5.png",
-		"mob_littlemaid6.png", "mob_littlemaid7.png",
-		"mob_littlemaid8.png", "mob_littlemaid9.png",
-		"mob_littlemaida.png", "mob_littlemaidb.png",
-		"mob_littlemaidc.png", "mob_littlemaidd.png",
-		"mob_littlemaide.png", "mob_littlemaidf.png",
-		"mob_littlemaidw.png",
-		"mob_littlemaid_a00.png", "mob_littlemaid_a01.png"
+    protected static String[] defNames = {
+            "mob_littlemaid0.png", "mob_littlemaid1.png",
+            "mob_littlemaid2.png", "mob_littlemaid3.png",
+            "mob_littlemaid4.png", "mob_littlemaid5.png",
+            "mob_littlemaid6.png", "mob_littlemaid7.png",
+            "mob_littlemaid8.png", "mob_littlemaid9.png",
+            "mob_littlemaida.png", "mob_littlemaidb.png",
+            "mob_littlemaidc.png", "mob_littlemaidd.png",
+            "mob_littlemaide.png", "mob_littlemaidf.png",
+            "mob_littlemaidw.png",
+            "mob_littlemaid_a00.png", "mob_littlemaid_a01.png"
 	};
-
-	/**
-	 * ローカルで保持しているモデルのリスト
-	 */
-	protected Map<String, ModelMultiBase[]> modelMap = new TreeMap<String, ModelMultiBase[]>();
-	/**
-	 * ローカルで保持しているテクスチャパック
-	 */
-	private List<TextureBox> textures = new ArrayList<TextureBox>();
 	/**
 	 * サーバー側での管理番号を識別するのに使う、クライアント用。
 	 */
-	public Map<TextureBox, Integer> textureServerIndex = new HashMap<TextureBox, Integer>();
+    public Map<TextureBox, Integer> textureServerIndex = new HashMap<>();
 	/**
 	 * サーバー・クライアント間でテクスチャパックの名称リストの同期を取るのに使う、サーバー用。
 	 */
-	public List<TextureBoxServer> textureServer = new ArrayList<TextureBoxServer>();
+    public List<TextureBoxServer> textureServer = new ArrayList<>();
+    /**
+     * ローカルで保持しているモデルのリスト
+     */
+    protected Map<String, ModelMultiBase[]> modelMap = new TreeMap<>();
 	/**
 	 * Entity毎にデフォルトテクスチャを参照。
 	 * 構築方法はEntityListを参照のこと。
-	 */
-	protected Map<Class, TextureBox> defaultTextures = new HashMap<Class, TextureBox>();
-
-	protected Map<IModelEntity, int[]> stackGetTexturePack = new HashMap<IModelEntity, int[]>();
-	protected Map<IModelEntity, Object[]> stackSetTexturePack = new HashMap<IModelEntity, Object[]>();
-
-	protected List<String[]> searchPrefix = new ArrayList<String[]>();
+     */
+    protected Map<Class, TextureBox> defaultTextures = new HashMap<>();
+    protected Map<IModelEntity, int[]> stackGetTexturePack = new HashMap<>();
+    protected Map<IModelEntity, Object[]> stackSetTexturePack = new HashMap<>();
+    protected List<String[]> searchPrefix = new ArrayList<>();
+    /**
+     * ローカルで保持しているテクスチャパック
+     */
+    private List<TextureBox> textures = new ArrayList<>();
 
 	public static final String[] searchFileNamePrefix = new String[]{"littleMaidMob","mmmlibx","ModelMulti","LittleMaidMob"};
 
@@ -291,11 +278,11 @@ public class ModelManager {
 		lbox.addTexture(0x0c, "/assets/minecraft/textures/entity/steve.png");
 		if (armorFilenamePrefix != null && armorFilenamePrefix.length > 0) {
 			for (String ls : armorFilenamePrefix) {
-				Map<Integer, ResourceLocation> lmap = new HashMap<Integer, ResourceLocation>();
+                Map<Integer, ResourceLocation> lmap = new HashMap<>();
 				lmap.put(tx_armor1, new ResourceLocation(
-						(new StringBuilder()).append("textures/models/armor/").append(ls).append("_layer_2.png").toString()));
+                        "textures/models/armor/" + ls + "_layer_2.png"));
 				lmap.put(tx_armor2, new ResourceLocation(
-						(new StringBuilder()).append("textures/models/armor/").append(ls).append("_layer_1.png").toString()));
+                        "textures/models/armor/" + ls + "_layer_1.png"));
 				lbox.armors.put(ls, lmap);
 			}
 		}
@@ -430,8 +417,8 @@ public class ModelManager {
 				if (!(ModelMultiBase.class).isAssignableFrom(lclass) || Modifier.isAbstract(lclass.getModifiers())) {
 					LittleMaidReengaged.Debug("getModelClass-fail.");
 					return;
-				}
-				ModelMultiBase mlm[] = new ModelMultiBase[3];
+                }
+                ModelMultiBase[] mlm = new ModelMultiBase[3];
 				Constructor<ModelMultiBase> cm = lclass.getConstructor(float.class);
 				mlm[0] = cm.newInstance(0.0F);
 				float[] lsize = mlm[0].getArmorModelsSize();
@@ -454,7 +441,7 @@ public class ModelManager {
 	protected boolean addTextureName(String fname, String[] pSearch) {
 		// パッケージにテクスチャを登録
 		if (!fname.startsWith("/")) {
-			fname = (new StringBuilder()).append("/").append(fname).toString();
+            fname = "/" + fname;
 		}
 
 //		LittleMaidReengaged.Debug("MMM_TextureManager.addTextureName : %s # %s # %s # %s", fname, pSearch[0], pSearch[1], pSearch[2]);
@@ -598,9 +585,9 @@ public class ModelManager {
 			}
 			if (ltb == pNowBox) {
 				f = true;
-			}
-		}
-		return lreturn == null ? null : lreturn;
+            }
+        }
+        return lreturn;
 	}
 
 	public TextureBox getPrevPackege(TextureBox pNowBox, int pColor) {
@@ -614,9 +601,9 @@ public class ModelManager {
 			}
 			if (ltb.hasColor(pColor)) {
 				lreturn = ltb;
-			}
-		}
-		return lreturn == null ? null : lreturn;
+            }
+        }
+        return lreturn;
 	}
 
 	/**
@@ -671,7 +658,7 @@ public class ModelManager {
 			return null;
 		}
 		// 野生色があるものをリストアップ
-		List<TextureBoxServer> llist = new ArrayList<TextureBoxServer>();
+        List<TextureBoxServer> llist = new ArrayList<>();
 		for (TextureBoxServer lbox : textureServer) {
 			if (lbox.getWildColorBits() > 0) {
 				llist.add(lbox);

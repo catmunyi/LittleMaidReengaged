@@ -5,7 +5,6 @@ import net.blacklab.lmr.util.helper.MaidHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.pathfinding.Path;
-import net.minecraft.pathfinding.PathNavigate;
 
 public class EntityAILMFollowOwner extends EntityAIBase implements IEntityAILM {
 

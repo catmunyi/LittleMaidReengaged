@@ -71,16 +71,15 @@ public class EntityMode_Pharmacist extends EntityModeBlockBase {
 
 	@Override
 	public boolean setMode(String pMode) {
-		switch (pMode) {
-		case mmode_Pharmacist :
-			owner.setBloodsuck(false);
+        if (mmode_Pharmacist.equals(pMode)) {
+            owner.setBloodsuck(false);
 //			owner.aiJumpTo.setEnable(false);
-			owner.aiFollow.setEnable(false);
-			owner.aiAttack.setEnable(false);
-			owner.aiShooting.setEnable(false);
-			inventryPos = 0;
-			return true;
-		}
+            owner.aiFollow.setEnable(false);
+            owner.aiAttack.setEnable(false);
+            owner.aiShooting.setEnable(false);
+            inventryPos = 0;
+            return true;
+        }
 
 		return false;
 	}
@@ -95,22 +94,20 @@ public class EntityMode_Pharmacist extends EntityModeBlockBase {
 		ItemStack litemstack;
 
 		// モードに応じた識別判定、速度優先
-		switch (pMode) {
-		case mmode_Pharmacist :
-			litemstack = owner.getCurrentEquippedItem();
-			if (!(inventryPos > 0 && !litemstack.isEmpty() && !PotionUtils.getEffectsFromStack(litemstack).isEmpty())) {
-				for (li = 0; li < owner.maidInventory.getSizeInventory(); li++) {
-					litemstack = owner.maidInventory.getStackInSlot(li);
-					if (!litemstack.isEmpty()) {
-						// 対象は水ポーション
-						if (isTriggerItem(pMode, litemstack)) {
-							return li;
-						}
-					}
-				}
-			}
-			break;
-		}
+        if (mmode_Pharmacist.equals(pMode)) {
+            litemstack = owner.getCurrentEquippedItem();
+            if (!(inventryPos > 0 && !litemstack.isEmpty() && !PotionUtils.getEffectsFromStack(litemstack).isEmpty())) {
+                for (li = 0; li < owner.maidInventory.getSizeInventory(); li++) {
+                    litemstack = owner.maidInventory.getStackInSlot(li);
+                    if (!litemstack.isEmpty()) {
+                        // 対象は水ポーション
+                        if (isTriggerItem(pMode, litemstack)) {
+                            return li;
+                        }
+                    }
+                }
+            }
+        }
 
 		return -1;
 	}

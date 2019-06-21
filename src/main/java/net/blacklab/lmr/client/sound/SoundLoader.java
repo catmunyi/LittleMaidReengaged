@@ -1,13 +1,15 @@
 package net.blacklab.lmr.client.sound;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
+import net.blacklab.lib.classutil.FileClassUtil;
+import net.blacklab.lmr.LittleMaidReengaged;
+import net.blacklab.lmr.entity.maidmodel.TextureBox;
+import net.blacklab.lmr.util.EnumSound;
+import net.blacklab.lmr.util.FileList;
+import net.blacklab.lmr.util.manager.ModelManager;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.logging.log4j.Level;
+
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -16,20 +18,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.apache.logging.log4j.Level;
-
-import net.blacklab.lib.classutil.FileClassUtil;
-import net.blacklab.lmr.LittleMaidReengaged;
-import net.blacklab.lmr.entity.maidmodel.TextureBox;
-import net.blacklab.lmr.util.EnumSound;
-import net.blacklab.lmr.util.FileList;
-import net.blacklab.lmr.util.manager.ModelManager;
-import net.minecraftforge.fml.common.FMLLog;
+import static net.blacklab.lmr.LittleMaidReengaged.log;
 
 /**
  * 新サウンドローディング(from 4.3)
@@ -46,8 +38,8 @@ public class SoundLoader {
 	private List<String> pathStore;
 
 	public SoundLoader() {
-		pathStore = new ArrayList<String>();
-		loadedTPNames = new ArrayList<String>();
+        pathStore = new ArrayList<>();
+        loadedTPNames = new ArrayList<>();
 	}
 
 	public static boolean isFoundSoundpack() {
@@ -152,11 +144,11 @@ public class SoundLoader {
 				}
 			}
 			zipInputStream.close();
-		} catch (ZipException e) {
+        }
+        catch (IOException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
+        }
+        catch (IllegalArgumentException e) {
 			// 文字コード違反
 			System.err.println("Loading sound: Unexpected error occured. Maybe sound archive contains "+ charset.name() +" characters?");
 			e.printStackTrace();
@@ -169,7 +161,7 @@ public class SoundLoader {
 			SoundRegistry.markTexVoiceReserved(texture);
 		}
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-		List<String> readLines = new ArrayList<String>();
+        List<String> readLines = new ArrayList<>();
 		// 読み込みだけ先に行う
 		try {
 			String buf;
@@ -185,10 +177,12 @@ public class SoundLoader {
 		float livingVoiceRate = 0.2f;
 		for (String buf: readLines) {
 			if (buf.startsWith("LivingVoiceRate=")) {
-				String vals[] = buf.split("=");
+                String[] vals = buf.split("=");
 				try{
 					livingVoiceRate = Float.valueOf(vals[1]);
-				} catch(NumberFormatException exception) {}
+                }
+                catch (NumberFormatException ignored) {
+                }
 			}
 		}
 
@@ -218,7 +212,8 @@ public class SoundLoader {
 							col = Integer.valueOf(vlStrings[vlStrings.length - 2]);
 							if (col > 15) col = 15;
 							if (col < -1) col = -1;
-						} catch (NumberFormatException e) {
+                        }
+                        catch (NumberFormatException ignored) {
 						}
 					case 1:
 						String tString = texture!=null ? texture : texname;
@@ -252,7 +247,7 @@ public class SoundLoader {
 		}
 		if (!jsonDir.exists()) {
 			if (!jsonDir.mkdir()) {
-				FMLLog.log(Level.ERROR, "[LittleMaidReengaged]Making LittleMaidReengaged directory failed.");
+                log(Level.ERROR, "Making LittleMaidReengaged directory failed.");
 				found = false;
 				return;
 			}
@@ -261,13 +256,13 @@ public class SoundLoader {
 		// JSON書き込み
 		File jsonFile = new File(jsonDir, "sounds.json");
 		if (jsonFile.isDirectory()) {
-			FMLLog.log(Level.ERROR, "[LittleMaidReengaged]There is sounds.json folder?");
+            log(Level.ERROR, "There is sounds.json folder?");
 			found = false;
 			return;
 		}
 		try {
 			// 出力行を生成
-			List<CharSequence> output = new ArrayList<CharSequence>();
+            List<CharSequence> output = new ArrayList<>();
 
 			// トップブロック
 			output.add("{");

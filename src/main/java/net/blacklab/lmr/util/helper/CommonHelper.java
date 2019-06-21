@@ -1,21 +1,13 @@
 package net.blacklab.lmr.util.helper;
 
-import java.util.List;
-import java.util.UUID;
-
 import com.mojang.authlib.GameProfile;
-
 import net.blacklab.lmr.LittleMaidReengaged;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -32,6 +24,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.List;
+import java.util.UUID;
+
 public class CommonHelper {
 
 	public static final boolean isClient;
@@ -41,9 +36,8 @@ public class CommonHelper {
 		Minecraft lm = null;
 		try {
 			lm =  Minecraft.getMinecraft();// ModLoader.getMinecraftInstance();
-		} catch (Exception e) {
-//			e.printStackTrace();
-		} catch (Error e) {
+        }
+        catch (Exception | Error e) {
 //			e.printStackTrace();
 		}
 		mc = lm;
@@ -175,34 +169,35 @@ public class CommonHelper {
 					pEntity.posX, pEntity.posY + pEntity.getEyeHeight(), pEntity.posZ);
 	//		Vec3 lvpos = pEntity.getPosition(pDelta).addVector(0D, pEntity.getEyeHeight(), 0D);
 			Vec3d lvlook = pEntity.getLook(pDelta);
-			Vec3d lvview = lvpos.addVector(lvlook.x * pRange, lvlook.y * pRange, lvlook.z * pRange);
+            Vec3d lvview = lvpos.add(lvlook.x * pRange, lvlook.y * pRange, lvlook.z * pRange);
 			Entity ltarget = null;
 			List llist = pEntity.world.getEntitiesWithinAABBExcludingEntity(pEntity, pEntity.getEntityBoundingBox().expand(lvlook.x * pRange, lvlook.y * pRange, lvlook.z * pRange).grow(pExpand, pExpand, pExpand));
 			double ltdistance = pRange * pRange;
 
-			for (int var13 = 0; var13 < llist.size(); ++var13) {
-				Entity lentity = (Entity)llist.get(var13);
+            for (Object o : llist) {
+                Entity lentity = (Entity) o;
 
-				if (lentity.canBeCollidedWith()) {
-					float lexpand = lentity.getCollisionBorderSize() + 0.3F;
-					AxisAlignedBB laabb = lentity.getEntityBoundingBox().grow(lexpand, lexpand, lexpand);
-					RayTraceResult lmop = laabb.calculateIntercept(lvpos, lvview);
+                if (lentity.canBeCollidedWith()) {
+                    float lexpand = lentity.getCollisionBorderSize() + 0.3F;
+                    AxisAlignedBB laabb = lentity.getEntityBoundingBox().grow(lexpand, lexpand, lexpand);
+                    RayTraceResult lmop = laabb.calculateIntercept(lvpos, lvview);
 
-					if (laabb.contains(lvpos)) {
-						if (0.0D < ltdistance || ltdistance == 0.0D) {
-							ltarget = lentity;
-							ltdistance = 0.0D;
-						}
-					} else if (lmop != null) {
-						double ldis = lvpos.squareDistanceTo(lmop.hitVec);
+                    if (laabb.contains(lvpos)) {
+                        if (0.0D < ltdistance || ltdistance == 0.0D) {
+                            ltarget = lentity;
+                            ltdistance = 0.0D;
+                        }
+                    }
+                    else if (lmop != null) {
+                        double ldis = lvpos.squareDistanceTo(lmop.hitVec);
 
-						if (ldis < ltdistance || ltdistance == 0.0D) {
-							ltarget = lentity;
-							ltdistance = ldis;
-						}
-					}
-				}
-			}
+                        if (ldis < ltdistance || ltdistance == 0.0D) {
+                            ltarget = lentity;
+                            ltdistance = ldis;
+                        }
+                    }
+                }
+            }
 			return ltarget;
 		}
 

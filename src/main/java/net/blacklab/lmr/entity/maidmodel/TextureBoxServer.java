@@ -16,8 +16,7 @@ public class TextureBoxServer extends TextureBoxBase {
 		contractColor	= pBox.getContractColorBits();
 		wildColor		= pBox.getWildColorBits();
 		textureName		= pBox.textureName;
-		isUpdateSize = (pBox.models != null && pBox.models[0] != null) ?
-				ModelCapsHelper.getCapsValueBoolean(pBox.models[0], IModelCaps.caps_isUpdateSize) : false;
+        isUpdateSize = (pBox.models != null && pBox.models[0] != null) && ModelCapsHelper.getCapsValueBoolean(pBox.models[0], IModelCaps.caps_isUpdateSize);
 /*
 		if (pBox.models != null) {
 			modelHeight			= pBox.models[0].getHeight(null);

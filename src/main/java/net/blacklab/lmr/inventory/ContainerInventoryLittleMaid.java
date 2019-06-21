@@ -131,7 +131,7 @@ public class ContainerInventoryLittleMaid extends Container {
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int pIndex) {
 		ItemStack litemstack = ItemStack.EMPTY;
-		Slot slot = (Slot)inventorySlots.get(pIndex);
+        Slot slot = inventorySlots.get(pIndex);
 		if (slot != null && slot.getHasStack()) {
 			ItemStack itemstack1 = slot.getStack();
 

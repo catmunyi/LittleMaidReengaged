@@ -1,10 +1,10 @@
 package net.blacklab.lmr.entity.maidmodel;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * マルチモデル用の基本クラス、これを継承していればマルチモデルとして使用できる。
@@ -13,7 +13,7 @@ import net.minecraftforge.fml.relauncher.Side;
  */
 public abstract class ModelMultiBase extends ModelBase implements IModelCaps {
 
-	public float heldItem[] = new float[] {0.0F, 0.0F};
+    public float[] heldItem = new float[]{0.0F, 0.0F};
 	public boolean aimedBow;
 	public boolean isSneak;
 	public boolean isWait;
@@ -21,8 +21,8 @@ public abstract class ModelMultiBase extends ModelBase implements IModelCaps {
 	public ModelRenderer mainFrame;
 	public ModelRenderer HeadMount;
 	public ModelRenderer HeadTop;
-	public ModelRenderer Arms[];
-	public ModelRenderer HardPoint[];
+    public ModelRenderer[] Arms;
+    public ModelRenderer[] HardPoint;
 	
 	public float entityIdFactor;
 	public int entityTicksExisted;
@@ -159,7 +159,9 @@ public abstract class ModelMultiBase extends ModelBase implements IModelCaps {
 	/**
 	 * 表示すべきすべての部品
 	 */
-	public void showAllParts(){};
+    public void showAllParts() {
+    }
+
 	/**
 	 * 表示すべきすべての部品
 	 */

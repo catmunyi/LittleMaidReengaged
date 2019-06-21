@@ -8,19 +8,18 @@ import net.minecraft.client.resources.data.MetadataSerializer;
 import net.minecraft.util.ResourceLocation;
 
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Set;
 
 public class OldZipTexturesWrapper implements IResourcePack {
 
-	public static ArrayList<String> keys = new ArrayList<String>();
+    public static ArrayList<String> keys = new ArrayList<>();
 
 	@Override
-	public InputStream getInputStream(ResourceLocation arg0) throws IOException {
+    public InputStream getInputStream(ResourceLocation arg0) {
 		if(resourceExists(arg0)){
-			String key = arg0.getResourcePath();
+            String key = arg0.getPath();
 			if(key.startsWith("/")) key = key.substring(1);
 			return LittleMaidReengaged.class.getClassLoader().getResourceAsStream(key);
 		}
@@ -28,13 +27,13 @@ public class OldZipTexturesWrapper implements IResourcePack {
 	}
 
 	@Override
-	public BufferedImage getPackImage() throws IOException {
+    public BufferedImage getPackImage() {
 		return null;
 	}
 
 	@Override
 	public IMetadataSection getPackMetadata(MetadataSerializer arg0,
-			String arg1) throws IOException {
+                                            String arg1) {
 		return null;
 	}
 
@@ -50,7 +49,7 @@ public class OldZipTexturesWrapper implements IResourcePack {
 
 	@Override
 	public boolean resourceExists(ResourceLocation arg0) {
-		String key = arg0.getResourcePath();
+        String key = arg0.getPath();
 		if(key.startsWith("/")) key = key.substring(1);
 		return keys.contains(key);
 	}

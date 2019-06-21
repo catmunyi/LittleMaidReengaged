@@ -1,7 +1,5 @@
 package net.blacklab.lmr.entity.littlemaid.mode;
 
-import java.util.List;
-
 import net.blacklab.lmr.LittleMaidReengaged;
 import net.blacklab.lmr.entity.littlemaid.EntityLittleMaid;
 import net.blacklab.lmr.util.EnumSound;
@@ -21,12 +19,21 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
+import java.util.List;
+
 public class EntityMode_Playing extends EntityModeBase {
-	
-	public static enum PlayRole {
-		NOTPLAYING,
-		QUICKSHOOTER,
-		STOCKSHOOTER
+
+    @Override
+    public boolean setMode(String pMode) {
+        if (mmode_Playing.equals(pMode)) {
+            if (!owner.world.isDaytime()) return false;
+            owner.aiAttack.setEnable(false);
+            owner.aiShooting.setEnable(true);
+            owner.setBloodsuck(false);
+            return true;
+        }
+
+        return false;
 	}
 
 	public static final String mmode_Playing	= "Playing";
@@ -321,18 +328,10 @@ public class EntityMode_Playing extends EntityModeBase {
 		return 0F;
 	}
 
-	@Override
-	public boolean setMode(String pMode) {
-		switch (pMode) {
-		case mmode_Playing :
-			if(!owner.world.isDaytime()) return false;
-			owner.aiAttack.setEnable(false);
-			owner.aiShooting.setEnable(true);
-			owner.setBloodsuck(false);
-			return true;
-		}
-
-		return false;
+    public enum PlayRole {
+        NOTPLAYING,
+        QUICKSHOOTER,
+        STOCKSHOOTER
 	}
 
 	@Override

@@ -51,13 +51,13 @@ public class EntityAILMHurtByTarget extends EntityAIHurtByTarget {
 		super.updateTask();
 		String s1 = taskOwner.getRevengeTarget() == null ? "Null" : taskOwner.getRevengeTarget().getClass().toString();
 		String s2 = taskOwner.getAttackTarget() == null ? "Null" : taskOwner.getAttackTarget().getClass().toString();
-		System.out.println(String.format("ID:%d, target:%s, attack:%s", taskOwner.getEntityId(), s1, s2));
+        //System.out.println(String.format("ID:%d, target:%s, attack:%s", taskOwner.getEntityId(), s1, s2));
 
 		// 殴られた仕返し
 		EntityLivingBase leliving = taskOwner.getRevengeTarget();
 		if (leliving != null && leliving != taskOwner.getAttackTarget()) {
 			taskOwner.setAttackTarget(null);
-			System.out.println(String.format("ID:%d, ChangeTarget.", taskOwner.getEntityId()));
+            //System.out.println(String.format("ID:%d, ChangeTarget.", taskOwner.getEntityId()));
 		}
 
 	}
@@ -103,9 +103,7 @@ public class EntityAILMHurtByTarget extends EntityAIHurtByTarget {
 				this.field_75301_b = this.func_75295_a(par1EntityLiving) ? 1 : 2;
 			}
 
-			if (this.field_75301_b == 2) {
-				return false;
-			}
+            return this.field_75301_b != 2;
 		}
 
 		return true;

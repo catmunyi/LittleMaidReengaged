@@ -69,9 +69,9 @@ public class ModelBox extends ModelBoxBase {
 		quadList[5] = new TexturedQuad(new PositionTextureVertex[] {lxyd, lwyd, lwhd, lxhd}, pTexX + pD + pW + pD, pTexY + pD, pTexX + pD + pW + pD + pW, pTexY + pD + pH, pMRenderer.textureWidth, pMRenderer.textureHeight);
 		
 		if (pMRenderer.mirror) {
-			for (int li = 0; li < this.quadList.length; ++li) {
-				this.quadList[li].flipFace();
-			}
+            for (TexturedQuad texturedQuad : this.quadList) {
+                texturedQuad.flipFace();
+            }
 		}
 	}
 

@@ -134,7 +134,7 @@ public class EntityMode_Shearer extends EntityModeBase {
 				owner.getMaidOverDriveTime().setEnable(true);
 			}
 		}
-		if (!owner.getMaidOverDriveTime().isEnable() && pMode == mmode_TNTD) {
+        if (!owner.getMaidOverDriveTime().isEnable() && pMode.equals(mmode_TNTD)) {
 			owner.setMaidMode(mmode_Ripper);
 //    		getNextEquipItem();
 		}
@@ -146,7 +146,7 @@ public class EntityMode_Shearer extends EntityModeBase {
 		if (pMode.equals(mmode_Detonator) && owner.isEntityAlive()) {
 			if (timeSinceIgnited < 0) {
 				if (lastTimeSinceIgnited != timeSinceIgnited) {
-					owner.getDataManager().set(EntityLittleMaid.dataWatch_Free, Integer.valueOf(0));
+                    owner.getDataManager().set(EntityLittleMaid.dataWatch_Free, 0);
 				}
 				else if (owner.getDataManager().get(EntityLittleMaid.dataWatch_Free) == 1) {
 					lastTimeSinceIgnited = timeSinceIgnited = 0;
@@ -177,8 +177,8 @@ public class EntityMode_Shearer extends EntityModeBase {
 
 	@Override
 	public boolean changeMode(EntityPlayer pentityplayer) {
-		ItemStack litemstack = owner.getHandSlotForModeChange();;
-		if (!litemstack.isEmpty()) {
+        ItemStack litemstack = owner.getHandSlotForModeChange();
+        if (!litemstack.isEmpty()) {
 			if (litemstack.getItem() instanceof ItemShears) {
 				owner.setMaidMode(mmode_Ripper);
 				if (pentityplayer != null) {
@@ -278,7 +278,7 @@ public class EntityMode_Shearer extends EntityModeBase {
 			if (pEntity instanceof EntityCreeper) {
 				// なんでPrivateにかえたし
 				try {
-					lis.damageItem((Integer)ObfuscationReflectionHelper.getPrivateValue(EntityCreeper.class,
+                    lis.damageItem(ObfuscationReflectionHelper.getPrivateValue(EntityCreeper.class,
 							(EntityCreeper)pEntity, "field_70833_d", "timeSinceIgnited"), owner);
 //							(EntityCreeper)pEntity, 1), owner.maidAvatar);
 					ObfuscationReflectionHelper.setPrivateValue(EntityCreeper.class, (EntityCreeper)pEntity, 1, "field_70833_d", "timeSinceIgnited");
@@ -378,7 +378,7 @@ public class EntityMode_Shearer extends EntityModeBase {
 		if (pMode.equals(mmode_Detonator) && ItemHelper.isItemExplord(owner.getCurrentEquippedItem())) {
 			if (timeSinceIgnited == -1) {
 				owner.playSound(SoundEvent.REGISTRY.getObject(new ResourceLocation("entity.tnt.primed")), 1.0F, 0.5F);
-				owner.getDataManager().set(EntityLittleMaid.dataWatch_Free, Integer.valueOf(1));
+                owner.getDataManager().set(EntityLittleMaid.dataWatch_Free, 1);
 			}
 //        	if (owner.entityToAttack == null)
 			owner.setMaidWait(true);

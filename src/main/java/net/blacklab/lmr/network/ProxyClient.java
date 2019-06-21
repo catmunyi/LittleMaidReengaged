@@ -226,12 +226,14 @@ public class ProxyClient extends ProxyCommon
 			while(isRunning){
 				try {
 					Thread.sleep(50);
-				} catch (InterruptedException e) {
+                }
+                catch (InterruptedException ignored) {
 				}
 				if(((ProxyClient)LittleMaidReengaged.proxy).soundCount>0){
 					try {
 						Thread.sleep(50);
-					} catch (InterruptedException e) {
+                    }
+                    catch (InterruptedException ignored) {
 					}
 					((ProxyClient)LittleMaidReengaged.proxy).soundCount--;
 				}

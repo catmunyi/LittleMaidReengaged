@@ -1,13 +1,8 @@
 package net.blacklab.lmr.client.renderer.entity;
 
-import java.util.Iterator;
-
-import org.lwjgl.opengl.GL11;
-
 import net.blacklab.lmr.entity.littlemaid.EntityLittleMaid;
 import net.blacklab.lmr.entity.maidmodel.IModelCaps;
 import net.blacklab.lmr.entity.maidmodel.ModelBaseDuo;
-import net.blacklab.lmr.inventory.InventoryLittleMaid;
 import net.blacklab.lmr.util.helper.RendererHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
@@ -23,6 +18,9 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
+
+import java.util.Iterator;
 
 public class RenderLittleMaid extends RenderModelMulti {
 
@@ -96,7 +94,9 @@ public class RenderLittleMaid extends RenderModelMulti {
 						modelFATT.modelInner.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, renderScale, fcaps);
 						modelFATT.modelInner.setLivingAnimations(fcaps, limbSwing, limbSwingAmount, partialTicks);
 						modelFATT.modelInner.render(fcaps, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, renderScale, true);
-					}catch(Exception e){ break INNER; }
+                    }
+                    catch (Exception ignored) {
+                    }
 				} else {
 //					modelFATT.modelInner.render(lmm.maidCaps, par2, par3, lmm.ticksExisted, par5, par6, renderScale, true);
 				}
@@ -146,7 +146,9 @@ public class RenderLittleMaid extends RenderModelMulti {
 						modelFATT.modelOuter.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, renderScale, fcaps);
 						modelFATT.modelOuter.setLivingAnimations(fcaps, limbSwing, limbSwingAmount, partialTicks);
 						modelFATT.modelOuter.render(fcaps, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, renderScale, true);
-					}catch(Exception e){break OUTER;}
+                    }
+                    catch (Exception ignored) {
+                    }
 				}else{
 //					modelFATT.modelOuter.render(lmm.maidCaps, limbSwing, par3, lmm.ticksExisted, par5, par6, renderScale, true);
 				}
@@ -209,10 +211,11 @@ public class RenderLittleMaid extends RenderModelMulti {
 			if(!lmm.isMaidWait()){
 
 				Iterator<ItemStack> heldItemIterator = lmm.getHeldEquipment().iterator();
-				int i = 0, handindexes[] = {lmm.getDominantArm(), lmm.getDominantArm() == 1 ? 0 : 1};
+                int i = 0;
+                int[] handindexes = {lmm.getDominantArm(), lmm.getDominantArm() == 1 ? 0 : 1};
 
-				while (heldItemIterator.hasNext()) {
-					ItemStack itemstack = (ItemStack) heldItemIterator.next();
+                while (heldItemIterator.hasNext()) {
+                    ItemStack itemstack = heldItemIterator.next();
 
 					if (!itemstack.isEmpty())
 					{

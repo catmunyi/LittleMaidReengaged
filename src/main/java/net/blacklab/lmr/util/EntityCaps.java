@@ -1,11 +1,11 @@
 package net.blacklab.lmr.util;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import net.blacklab.lmr.entity.littlemaid.EntityLittleMaid;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -18,7 +18,7 @@ public class EntityCaps extends EntityCapsLiving {
 	private static Map<String, Integer> caps;
 
 	static {
-		caps = new HashMap<String, Integer>();
+        caps = new HashMap<>();
 		caps.putAll(getStaticModelCaps());
 		caps.put("isBloodsuck", caps_isBloodsuck);
 		caps.put("isFreedom", caps_isFreedom);
@@ -189,9 +189,8 @@ public class EntityCaps extends EntityCapsLiving {
 
 	@Override
 	public boolean setCapsValue(int pIndex, Object... pArg) {
-		switch (pIndex) {
-		case caps_PartsVisible:
-			owner.textureData.selectValue = (Integer)pArg[0];
+        if (pIndex == caps_PartsVisible) {
+            owner.textureData.selectValue = (Integer) pArg[0];
 		}
 		return super.setCapsValue(pIndex, pArg);
 	}

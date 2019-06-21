@@ -1,6 +1,5 @@
 package net.blacklab.lmr.util.coremod;
 
-import net.blacklab.lmr.util.helper.CommonHelper;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 
 import java.util.Map;

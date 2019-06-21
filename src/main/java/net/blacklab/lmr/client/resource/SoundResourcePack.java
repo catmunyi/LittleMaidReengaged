@@ -1,23 +1,6 @@
 package net.blacklab.lmr.client.resource;
 
-import java.awt.image.BufferedImage;
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.ZipFile;
-
-import javax.imageio.ImageIO;
-
 import com.google.common.collect.ImmutableSet;
-
 import net.blacklab.lmr.LittleMaidReengaged;
 import net.blacklab.lmr.client.sound.SoundRegistry;
 import net.blacklab.lmr.util.FileList;
@@ -26,6 +9,13 @@ import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.client.resources.data.IMetadataSection;
 import net.minecraft.client.resources.data.MetadataSerializer;
 import net.minecraft.util.ResourceLocation;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * サウンドパック用
@@ -36,8 +26,8 @@ public class SoundResourcePack implements IResourcePack, Closeable {
 	}
 
 	@Override
-	public InputStream getInputStream(ResourceLocation par1ResourceLocation) throws IOException {
-		LittleMaidReengaged.Debug("GET STREAM %s", par1ResourceLocation.getResourcePath());
+    public InputStream getInputStream(ResourceLocation par1ResourceLocation) {
+        LittleMaidReengaged.Debug("GET STREAM %s", par1ResourceLocation.getPath());
 		InputStream inputstream = getResourceStream(par1ResourceLocation);
 //		if (inputstream != null) {
 		return inputstream;
@@ -48,7 +38,7 @@ public class SoundResourcePack implements IResourcePack, Closeable {
 
 	private InputStream getResourceStream(ResourceLocation resource) {
 		InputStream lis = null;
-		if (resource.getResourcePath().endsWith("sounds.json")) {
+        if (resource.getPath().endsWith("sounds.json")) {
 			//return LittleMaidReengaged.class.getClassLoader().getResourceAsStream("LittleMaidReengaged/sounds.json");
 			File jsonDir = new File(FileList.dirMods, "LittleMaidReengaged");
 			if (!jsonDir.exists()) {
@@ -60,11 +50,11 @@ public class SoundResourcePack implements IResourcePack, Closeable {
 			}
 			try {
 				lis = new FileInputStream(jsonFile);
-			} catch (FileNotFoundException e) {
-				;
-			}
-		}
-		if (resource.getResourcePath().endsWith(".ogg")) {
+            }
+            catch (FileNotFoundException ignored) {
+            }
+        }
+        if (resource.getPath().endsWith(".ogg")) {
 			//lis = LittleMaidReengaged.class.getClassLoader().getResourceAsStream(decodePathGetPath(resource));
 			String f = decodePathGetName(resource);
 			if (!SoundRegistry.isSoundNameRegistered(f)) {
@@ -77,27 +67,24 @@ public class SoundResourcePack implements IResourcePack, Closeable {
 
 	@Override
 	public boolean resourceExists(ResourceLocation resource) {
-		LittleMaidReengaged.Debug("RESOURCE CHECK %s", resource.getResourcePath());
-		if (resource.getResourcePath().endsWith("sounds.json")) {
+        LittleMaidReengaged.Debug("RESOURCE CHECK %s", resource.getPath());
+        if (resource.getPath().endsWith("sounds.json")) {
 			File jsonDir = new File(FileList.dirMods, "LittleMaidReengaged");
 			if (!jsonDir.exists()) {
 				return false;
 			}
 			File jsonFile = new File(jsonDir, "sounds.json");
-			if (!jsonFile.exists()) {
-				return false;
-			}
-			return true;
-		}
-		if (resource.getResourcePath().endsWith(".ogg")) {
+            return jsonFile.exists();
+        }
+        if (resource.getPath().endsWith(".ogg")) {
 			String f = decodePathGetName(resource);
-			return SoundRegistry.isSoundNameRegistered(f) ? SoundRegistry.getPathListFromRegisteredName(f)!=null : false;
+            return SoundRegistry.isSoundNameRegistered(f) && SoundRegistry.getPathListFromRegisteredName(f) != null;
 		}
 		return false;
 	}
 
 	private String decodePathSplicePathStr(ResourceLocation rl) {
-		String path = rl.getResourcePath();
+        String path = rl.getPath();
 		Pattern pattern = Pattern.compile("^/*?sounds/(.+)\\.ogg");
 		Matcher matcher = pattern.matcher(path);
 		if (matcher.find()) {
@@ -138,7 +125,7 @@ public class SoundResourcePack implements IResourcePack, Closeable {
 	public BufferedImage getPackImage() {// throws IOException {
 		try {
 			return ImageIO.read(DefaultResourcePack.class.getResourceAsStream("/"
-					+ (new ResourceLocation("pack.png")).getResourcePath()));
+                    + (new ResourceLocation("pack.png")).getPath()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -151,7 +138,7 @@ public class SoundResourcePack implements IResourcePack, Closeable {
 	}
 
 	@Override
-	public void close() throws IOException {
+    public void close() {
 		SoundRegistry.close();
 	}
 }

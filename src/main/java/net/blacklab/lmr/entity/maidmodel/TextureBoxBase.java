@@ -24,7 +24,7 @@ public abstract class TextureBoxBase {
 	}
 
 	protected byte getRandomColor(int pColor, Random pRand) {
-		List<Byte> llist = new ArrayList<Byte>();
+        List<Byte> llist = new ArrayList<>();
 		for (byte li = 0; li < 16; li++) {
 			if ((pColor & 0x01) > 0) {
 				llist.add(li);

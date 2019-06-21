@@ -46,9 +46,9 @@ public class LMRNetwork
 		INSTANCE.sendToAll(new LMRMessage(mode, id, tagCompound));
 	}
 
-	/**
-		 * 渡されたデータの先頭に自分のEntityIDを付与して特定ののクライアントへ送信
-		 *
+	/*
+		  渡されたデータの先頭に自分のEntityIDを付与して特定ののクライアントへ送信
+
 		public static void sendToEClient(EntityPlayer player, LMM_EntityLittleMaid pEntity, byte[] pData) {
 			MMM_Helper.setInt(pData, 1, pEntity.getEntityId());
 			W_Network.sendPacketToPlayer(player, pData);

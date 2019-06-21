@@ -1,6 +1,5 @@
 package net.blacklab.lmr.entity.ai;
 
-import net.blacklab.lib.minecraft.vector.VectorUtil;
 import net.blacklab.lmr.entity.littlemaid.EntityLittleMaid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -38,10 +37,7 @@ public class EntityAILMTeleport extends EntityAIBase implements IEntityAILM {
 		}
 		
 		// If this maid gets too far from her master:
-		if (theMaid.getDistanceSq(theMaid.getMaidMasterEntity()) >= theMaid.getActiveModeClass().getLimitRangeSqOnFollow()) {
-			return true;
-		}
-		return false;
+		return theMaid.getDistanceSq(theMaid.getMaidMasterEntity()) >= theMaid.getActiveModeClass().getLimitRangeSqOnFollow();
 	}
 	
 	@Override
@@ -56,7 +52,7 @@ public class EntityAILMTeleport extends EntityAIBase implements IEntityAILM {
 		EntityPlayer lMaster = theMaid.getMaidMasterEntity();
 		if (lMaster != null) {
 			BlockPos lMasterPos = lMaster.getPosition();
-			System.out.println("MASTER=" + lMasterPos.toString());
+			//System.out.println("MASTER=" + lMasterPos.toString());
 
 			int x, y, z, i = 0;
 			BlockPos[] lCoordinates = new BlockPos[3];

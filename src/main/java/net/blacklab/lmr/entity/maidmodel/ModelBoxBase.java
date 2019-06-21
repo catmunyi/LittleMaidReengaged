@@ -26,9 +26,9 @@ public abstract class ModelBoxBase {
 	}
 
 	public void render(Tessellator par1Tessellator, float par2) {
-		for (int var3 = 0; var3 < quadList.length; ++var3) {
-			quadList[var3].draw(par1Tessellator.getBuffer(), par2);
-		}
+        for (TexturedQuad texturedQuad : quadList) {
+            texturedQuad.draw(par1Tessellator.getBuffer(), par2);
+        }
 	}
 
 	public ModelBoxBase setBoxName(String pName) {

@@ -1,14 +1,6 @@
 package net.blacklab.lmr.client.gui;
 
 
-import java.io.IOException;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
 import net.blacklab.lmr.LittleMaidReengaged;
 import net.blacklab.lmr.entity.littlemaid.EntityLittleMaid;
 import net.blacklab.lmr.network.LMRMessage;
@@ -21,7 +13,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSlot;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.player.EntityPlayer;
@@ -30,23 +21,26 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.EntityEntry;
-import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+
+import java.io.IOException;
+import java.lang.reflect.Modifier;
+import java.util.*;
 
 public class GuiIFF extends GuiScreen {
 
-	public static final String IFFString[] = {
-		"ENEMY",
-		"NEUTRAL",
-		"FRIENDLY"
-	};
+    public static final String[] IFFString = {
+            "ENEMY",
+            "NEUTRAL",
+            "FRIENDLY"
+    };
 
 	protected EntityLittleMaid target;
 	protected EntityPlayer thePlayer;
 
 	public Map<String, Entity> entityMap;
-	public static Map<Class, String> entityMapClass = new HashMap<Class, String>();
-	public static List<String> exclusionList = new ArrayList<String>();
+    public static Map<Class, String> entityMapClass = new HashMap<>();
+    public static List<String> exclusionList = new ArrayList<>();
 
 	protected String screenTitle;
 	protected GuiSlot selectPanel;

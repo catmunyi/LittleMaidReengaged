@@ -1,9 +1,5 @@
 package net.blacklab.lmr.util;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import net.blacklab.lmr.entity.maidmodel.IModelCaps;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
@@ -14,13 +10,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class EntityCapsLiving implements IModelCaps {
 
 	protected EntityLivingBase owner;
 	private static Map<String, Integer> caps;
 
 	static {
-		caps = new HashMap<String, Integer>();
+        caps = new HashMap<>();
 		caps.put("Entity", caps_Entity);
 		caps.put("health", caps_health);
 		caps.put("healthFloat", caps_healthFloat);

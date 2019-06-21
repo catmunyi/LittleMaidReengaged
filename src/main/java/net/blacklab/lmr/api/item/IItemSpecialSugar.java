@@ -15,7 +15,7 @@ public interface IItemSpecialSugar {
 	 * @param stack メイドが食べるアイテムのItemStack。食べられる前のサイズなので注意
 	 * @return falseを返すとデフォルトの砂糖によるハート0.5分回復をしなくなる。デフォルトでの被ダメージ後の回復もされなくなるので注意。
 	 */
-	public boolean onSugarEaten(EntityLittleMaid maid, EntityLittleMaid.EnumConsumeSugar purpose, ItemStack stack);
+    boolean onSugarEaten(EntityLittleMaid maid, EntityLittleMaid.EnumConsumeSugar purpose, ItemStack stack);
 	
 	/** 実装アイテムを直接与えた時の処理。
 	 * @param world
@@ -24,6 +24,6 @@ public interface IItemSpecialSugar {
 	 * @param maid 砂糖を与えられたメイド
 	 * @return falseを返すとモード切替をしなくなる。
 	 */
-	public boolean onSugarInteract(World world, EntityPlayer player, ItemStack stack, EntityLittleMaid maid);
+    boolean onSugarInteract(World world, EntityPlayer player, ItemStack stack, EntityLittleMaid maid);
 	
 }

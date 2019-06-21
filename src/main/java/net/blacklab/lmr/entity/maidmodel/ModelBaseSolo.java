@@ -1,19 +1,17 @@
 package net.blacklab.lmr.entity.maidmodel;
 
-import java.util.Map;
-
-import org.lwjgl.opengl.GL11;
-
 import net.blacklab.lmr.LittleMaidReengaged;
 import net.blacklab.lmr.util.helper.RendererHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.TextureOffset;
 import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderEntity;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
+
+import java.util.Map;
 
 public class ModelBaseSolo extends ModelBaseNihil implements IModelBaseMMM {
 

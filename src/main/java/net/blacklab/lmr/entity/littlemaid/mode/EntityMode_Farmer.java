@@ -1,8 +1,5 @@
 package net.blacklab.lmr.entity.littlemaid.mode;
 
-import java.util.HashMap;
-import java.util.Iterator;
-
 import net.blacklab.lib.minecraft.vector.VectorUtil;
 import net.blacklab.lmr.achievements.AchievementsLMRE;
 import net.blacklab.lmr.entity.littlemaid.EntityLittleMaid;
@@ -25,6 +22,9 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.IPlantable;
+
+import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * メイド農家。付近の農地に移動し耕作可能であれば耕す。
@@ -85,13 +85,12 @@ public class EntityMode_Farmer extends EntityModeBase {
 	@Override
 	public boolean setMode(String pMode) {
 		// TODO 自動生成されたメソッド・スタブ
-		switch (pMode) {
-		case mmode_Farmer :
-			owner.setBloodsuck(false);
-			owner.aiAttack.setEnable(false);
-			owner.aiShooting.setEnable(false);
-			return true;
-		}
+        if (mmode_Farmer.equals(pMode)) {
+            owner.setBloodsuck(false);
+            owner.aiAttack.setEnable(false);
+            owner.aiShooting.setEnable(false);
+            return true;
+        }
 
 		return false;
 	}
@@ -106,28 +105,25 @@ public class EntityMode_Farmer extends EntityModeBase {
 		ItemStack litemstack;
 
 		// モードに応じた識別判定、速度優先
-		switch (pMode) {
-		case mmode_Farmer :
-			for (li = 0; li < owner.maidInventory.getSizeInventory() - 1; li++) {
-				litemstack = owner.maidInventory.getStackInSlot(li);
-				if (litemstack.isEmpty()) continue;
+        if (mmode_Farmer.equals(pMode)) {
+            for (li = 0; li < owner.maidInventory.getSizeInventory() - 1; li++) {
+                litemstack = owner.maidInventory.getStackInSlot(li);
+                if (litemstack.isEmpty()) continue;
 
-				// クワ
-				if (owner.getModeTrigger().isTriggerable(mtrigger_Hoe, litemstack, ItemHoe.class)) {
-					return li;
-				}
-			}
-			break;
-		}
+                // クワ
+                if (owner.getModeTrigger().isTriggerable(mtrigger_Hoe, litemstack, ItemHoe.class)) {
+                    return li;
+                }
+            }
+        }
 
 		return -1;
 	}
 
 	@Override
 	public boolean checkItemStack(ItemStack pItemStack) {
-		if(pItemStack.isEmpty()) return false;
-		return true;//UtilModeFarmer.isHoe(owner, pItemStack)||UtilModeFarmer.isSeed(pItemStack.getItem())||UtilModeFarmer.isCrop(pItemStack.getItem());
-	}
+        return !pItemStack.isEmpty();//UtilModeFarmer.isHoe(owner, pItemStack)||UtilModeFarmer.isSeed(pItemStack.getItem())||UtilModeFarmer.isCrop(pItemStack.getItem());
+    }
 
 	@Override
 	public boolean isSearchBlock() {
@@ -158,13 +154,10 @@ public class EntityMode_Farmer extends EntityModeBase {
 				}
 			}
 */
-			if(getHadSeedIndex()==-1)
-				return false;
-			return true;
-		}
-		if(isCropGrown(px,py,pz)) return true;
-		return false;
-	}
+            return getHadSeedIndex() != -1;
+        }
+        return isCropGrown(px, py, pz);
+    }
 
 	@Override
 	public boolean executeBlock(String pMode, int px, int py, int pz) {

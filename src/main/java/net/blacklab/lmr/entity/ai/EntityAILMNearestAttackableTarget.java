@@ -1,20 +1,16 @@
 package net.blacklab.lmr.entity.ai;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import net.blacklab.lmr.entity.littlemaid.EntityLittleMaid;
 import net.blacklab.lmr.entity.littlemaid.mode.EntityModeBase;
-import net.blacklab.lmr.entity.littlemaid.mode.EntityMode_Fencer;
 import net.blacklab.lmr.util.helper.MaidHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.math.MathHelper;
+
+import java.util.List;
 
 public class EntityAILMNearestAttackableTarget<T extends EntityLivingBase> extends EntityAINearestAttackableTarget<T> {
 
@@ -71,18 +67,16 @@ public class EntityAILMNearestAttackableTarget<T extends EntityLivingBase> exten
 			// 自分中心にソート
 			theNearestAttackableTargetSorter.setEntity(theMaid);
 		}
-		Collections.sort(llist, theNearestAttackableTargetSorter);
-		Iterator<T> nearEntityCollectionsIterator = llist.iterator();
-		while (nearEntityCollectionsIterator.hasNext()) {
-			T lentity = (T)nearEntityCollectionsIterator.next();
-			if (lentity == theMaid.getAttackTarget()) {
-				return true;
-			}
-			if (lentity.isEntityAlive() && this.isSuitableTargetLM(lentity, false)) {
-				this.targetEntity = lentity;
-				return true;
-			}
-		}
+        llist.sort(theNearestAttackableTargetSorter);
+        for (T lentity : llist) {
+            if (lentity == theMaid.getAttackTarget()) {
+                return true;
+            }
+            if (lentity.isEntityAlive() && this.isSuitableTargetLM(lentity, false)) {
+                this.targetEntity = lentity;
+                return true;
+            }
+        }
 
 		return false;
 	}
@@ -90,7 +84,7 @@ public class EntityAILMNearestAttackableTarget<T extends EntityLivingBase> exten
 	@Override
 	public void startExecuting() {
 		super.startExecuting();
-		theMaid.setAttackTarget((EntityLivingBase)targetEntity);
+        theMaid.setAttackTarget(targetEntity);
 
 		fcanAttack = 0;
 		fretryCounter = 0;
@@ -157,9 +151,7 @@ public class EntityAILMNearestAttackableTarget<T extends EntityLivingBase> exten
 				this.fcanAttack = this.func_75295_a(pTarget) ? 1 : 2;
 			}
 
-			if (this.fcanAttack == 2) {
-				return false;
-			}
+            return this.fcanAttack != 2;
 		}
 
 		return true;

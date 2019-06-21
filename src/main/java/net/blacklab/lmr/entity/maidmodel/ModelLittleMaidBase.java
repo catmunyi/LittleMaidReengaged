@@ -5,7 +5,6 @@ import org.lwjgl.opengl.GL11;
 /**
  * LMM用に最適化
  */
-@SuppressWarnings("deprecation")
 public abstract class ModelLittleMaidBase extends ModelMultiMMMBase {
 
 	//fields
@@ -322,18 +321,18 @@ public abstract class ModelLittleMaidBase extends ModelMultiMMMBase {
 		// 鎧の表示用
 		boolean f;
 		// 兜
-		f = parts == 3 ? true : false;
+        f = parts == 3;
 		bipedHead.setVisible(f);
 		// 鎧
-		f = parts == 2 ? true : false;
+        f = parts == 2;
 		bipedBody.setVisible(f);
 		bipedRightArm.setVisible(f);
 		bipedLeftArm.setVisible(f);
 		// 脚甲
-		f = parts == 1 ? true : false;
+        f = parts == 1;
 		Skirt.setVisible(f);
 		// 臑当
-		f = parts == 0 ? true : false;
+        f = parts == 0;
 		bipedRightLeg.setVisible(f);
 		bipedLeftLeg.setVisible(f);
 

@@ -232,7 +232,7 @@ public class ModelLittleMaid_RX0 extends ModelLittleMaidBase {
 		scaleFactor = 0.80F;
 		if ((!ModelCapsHelper.getCapsValueBoolean(pEntityCaps, caps_isOverdriveDelay) &&
 				!ModelCapsHelper.getCapsValueBoolean(pEntityCaps, caps_isBloodsuck) &&
-				((lvisible & 0x0001) == 0)) && true) {
+                ((lvisible & 0x0001) == 0))) {
 			// bansheeMode
 			bipedBust.setRotationPoint(0F, 2.5F, -2F);
 			bipedBust.setRotateAngleDegX(-0F);
@@ -411,7 +411,7 @@ public class ModelLittleMaid_RX0 extends ModelLittleMaidBase {
 		int lvisible = ModelCapsHelper.getCapsValueInt(pEntityCaps, caps_PartsVisible);
 		boolean lf = (!ModelCapsHelper.getCapsValueBoolean(pEntityCaps, caps_isOverdriveDelay) &&
 				!ModelCapsHelper.getCapsValueBoolean(pEntityCaps, caps_isBloodsuck) &&
-				((lvisible & 0x0001) == 0)) && true;
+                ((lvisible & 0x0001) == 0));
 		return lf ? 1.152F : 1.58F;
 	}
 
@@ -426,19 +426,19 @@ public class ModelLittleMaid_RX0 extends ModelLittleMaidBase {
 		// 鎧の表示用
 		boolean f;
 		// 允E
-		f = parts == 3 ? true : false;
+        f = parts == 3;
 		bipedHead.setVisible(f);
 		// 鎧
-		f = parts == 2 ? true : false;
+        f = parts == 2;
 		bipedBody.setVisible(f);
 		bipedWaist.setVisible(f);
 		bipedRightArm.setVisible(f);
 		bipedLeftArm.setVisible(f);
 		// 脚甲
-		f = parts == 1 ? true : false;
+        f = parts == 1;
 		Skirt.setVisible(f);
 		// 臑彁E
-		f = parts == 0 ? true : false;
+        f = parts == 0;
 		bipedRightLeg.setVisible(f);
 		bipedLeftLeg.setVisible(f);
 		

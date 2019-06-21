@@ -1,13 +1,13 @@
 package net.blacklab.lmr.entity.maidmodel;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
-
 import net.blacklab.lmr.util.manager.ModelManager;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class TextureBox extends TextureBoxBase {
 
@@ -43,8 +43,8 @@ public class TextureBox extends TextureBoxBase {
 
 
 	public TextureBox() {
-		textures = new HashMap<Integer, ResourceLocation>();
-		armors = new TreeMap<String, Map<Integer, ResourceLocation>>();
+        textures = new HashMap<>();
+        armors = new TreeMap<>();
 		modelHeight = modelWidth = modelYOffset = modelMountedYOffset = 0.0F;
 		contractColor = -1;
 		wildColor = -1;
@@ -68,8 +68,8 @@ public class TextureBox extends TextureBoxBase {
 	public void setModels(String pModelName, ModelMultiBase[] pModels, ModelMultiBase[] pDefModels) {
 		modelName = pModelName;
 		models = pModels == null ? pDefModels : pModels;
-		textureName = (new StringBuilder()).append(packegeName).append("_").append(modelName).toString();
-		isUpdateSize = (models != null && models[0] != null) ? ModelCapsHelper.getCapsValueBoolean(models[0], IModelCaps.caps_isUpdateSize) : false;
+        textureName = packegeName + "_" + modelName;
+        isUpdateSize = (models != null && models[0] != null) && ModelCapsHelper.getCapsValueBoolean(models[0], IModelCaps.caps_isUpdateSize);
 	}
 
 	/**
@@ -229,7 +229,7 @@ public class TextureBox extends TextureBoxBase {
 			if (armors.containsKey(ls)) {
 				lmap = armors.get(ls);
 			} else {
-				lmap = new HashMap<Integer, ResourceLocation>();
+                lmap = new HashMap<>();
 				armors.put(ls, lmap);
 			}
 			lmap.put(pIndex, new ResourceLocation(pLocation));

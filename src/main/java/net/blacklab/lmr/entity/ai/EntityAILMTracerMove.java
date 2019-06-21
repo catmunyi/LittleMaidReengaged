@@ -156,7 +156,7 @@ public class EntityAILMTracerMove extends EntityAIBase implements IEntityAILM {
 	 */
 	protected boolean checkBlock(int px, int py, int pz) {
 		IBlockState iState = world.getBlockState(new BlockPos(px, py + 1, pz));
-		return world.isBlockPowered(new BlockPos(px,py,pz)) && (iState.getBlock().getMaterial(iState) == Material.AIR);
+        return world.isBlockPowered(new BlockPos(px, py, pz)) && (iState.getMaterial() == Material.AIR);
 	}
 
 	/**

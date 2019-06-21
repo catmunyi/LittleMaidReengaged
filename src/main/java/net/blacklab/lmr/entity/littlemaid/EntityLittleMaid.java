@@ -72,12 +72,6 @@ import net.minecraft.potion.PotionUtils;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -157,7 +151,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	private int maidDominantArm;			// 利き腕、1Byte
 	/** テクスチャ関連のデータを管理 **/
 	public ModelConfigCompound textureData;
-	public Map<String, EquippedStabilizer> maidStabilizer = new HashMap<String, EquippedStabilizer>();
+	public Map<String, EquippedStabilizer> maidStabilizer = new HashMap<>();
 
 	public float getLastDamage(){
 		return lastDamage;
@@ -183,8 +177,9 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	public boolean maidFreedom;
 	public boolean maidWait;
 	public int homeWorld;
-	protected int maidTiles[][] = new int[9][3];
-	public int maidTile[] = new int[3];
+	public int[] maidTile = new int[3];
+	// 腕振り
+	public SwingStatus[] mstatSwingStatus;
 	public TileEntity maidTileEntity;
 
 	// 動的な状態
@@ -211,9 +206,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	protected boolean mstatOpenInventory;
 
 	protected int ticksSinceLastDamage = 0;
-
-	// 腕振り
-	public SwingStatus mstatSwingStatus[];
+	protected int[][] maidTiles = new int[9][3];
 	public boolean mstatAimeBow;
 	// 首周り
 	private boolean looksWithInterest;
@@ -238,9 +231,8 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	private EnumSound maidDamegeSound;
 	protected int maidSoundInterval;
 	protected float maidSoundRate;
-
 	// クライアント専用音声再生フラグ
-	private CopyOnWriteArrayList<EnumSound> playingSound = new CopyOnWriteArrayList<EnumSound>();
+	private CopyOnWriteArrayList<EnumSound> playingSound = new CopyOnWriteArrayList<>();
 
 	// 実験用
 	private int firstload = 100;
@@ -347,7 +339,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 //		if (world.isRemote) {
 			// 形態形成場
 			textureData.setColor((byte)0xc);
-			TextureBox ltb[] = new TextureBox[2];
+		TextureBox[] ltb = new TextureBox[2];
 			ltb[0] = ltb[1] = ModelManager.instance.getDefaultTexture(this);
 			setTexturePackName(ltb);
 //		}
@@ -428,7 +420,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	protected void onSpawnWild() {
 		// 野生メイドの色設定処理
 		int nsize = 0;
-		byte avaliableColor[] = new byte[16];
+		byte[] avaliableColor = new byte[16];
 		TextureBoxBase box = getModelConfigCompound().textureBox[0];
 		for (byte i=0; i<16; i++) {
 			if ((box.wildColor & 1<<i) > 0) {
@@ -476,37 +468,37 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		// maidAvater用EntityPlayer互換変数
 		// 17 -> 18
 		// 18 : Absoption効果をクライアント側へ転送するのに使う
-		dataManager.register(EntityLittleMaid.dataWatch_Absoption, Float.valueOf(0));
+		dataManager.register(EntityLittleMaid.dataWatch_Absoption, (float) 0);
 
 		// 独自分
 		// 19:maidColor
 		dataManager.register(EntityLittleMaid.dataWatch_Color, (byte)0xc);
 		// 20:選択テクスチャインデックス
 		// TODO いらん？
-		dataManager.register(EntityLittleMaid.dataWatch_Texture, Integer.valueOf(0));
+		dataManager.register(EntityLittleMaid.dataWatch_Texture, 0);
 		// 21:モデルパーツの表示フラグ
-		dataManager.register(EntityLittleMaid.dataWatch_Parts, Integer.valueOf(0));
+		dataManager.register(EntityLittleMaid.dataWatch_Parts, 0);
 		// 22:状態遷移フラグ群(32Bit)、詳細はStatics参照
-		dataManager.register(EntityLittleMaid.dataWatch_Flags, Integer.valueOf(0));
+		dataManager.register(EntityLittleMaid.dataWatch_Flags, 0);
 		// 23:GotchaID
-		dataManager.register(EntityLittleMaid.dataWatch_Gotcha, Integer.valueOf(0));
+		dataManager.register(EntityLittleMaid.dataWatch_Gotcha, 0);
 		// 24:メイドモード
 		dataManager.register(EntityLittleMaid.dataWatch_Mode, "");
 		// 25:利き腕
-		dataManager.register(EntityLittleMaid.dataWatch_DominamtArm, Integer.valueOf(0));
+		dataManager.register(EntityLittleMaid.dataWatch_DominamtArm, 0);
 		// 26:アイテムの使用判定
-		dataManager.register(EntityLittleMaid.dataWatch_ItemUse, Integer.valueOf(0));
+		dataManager.register(EntityLittleMaid.dataWatch_ItemUse, 0);
 		// 27:保持経験値
-		/**
-		 * TODO 旧コメにあった「互換性保持」の意味がよく分からなかった．
-		 * バニラには27番を使うMobはいないし，旧版継承の問題？
-		 * バニラ由来のexperienceValueはほとんど利用していないので上書き．
+		/*
+		  TODO 旧コメにあった「互換性保持」の意味がよく分からなかった．
+		  バニラには27番を使うMobはいないし，旧版継承の問題？
+		  バニラ由来のexperienceValueはほとんど利用していないので上書き．
 		 */
-		dataManager.register(EntityLittleMaid.dataWatch_MaidExpValue , Float.valueOf(0));
+		dataManager.register(EntityLittleMaid.dataWatch_MaidExpValue, (float) 0);
 
 		// TODO:test
 		// 31:自由変数、EntityMode等で使用可能な変数。
-		dataManager.register(EntityLittleMaid.dataWatch_Free, new Integer(0));
+		dataManager.register(EntityLittleMaid.dataWatch_Free, 0);
 
 		defaultWidth = width;
 		defaultHeight = height;
@@ -540,7 +532,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		aiProfiler = world != null && world.profiler != null ? world.profiler : null;
 
 		// 動作モード用のTasksListを初期化
-		EntityAITasks ltasks[] = new EntityAITasks[2];
+		EntityAITasks[] ltasks = new EntityAITasks[2];
 		ltasks[0] = new EntityAITasks(aiProfiler);
 		ltasks[1] = new EntityAITasks(aiProfiler);
 
@@ -724,8 +716,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 //		aiWander.setEnable(maidFreedom);
 		setBloodsuck(false);
 		clearTilePosAll();
-		for (int li = 0; li < maidEntityModeList.size(); li++) {
-			EntityModeBase iem = maidEntityModeList.get(li);
+		for (EntityModeBase iem : maidEntityModeList) {
 			if (iem.setMode(maidMode)) {
 				setActiveModeClass(iem);
 				break;
@@ -739,9 +730,8 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	protected void setMaidModeAITasks(EntityAITasks pTasksSRC, EntityAITasks pTasksDEST) {
 		// 既存のAIを削除して置き換える。
 		// 動作をクリア
-		List<EntityAIBase> originAIs = new ArrayList<EntityAIBase>();
-		for (Iterator<EntityAITaskEntry> iterator = pTasksDEST.taskEntries.iterator(); iterator.hasNext(); ) {
-			EntityAITaskEntry lEntry = iterator.next();
+		List<EntityAIBase> originAIs = new ArrayList<>();
+		for (EntityAITaskEntry lEntry : pTasksDEST.taskEntries) {
 			originAIs.add(lEntry.action);
 		}
 		for (EntityAIBase pAiBase: originAIs) {
@@ -749,9 +739,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		}
 
 		// 動作追加
-		for (Iterator<EntityAITaskEntry> iterator = pTasksSRC.taskEntries.iterator(); iterator.hasNext(); ) {
-			pTasksDEST.taskEntries.add(iterator.next());
-		}
+		pTasksDEST.taskEntries.addAll(pTasksSRC.taskEntries);
 	}
 	public static ArrayList<EntityAITaskEntry> getEntityAITasks_taskEntries(EntityAITasks task)
 	{
@@ -842,7 +830,9 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 				LittleMaidReengaged.Debug("PLAYING SOUND EVENT-%s", sEvent.getSoundName().toString());
 				try {
 					playSound(sEvent, 1, pitch);
-				} catch (Exception exception) {}
+				}
+				catch (Exception ignored) {
+				}
 			}
 //		}
 	}
@@ -948,7 +938,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	@Override
 	protected boolean canDespawn() {
 		// デスポーン判定
-		return isTamed()||hasCustomName() ? false : LittleMaidReengaged.cfg_canDespawn;
+		return !isTamed() && !hasCustomName() && LittleMaidReengaged.cfg_canDespawn;
 	}
 
 	@Override
@@ -1076,7 +1066,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			par1 = 0.0F;
 		}
 
-		dataManager.set(EntityLittleMaid.dataWatch_Absoption, Float.valueOf(par1));
+		dataManager.set(EntityLittleMaid.dataWatch_Absoption, par1);
 	}
 	public float getAbsorptionAmount() {
 		return dataManager.get(EntityLittleMaid.dataWatch_Absoption);
@@ -1157,9 +1147,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 				}
 				if (et instanceof EntityLittleMaid) {
 					// 同じマスターのメイドを攻撃対象としている
-					if (((EntityLittleMaid)et).getMaidMasterEntity() == mstatMasterEntity) {
-						return false;
-					}
+					return ((EntityLittleMaid) et).getMaidMasterEntity() != mstatMasterEntity;
 				}
 			}
 			return true;
@@ -1265,8 +1253,8 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			}
 		}
 		// 追加分
-		for (int li = 0; li < maidEntityModeList.size(); li++) {
-			maidEntityModeList.get(li).writeEntityToNBT(par1nbtTagCompound);
+		for (EntityModeBase entityModeBase : maidEntityModeList) {
+			entityModeBase.writeEntityToNBT(par1nbtTagCompound);
 		}
 
 		getExperienceHandler().writeEntityToNBT(par1nbtTagCompound);
@@ -1331,12 +1319,12 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		// Tiles
 		NBTTagCompound lnbt = par1nbtTagCompound.getCompoundTag("Tiles");
 		for (int li = 0; li < maidTiles.length; li++) {
-			int ltile[] = lnbt.getIntArray(String.valueOf(li));
+			int[] ltile = lnbt.getIntArray(String.valueOf(li));
 			maidTiles[li] = ltile.length > 0 ? ltile : null;
 		}
 
-		for (int li = 0; li < maidEntityModeList.size(); li++) {
-			maidEntityModeList.get(li).readEntityFromNBT(par1nbtTagCompound);
+		for (EntityModeBase entityModeBase : maidEntityModeList) {
+			entityModeBase.readEntityFromNBT(par1nbtTagCompound);
 		}
 
 		textureNameMain = par1nbtTagCompound.getString("textureModelNameForClient");
@@ -1378,7 +1366,9 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 					if (ridingPlayer != null) {
 						startRiding(ridingPlayer);
 					}
-				} catch(IllegalArgumentException exception) {}
+				}
+				catch (IllegalArgumentException ignored) {
+				}
 			}
 		}
 
@@ -1535,7 +1525,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			int li = dataManager.get(EntityLittleMaid.dataWatch_Flags);
 			li = looksWithInterest ? (li | dataWatch_Flags_looksWithInterest) : (li & ~dataWatch_Flags_looksWithInterest);
 			li = looksWithInterestAXIS ? (li | dataWatch_Flags_looksWithInterestAXIS) : (li & ~dataWatch_Flags_looksWithInterestAXIS);
-			dataManager.set(EntityLittleMaid.dataWatch_Flags, Integer.valueOf(li));
+			dataManager.set(EntityLittleMaid.dataWatch_Flags, li);
 		}
 	}
 
@@ -1649,7 +1639,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		}
 		for (EntityModeBase lm : maidEntityModeList) {
 			float li = lm.attackEntityFrom(par1DamageSource, par2);
-			if (li > 0) return li == 1 ? false : true;
+			if (li > 0) return li != 1;
 		}
 
 		setMaidWait(false);
@@ -1806,9 +1796,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	public void onEntityUpdate() {
 		//音声再生
 		if(world.isRemote&&!playingSound.isEmpty()){
-			Iterator<EnumSound> iterator = playingSound.iterator();
-			while(iterator.hasNext()){
-				EnumSound enumsound = iterator.next();
+			for (EnumSound enumsound : playingSound) {
 				LittleMaidReengaged.Debug("REQ %s", enumsound);
 
 				if (!SoundLoader.isFoundSoundpack()) {
@@ -1840,7 +1828,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 				LittleMaidReengaged.Debug(String.format("id:%d, se:%04x-%s (%s)", getEntityId(), enumsound.index, enumsound.name(), sname));
 
 //				playSound(LittleMaidReengaged.DOMAIN+":"+sname, lpitch);
-				world.playSound(posX, posY, posZ, new SoundEvent(new ResourceLocation(LittleMaidReengaged.DOMAIN+":"+sname)), getSoundCategory(), getSoundVolume(), 1f, false);
+				world.playSound(posX, posY, posZ, new SoundEvent(new ResourceLocation(LittleMaidReengaged.DOMAIN + ":" + sname)), getSoundCategory(), getSoundVolume(), 1f, false);
 				playingSound.remove(enumsound);
 			}
 //			LMM_LittleMaidMobNX.proxy.playLittleMaidSound(world, posX, posY, posZ, playingSound, getSoundVolume(), lpitch, false);
@@ -1853,7 +1841,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	 */
 	private boolean isBlockTranslucent(int par1, int par2, int par3) {
 		IBlockState iState = world.getBlockState(new BlockPos(par1, par2, par3));
-		return iState.getBlock().isNormalCube(iState);
+		return iState.isNormalCube();
 	}
 
 	/**
@@ -2020,13 +2008,13 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			if (!world.isRemote) {
 				List list = world.getEntitiesWithinAABBExcludingEntity(this, getEntityBoundingBox().grow(1.0D, 0.0D, 1.0D));
 				if (list != null) {
-					for (int i = 0; i < list.size(); i++) {
-						Entity entity = (Entity)list.get(i);
+					for (Object o : list) {
+						Entity entity = (Entity) o;
 						if (!entity.isDead) {
 							if (entity instanceof EntityArrow &&
-									(world.getDifficulty() == EnumDifficulty.HARD ? ((EntityArrow) entity).shootingEntity == this : true)) {
+									(world.getDifficulty() != EnumDifficulty.HARD || ((EntityArrow) entity).shootingEntity == this)) {
 								// 特殊回収
-								((EntityArrow)entity).pickupStatus = PickupStatus.ALLOWED;
+								((EntityArrow) entity).pickupStatus = PickupStatus.ALLOWED;
 							}
 							entity.onCollideWithPlayer(maidAvatar);
 						}
@@ -2072,8 +2060,8 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			// TNT-D System
 			maidOverDriveTime.onUpdate();
 			if (maidOverDriveTime.isDelay()) {
-				for (int li = 0; li < mstatSwingStatus.length; li++) {
-					mstatSwingStatus[li].attackTime--;
+				for (SwingStatus swingStatus : mstatSwingStatus) {
+					swingStatus.attackTime--;
 				}
 				if (maidOverDriveTime.isEnable()) {
 					world.spawnParticle(EnumParticleTypes.REDSTONE, (posX + rand.nextFloat() * width * 2.0F) - width, posY + 0.5D + rand.nextFloat() * height, (posZ + rand.nextFloat() * width * 2.0F) - width, 1.2D, 0.4D, 0.4D);
@@ -2386,12 +2374,12 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			}
 			if(rand.nextInt(16) == 0) {
 				List list = world.getEntitiesWithinAABBExcludingEntity(this, getEntityBoundingBox().grow(8D, 8D, 8D));
-				for (int k = 0; k < list.size(); k++) {
-					Entity entity = (Entity)list.get(k);
+				for (Object o : list) {
+					Entity entity = (Entity) o;
 					if (!(entity instanceof EntityMob)) {
 						continue;
 					}
-					EntityMob entitymob = (EntityMob)entity;
+					EntityMob entitymob = (EntityMob) entity;
 					if (entitymob.getAttackTarget() == mstatgotcha) {
 						//1.8検討
 						entitymob.setAttackTarget(this);
@@ -2414,7 +2402,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		// 死因を表示
 //		if (!world.isRemote) {
 			if (LittleMaidReengaged.cfg_DeathMessage && getMaidMasterEntity() != null) {
-				getMaidMasterEntity().sendMessage(new TextComponentTranslation("littleMaidMob.chat.text.death", CommonHelper.getDeadSource(par1DamageSource)));
+				getMaidMasterEntity().sendMessage(new TextComponentTranslation("littleMaidMob.chat.text.death", this.getDisplayName(), CommonHelper.getDeadSource(par1DamageSource)));
 			}
 //		}
 	}
@@ -2543,18 +2531,14 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 			Method me = is.getItem().getClass().getMethod("isWeaponReload", ItemStack.class, EntityPlayer.class);
 			weaponReload = (Boolean)me.invoke(is.getItem(), is, maidAvatar);
 		}
-		catch (NoSuchMethodException e) {
-		}
-		catch (Exception e) {
+		catch (Exception ignored) {
 		}
 
 		try {
 			Method me = is.getItem().getClass().getMethod("isWeaponFullAuto", ItemStack.class);
 			weaponFullAuto = (Boolean)me.invoke(is.getItem(), is);
 		}
-		catch (NoSuchMethodException e) {
-		}
-		catch (Exception e) {
+		catch (Exception ignored) {
 		}
 	}
 
@@ -2582,7 +2566,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 
 	@Override
 	public Iterable<ItemStack> getHeldEquipment() {
-		return Arrays.asList(new ItemStack[]{getCurrentEquippedItem(), getHeldItemOffhand()});
+		return Arrays.asList(getCurrentEquippedItem(), getHeldItemOffhand());
 	}
 
 	@Override
@@ -2707,7 +2691,7 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	 */
 	public int getSwingSpeedModifier() {
 		if (isPotionActive(Potion.getPotionFromResourceLocation("haste"))) {
-			return 6 - (1 + getActivePotionEffect(Potion.getPotionFromResourceLocation("haste")).getAmplifier()) * 1;
+			return 6 - (1 + getActivePotionEffect(Potion.getPotionFromResourceLocation("haste")).getAmplifier());
 		}
 
 		if (isPotionActive(Potion.getPotionFromResourceLocation("mining_fatigue"))) {
@@ -2746,8 +2730,8 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		float lhealth = getHealth();
 
 		// プラグインでの処理を先に行う
-		for (int li = 0; li < maidEntityModeList.size(); li++) {
-			if (maidEntityModeList.get(li).preInteract(par1EntityPlayer, par3ItemStack)) {
+		for (EntityModeBase modeBase : maidEntityModeList) {
+			if (modeBase.preInteract(par1EntityPlayer, par3ItemStack)) {
 				return true;
 			}
 		}
@@ -2810,8 +2794,8 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 					if (!par3ItemStack.isEmpty()) {
 						// 追加分の処理
 						// プラグインでの処理を先に行う
-						for (int li = 0; li < maidEntityModeList.size(); li++) {
-							if (maidEntityModeList.get(li).interact(par1EntityPlayer, par3ItemStack)) {
+						for (EntityModeBase entityModeBase : maidEntityModeList) {
+							if (entityModeBase.interact(par1EntityPlayer, par3ItemStack)) {
 								return true;
 							}
 						}
@@ -3333,11 +3317,25 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		return mstatLookSuger;
 	}
 
-	public static enum EnumConsumeSugar{
-		/**通常回復**/HEAL,
-		/**契約更新**/RECONTRACT,
-		/**その他（つまみ食いとか）**/OTHER
-	};
+	/**
+	 * 紐の持ち主
+	 */
+	public void updateGotcha() {
+		int lid = dataManager.get(EntityLittleMaid.dataWatch_Gotcha);
+		if (lid == 0) {
+			mstatgotcha = null;
+			return;
+		}
+		if (mstatgotcha != null && mstatgotcha.getEntityId() == lid) {
+			return;
+		}
+		for (int li = 0; li < world.loadedEntityList.size(); li++) {
+			if (world.loadedEntityList.get(li).getEntityId() == lid) {
+				mstatgotcha = world.loadedEntityList.get(li);
+				break;
+			}
+		}
+	}
 
 	/** インベントリ内の砂糖を食べる。左上から消費する。
 	 * @param mode EnumConsumeSugar型の定数
@@ -3681,28 +3679,17 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 		return false;
 	}
 
-	/**
-	 * 紐の持ち主
-	 */
-	public void updateGotcha() {
-		int lid = dataManager.get(EntityLittleMaid.dataWatch_Gotcha);
-		if (lid == 0) {
-			mstatgotcha = null;
-			return;
-		}
-		if (mstatgotcha != null && mstatgotcha.getEntityId() == lid) {
-			return;
-		}
-		for (int li = 0; li < world.loadedEntityList.size(); li++) {
-			if (((Entity)world.loadedEntityList.get(li)).getEntityId() == lid) {
-				mstatgotcha = (Entity)world.loadedEntityList.get(li);
-				break;
-			}
-		}
+	public void setGotcha(int pEntityID) {
+		dataManager.set(EntityLittleMaid.dataWatch_Gotcha, pEntityID);
 	}
 
-	public void setGotcha(int pEntityID) {
-		dataManager.set(EntityLittleMaid.dataWatch_Gotcha, Integer.valueOf(pEntityID));
+	/**
+	 * フラグ群に値をセット。
+	 */
+	public void setMaidFlags(boolean pFlag, int pFlagvalue) {
+		int li = dataManager.get(EntityLittleMaid.dataWatch_Flags);
+		li = pFlag ? (li | pFlagvalue) : (li & ~pFlagvalue);
+		dataManager.set(EntityLittleMaid.dataWatch_Flags, li);
 	}
 	public void setGotcha(Entity pEntity) {
 		setGotcha(pEntity == null ? 0 : pEntity.getEntityId());
@@ -3741,12 +3728,21 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 	}
 
 	/**
-	 * フラグ群に値をセット。
+	 * 使っているTileかどうか判定して返す。
 	 */
-	public void setMaidFlags(boolean pFlag, int pFlagvalue) {
-		int li = dataManager.get(EntityLittleMaid.dataWatch_Flags);
-		li = pFlag ? (li | pFlagvalue) : (li & ~pFlagvalue);
-		dataManager.set(EntityLittleMaid.dataWatch_Flags, Integer.valueOf(li));
+	public boolean isUsingTile(TileEntity pTile) {
+		if (isActiveModeClass()) {
+			return getActiveModeClass().isUsingTile(pTile);
+		}
+		for (int[] tile : maidTiles) {
+			if (tile != null &&
+					pTile.getPos().getX() == tile[0] &&
+					pTile.getPos().getY() == tile[1] &&
+					pTile.getPos().getZ() == tile[2]) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -3890,22 +3886,16 @@ public class EntityLittleMaid extends EntityTameable implements IModelEntity {
 
 	// Tile関係
 
-	/**
-	 * 使っているTileかどうか判定して返す。
-	 */
-	public boolean isUsingTile(TileEntity pTile) {
-		if (isActiveModeClass()) {
-			return getActiveModeClass().isUsingTile(pTile);
-		}
-		for (int li = 0; li < maidTiles.length; li++) {
-			if (maidTiles[li] != null &&
-					pTile.getPos().getX() == maidTiles[li][0] &&
-					pTile.getPos().getY() == maidTiles[li][1] &&
-					pTile.getPos().getZ() == maidTiles[li][2]) {
-				return true;
-			}
-		}
-		return false;
+	public enum EnumConsumeSugar {
+		/**
+		 * 通常回復
+		 **/
+		HEAL,
+		/**
+		 * 契約更新
+		 **/
+		RECONTRACT,
+		/**その他（つまみ食いとか）**/OTHER
 	}
 
 	public boolean isEqualTile() {

@@ -1,8 +1,5 @@
 package net.blacklab.lmr.entity.littlemaid.mode;
 
-import java.util.HashMap;
-import java.util.List;
-
 import net.blacklab.lmr.LittleMaidReengaged;
 import net.blacklab.lmr.achievements.AchievementsLMRE;
 import net.blacklab.lmr.entity.ai.EntityAILMHurtByTarget;
@@ -10,23 +7,21 @@ import net.blacklab.lmr.entity.ai.EntityAILMNearestAttackableTarget;
 import net.blacklab.lmr.entity.littlemaid.EntityLittleMaid;
 import net.blacklab.lmr.entity.littlemaid.trigger.ModeTrigger;
 import net.blacklab.lmr.util.helper.MaidHelper;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemArrow;
-import net.minecraft.item.ItemBow;
-import net.minecraft.item.ItemFlintAndSteel;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import java.util.HashMap;
+import java.util.List;
 
 public class EntityMode_Archer extends EntityModeBase {
 
@@ -224,21 +219,19 @@ public class EntityMode_Archer extends EntityModeBase {
 			// Blazingstarの特殊効果
 			World lworld = owner.world;
 			List<Entity> llist = lworld.getEntitiesWithinAABB(Entity.class, owner.getEntityBoundingBox().grow(16D, 16D, 16D));
-			for (int li = 0; li < llist.size(); li++) {
-				Entity lentity = llist.get(li);
-				if (lentity.isEntityAlive() && lentity.isBurning() && owner.getRNG().nextFloat() > 0.9F) {
-					// 発火！
-					int lx = (int)owner.posX;
-					int ly = (int)owner.posY;
-					int lz = (int)owner.posZ;
+            for (Entity lentity : llist) {
+                if (lentity.isEntityAlive() && lentity.isBurning() && owner.getRNG().nextFloat() > 0.9F) {
+                    // 発火！
+                    int lx = (int) owner.posX;
+                    int ly = (int) owner.posY;
+                    int lz = (int) owner.posZ;
 
-					IBlockState iState;
-					if (lworld.isAirBlock(new BlockPos(lx, ly, lz)) || (iState = lworld.getBlockState(new BlockPos(lx, ly, lz))).getBlock().getMaterial(iState).getCanBurn()) {
-						lworld.playSound(lx + 0.5D, ly + 0.5D, lz + 0.5D, SoundEvent.REGISTRY.getObject(new ResourceLocation("item.firecharge.use")), SoundCategory.NEUTRAL, 1.0F, owner.getRNG().nextFloat() * 0.4F + 0.8F, false);
-						lworld.setBlockState(new BlockPos(lx, ly, lz), Blocks.FIRE.getDefaultState());
-					}
-				}
-			}
+                    if (lworld.isAirBlock(new BlockPos(lx, ly, lz)) || (lworld.getBlockState(new BlockPos(lx, ly, lz))).getMaterial().getCanBurn()) {
+                        lworld.playSound(lx + 0.5D, ly + 0.5D, lz + 0.5D, SoundEvent.REGISTRY.getObject(new ResourceLocation("item.firecharge.use")), SoundCategory.NEUTRAL, 1.0F, owner.getRNG().nextFloat() * 0.4F + 0.8F, false);
+                        lworld.setBlockState(new BlockPos(lx, ly, lz), Blocks.FIRE.getDefaultState());
+                    }
+                }
+            }
 		}
 	}
 

@@ -1,18 +1,16 @@
 package net.blacklab.lmr.entity.maidmodel;
 
-import java.util.Map;
-
-import org.lwjgl.opengl.GL11;
-
 import net.blacklab.lmr.util.helper.RendererHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.TextureOffset;
 import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderEntity;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
+
+import java.util.Map;
 
 /**
  * アーマーの二重描画用クラス。
@@ -77,7 +75,8 @@ public class ModelBaseDuo extends ModelBaseNihil implements IModelBaseMMM {
 					try{
 						Minecraft.getMinecraft().getTextureManager().bindTexture(textureInner[renderParts]);
 						modelInner.render(entityCaps, par2, par3, par4, par5, par6, par7, isRendering);
-					}catch(Exception e){
+                    }
+                    catch (Exception ignored) {
 					}
 				}
 			} else {
@@ -89,7 +88,8 @@ public class ModelBaseDuo extends ModelBaseNihil implements IModelBaseMMM {
 				if (textureInnerLight[renderParts] != null) {
 					try{
 						Minecraft.getMinecraft().getTextureManager().bindTexture(textureInnerLight[renderParts]);
-					}catch(Exception e){
+                    }
+                    catch (Exception ignored) {
 					}
 					GL11.glEnable(GL11.GL_BLEND);
 					GL11.glEnable(GL11.GL_ALPHA_TEST);
@@ -124,7 +124,8 @@ public class ModelBaseDuo extends ModelBaseNihil implements IModelBaseMMM {
 					try{
 						Minecraft.getMinecraft().getTextureManager().bindTexture(textureOuter[renderParts]);
 						modelOuter.render(entityCaps, par2, par3, par4, par5, par6, par7, isRendering);
-					}catch(Exception e){
+                    }
+                    catch (Exception ignored) {
 					}
 				}
 			} else {
@@ -136,7 +137,8 @@ public class ModelBaseDuo extends ModelBaseNihil implements IModelBaseMMM {
 				if (textureOuterLight[renderParts] != null) {
 					try{
 						Minecraft.getMinecraft().getTextureManager().bindTexture(textureOuterLight[renderParts]);
-					}catch(Exception e){
+                    }
+                    catch (Exception ignored) {
 					}
 					GL11.glEnable(GL11.GL_BLEND);
 					GL11.glEnable(GL11.GL_ALPHA_TEST);

@@ -1,7 +1,5 @@
 package net.blacklab.lmr.client.renderer.entity;
 
-import org.lwjgl.opengl.GL11;
-
 import net.blacklab.lmr.LittleMaidReengaged;
 import net.blacklab.lmr.client.entity.EntityLittleMaidForTexSelect;
 import net.blacklab.lmr.entity.maidmodel.IModelEntity;
@@ -18,6 +16,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
 
 public class RenderEntitySelect extends RenderModelMulti {
 
@@ -99,7 +98,9 @@ public class RenderEntitySelect extends RenderModelMulti {
 				ResourceLocation texInner = mmodel.textureInner[renderParts];
 				if(texInner!=null) try{
 					Minecraft.getMinecraft().getTextureManager().bindTexture(texInner);
-				}catch(Exception e){}
+                }
+                catch (Exception ignored) {
+                }
 
 //				mmodel.modelInner.setLivingAnimations(lmm.maidCaps, par2, par3, lmm.ticksExisted);
 //				mmodel.modelInner.setRotationAngles(par2, par3, lmm.ticksExisted, par5, par6, 0.0625F, lmm.maidCaps);
@@ -148,7 +149,9 @@ public class RenderEntitySelect extends RenderModelMulti {
 				ResourceLocation texOuter = mmodel.textureOuter[renderParts];
 				if(texOuter!=null) try{
 					Minecraft.getMinecraft().getTextureManager().bindTexture(texOuter);
-				}catch(Exception e){}
+                }
+                catch (Exception ignored) {
+                }
 
 //				mmodel.modelOuter.setLivingAnimations(lmm.maidCaps, par2, par3, lmm.ticksExisted);
 //				mmodel.modelOuter.setRotationAngles(par2, par3, lmm.ticksExisted, par5, par6, 0.0625F, lmm.maidCaps);

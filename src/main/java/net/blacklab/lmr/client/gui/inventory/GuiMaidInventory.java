@@ -1,23 +1,11 @@
 package net.blacklab.lmr.client.gui.inventory;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Random;
-
-import net.blacklab.lmr.network.LMRMessage;
-import net.minecraft.nbt.NBTTagCompound;
-import org.lwjgl.opengl.GL11;
-
 import net.blacklab.lmr.LittleMaidReengaged;
-import net.blacklab.lmr.client.gui.GuiButtonArmorToggle;
-import net.blacklab.lmr.client.gui.GuiButtonBoostChange;
-import net.blacklab.lmr.client.gui.GuiButtonFreedomToggle;
-import net.blacklab.lmr.client.gui.GuiButtonNextPage;
-import net.blacklab.lmr.client.gui.GuiTextureSelect;
+import net.blacklab.lmr.client.gui.*;
 import net.blacklab.lmr.entity.experience.ExperienceUtil;
 import net.blacklab.lmr.entity.littlemaid.EntityLittleMaid;
 import net.blacklab.lmr.inventory.ContainerInventoryLittleMaid;
+import net.blacklab.lmr.network.LMRMessage;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -30,10 +18,16 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import org.lwjgl.opengl.GL11;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Random;
 
 public class GuiMaidInventory extends GuiContainer {
 	// Field
@@ -44,9 +38,9 @@ public class GuiMaidInventory extends GuiContainer {
 	private int updateCounter;
 	public EntityLittleMaid entitylittlemaid;
 
-	public GuiButtonNextPage txbutton[] = new GuiButtonNextPage[4];
+    public GuiButtonNextPage[] txbutton = new GuiButtonNextPage[4];
 	public GuiButton selectbutton;
-	public GuiButtonArmorToggle visarmorbutton[] = new GuiButtonArmorToggle[4];
+    public GuiButtonArmorToggle[] visarmorbutton = new GuiButtonArmorToggle[4];
 	public GuiButtonFreedomToggle frdmbutton;
 	public GuiButtonBoostChange boostMinus;
 	public GuiButtonBoostChange boostPlus;
@@ -54,66 +48,88 @@ public class GuiMaidInventory extends GuiContainer {
 
 	private int topTicks = 0;
 
-	private static class RenderInfoPart {
-		private static boolean shiftLock;
+    @Override
+    public void drawScreen(int i, int j, float f) {
+        if ((entitylittlemaid.ticksExisted - topTicks) % 30 == 0) {
+            if (!RenderInfoPart.islocked()) RenderInfoPart.shiftPart();
+            RenderInfoPart.lock();
+        }
+        else {
+            RenderInfoPart.unlock();
+        }
 
-		/**
-		 * 0: Health, 1: Armor, 2: Mode, 3: Free
-		 */
-		private static boolean renderInfo[] = new boolean[] {
-				true, false, true, false
-		};
+        super.drawScreen(i, j, f);
 
-		private static int renderingPart = 0;
+        // 事前処理
+        for (int cnt = 0; cnt < 4; cnt++) {
+            visarmorbutton[cnt].visible = true;
+            visarmorbutton[cnt].toggle = entitylittlemaid.isArmorVisible(cnt);
+        }
+        frdmbutton.visible = true;
+        frdmbutton.toggle = entitylittlemaid.isFreedom();
 
-		public static int getEnabledCounts() {
-			int count = 0;
-			for (boolean s: renderInfo) {
-				if (s) ++count;
-			}
-			return count;
+        int ii = i - guiLeft;
+        int jj = j - guiTop;
+
+        if (entitylittlemaid.canChangeModel() && ii > 7 && ii < 96 && jj > 7 && jj < 60) {
+            // ボタンの表示
+            txbutton[0].visible = true;
+            txbutton[1].visible = true;
+            txbutton[2].visible = true;
+            txbutton[3].visible = true;
+
+            // テクスチャ名称の表示
+            GL11.glPushMatrix();
+            GL11.glTranslatef(i - ii, j - jj, 0.0F);
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+//			RenderHelper.disableStandardItemLighting();
+
+            if (entitylittlemaid.textureData.textureBox[0] != null) {
+                String ls1 = entitylittlemaid.textureData.getTextureName(0);
+                String ls2 = entitylittlemaid.textureData.getTextureName(1);
+                int ltw1 = this.mc.fontRenderer.getStringWidth(ls1);
+                int ltw2 = this.mc.fontRenderer.getStringWidth(ls2);
+                int ltwmax = (ltw1 > ltw2) ? ltw1 : ltw2;
+                int lbx = 52 - ltwmax / 2;
+                int lby = 68;
+                int lcolor;
+                lcolor = jj < 20 ? 0xc0882222 : 0xc0000000;
+                GlStateManager.disableLighting();
+                GlStateManager.disableDepth();
+                GlStateManager.colorMask(true, true, true, false);
+                drawGradientRect(lbx - 3, lby - 4, lbx + ltwmax + 3, lby + 8, lcolor, lcolor);
+                drawString(this.mc.fontRenderer, ls1, 52 - ltw1 / 2, lby - 2, -1);
+                lcolor = jj > 46 ? 0xc0882222 : 0xc0000000;
+                drawGradientRect(lbx - 3, lby + 8, lbx + ltwmax + 3, lby + 16 + 4, lcolor, lcolor);
+                drawString(this.mc.fontRenderer, ls2, 52 - ltw2 / 2, lby + 10, -1);
+                GlStateManager.enableLighting();
+                GlStateManager.enableDepth();
+                GlStateManager.colorMask(true, true, true, true);
+            }
+            GL11.glPopMatrix();
+//			RenderHelper.enableStandardItemLighting();
+        }
+        else {
+            txbutton[0].visible = false;
+            txbutton[1].visible = false;
+            txbutton[2].visible = false;
+            txbutton[3].visible = false;
+        }
+        selectbutton.visible = ii > 25 && ii < 79 && jj > 24 && jj < 44;
+        if (ii > 96 && ii < xSize && jj > -16 && jj < 0) {
+            GlStateManager.disableLighting();
+            GlStateManager.disableDepth();
+            GlStateManager.colorMask(true, true, true, false);
+            String str = I18n.format("littleMaidMob.gui.text.expboost");
+            int width = fontRenderer.getStringWidth(str);
+            int centerx = guiLeft + 48 + xSize / 2;
+            drawGradientRect(centerx - width / 2 - 4, guiTop, centerx + width / 2 + 4, guiTop + fontRenderer.FONT_HEIGHT, 0xc0202020, 0xc0202020);
+            drawCenteredString(fontRenderer, str, centerx, guiTop, 0xffffff);
+            GlStateManager.enableLighting();
+            GlStateManager.enableDepth();
+            GlStateManager.colorMask(true, true, true, true);
 		}
 
-		public static void setEnabled(int index, boolean flag) {
-			renderInfo[index] = flag;
-			// 体力だけはtrueを維持
-			renderInfo[0] = true;
-			if (renderingPart == index && !flag) {
-				shiftPart();
-			}
-		}
-
-		public static boolean isEnabled(int index) {
-			try {
-				return renderInfo[index];
-			} catch (IndexOutOfBoundsException exception) {
-				return false;
-			}
-		}
-
-		public static void shiftPart() {
-			while (!isEnabled(++renderingPart)) {
-				if (renderingPart >= renderInfo.length) {
-					renderingPart = -1;
-				}
-			}
-		}
-
-		public static int getRenderingPart() {
-			return renderingPart;
-		}
-
-		public static void lock() {
-			shiftLock = true;
-		}
-
-		public static void unlock() {
-			shiftLock = false;
-		}
-
-		public static boolean islocked() {
-			return shiftLock;
-		}
 	}
 
 	protected static final ResourceLocation fguiTex =
@@ -137,7 +153,6 @@ public class GuiMaidInventory extends GuiContainer {
 		topTicks = entitylittlemaid.ticksExisted;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
@@ -504,104 +519,11 @@ public class GuiMaidInventory extends GuiContainer {
 	}
 
 	@Override
-	public void drawScreen(int i, int j, float f) {
-		if ((entitylittlemaid.ticksExisted - topTicks) % 30 == 0) {
-			if (!RenderInfoPart.islocked())RenderInfoPart.shiftPart();
-			RenderInfoPart.lock();
-		} else {
-			RenderInfoPart.unlock();
-		}
-
-		super.drawScreen(i, j, f);
-
-		// 事前処理
-		for(int cnt=0;cnt<4;cnt++){
-			visarmorbutton[cnt].visible = true;
-			visarmorbutton[cnt].toggle = entitylittlemaid.isArmorVisible(cnt);
-		}
-		frdmbutton.visible = true;
-		frdmbutton.toggle = entitylittlemaid.isFreedom();
-
-		int ii = i - guiLeft;
-		int jj = j - guiTop;
-
-		if (entitylittlemaid.canChangeModel() && ii > 7 && ii < 96 && jj > 7 && jj < 60) {
-			// ボタンの表示
-			txbutton[0].visible = true;
-			txbutton[1].visible = true;
-			txbutton[2].visible = true;
-			txbutton[3].visible = true;
-
-			// テクスチャ名称の表示
-			GL11.glPushMatrix();
-			GL11.glTranslatef(i - ii, j - jj, 0.0F);
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-//			RenderHelper.disableStandardItemLighting();
-
-			if (entitylittlemaid.textureData.textureBox[0] != null) {
-				String ls1 = entitylittlemaid.textureData.getTextureName(0);
-				String ls2 = entitylittlemaid.textureData.getTextureName(1);
-				int ltw1 = this.mc.fontRenderer.getStringWidth(ls1);
-				int ltw2 = this.mc.fontRenderer.getStringWidth(ls2);
-				int ltwmax = (ltw1 > ltw2) ? ltw1 : ltw2;
-				int lbx = 52 - ltwmax / 2;
-				int lby = 68;
-				int lcolor;
-				lcolor = jj < 20 ? 0xc0882222 : 0xc0000000;
-				GlStateManager.disableLighting();
-				GlStateManager.disableDepth();
-				GlStateManager.colorMask(true, true, true, false);
-				drawGradientRect(lbx - 3, lby - 4, lbx + ltwmax + 3, lby + 8, lcolor, lcolor);
-				drawString(this.mc.fontRenderer, ls1, 52 - ltw1 / 2, lby - 2, -1);
-				lcolor = jj > 46 ? 0xc0882222 : 0xc0000000;
-				drawGradientRect(lbx - 3, lby + 8, lbx + ltwmax + 3, lby + 16 + 4, lcolor, lcolor);
-				drawString(this.mc.fontRenderer, ls2, 52 - ltw2 / 2, lby + 10, -1);
-				GlStateManager.enableLighting();
-				GlStateManager.enableDepth();
-				GlStateManager.colorMask(true, true, true, true);
-			}
-			GL11.glPopMatrix();
-//			RenderHelper.enableStandardItemLighting();
-		} else {
-			txbutton[0].visible = false;
-			txbutton[1].visible = false;
-			txbutton[2].visible = false;
-			txbutton[3].visible = false;
-		}
-		if (ii > 25 && ii < 79 && jj > 24 && jj < 44) {
-			selectbutton.visible = true;
-		} else {
-			selectbutton.visible = false;
-		}
-		if (ii > 96 && ii < xSize && jj > -16 && jj < 0) {
-			GlStateManager.disableLighting();
-			GlStateManager.disableDepth();
-			GlStateManager.colorMask(true, true, true, false);
-			String str = I18n.format("littleMaidMob.gui.text.expboost");
-			int width = fontRenderer.getStringWidth(str);
-			int centerx = guiLeft + 48 + xSize/2;
-			drawGradientRect(centerx - width/2 - 4, guiTop, centerx + width/2 + 4, guiTop + fontRenderer.FONT_HEIGHT, 0xc0202020, 0xc0202020);
-			drawCenteredString(fontRenderer, str, centerx, guiTop, 0xffffff);
-			GlStateManager.enableLighting();
-			GlStateManager.enableDepth();
-			GlStateManager.colorMask(true, true, true, true);
-		}
-
-	}
-
-
-
-	@Override
-	public void updateScreen() {
-		super.updateScreen();
-		updateCounter++;
-	}
-
-	@Override
 	protected void mouseClicked(int i, int j, int k) {
 		try {
 			super.mouseClicked(i, j, k);
-		} catch (IOException e) {
+        }
+        catch (IOException ignored) {
 		}
 /*
 		// 26,8-77,59
@@ -621,6 +543,50 @@ public class GuiMaidInventory extends GuiContainer {
 		}
 */
 	}
+
+
+    @Override
+    public void updateScreen() {
+        super.updateScreen();
+        updateCounter++;
+    }
+
+    private void displayDebuffEffects() {
+        // ポーションエフェクトの表示
+        int lx = guiLeft - 124;
+        int ly = guiTop;
+        Collection collection = entitylittlemaid.getActivePotionEffects();
+        if (collection.isEmpty()) {
+            return;
+        }
+        int lh = 33;
+        if (collection.size() > 5) {
+            lh = 132 / (collection.size() - 1);
+        }
+        for (PotionEffect potioneffect : entitylittlemaid.getActivePotionEffects()) {
+            Potion potion = potioneffect.getPotion();//Potion.potionTypes[potioneffect.getPotionID()];
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("textures/gui/container/inventory.png"));
+            drawTexturedModalRect(lx, ly, 0, ySizebk, 140, 32);
+
+            if (potion.hasStatusIcon()) {
+                int i1 = potion.getStatusIconIndex();
+                drawTexturedModalRect(lx + 6, ly + 7, (i1 % 8) * 18,
+                        ySizebk + 32 + (i1 / 8) * 18, 18, 18);
+            }
+            String ls = I18n.format(potion.getName());
+            if (potioneffect.getAmplifier() > 0) {
+                ls = ls + " " +
+                        I18n.format("potion.potency." +
+                                potioneffect.getAmplifier());
+            }
+            mc.fontRenderer.drawString(ls, lx + 10 + 18, ly + 6, 0xffffff);
+            // TODO ここもよく分からん
+            String s1 = Potion.getPotionDurationString(potioneffect, 1);
+            mc.fontRenderer.drawString(s1, lx + 10 + 18, ly + 6 + 10, 0x7f7f7f);
+            ly += lh;
+        }
+    }
 
 	@Override
 	protected void actionPerformed(GuiButton par1GuiButton) {
@@ -710,43 +676,66 @@ public class GuiMaidInventory extends GuiContainer {
 		}
 	}
 
-	private void displayDebuffEffects() {
-		// ポーションエフェクトの表示
-		int lx = guiLeft - 124;
-		int ly = guiTop;
-		Collection collection = entitylittlemaid.getActivePotionEffects();
-		if (collection.isEmpty()) {
-			return;
-		}
-		int lh = 33;
-		if (collection.size() > 5) {
-			lh = 132 / (collection.size() - 1);
-		}
-		for (Iterator iterator = entitylittlemaid.getActivePotionEffects().iterator(); iterator.hasNext();) {
-			PotionEffect potioneffect = (PotionEffect) iterator.next();
-			Potion potion = potioneffect.getPotion();//Potion.potionTypes[potioneffect.getPotionID()];
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-			Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("textures/gui/container/inventory.png"));
-			drawTexturedModalRect(lx, ly, 0, ySizebk, 140, 32);
+    private static class RenderInfoPart {
+        private static boolean shiftLock;
 
-			if (potion.hasStatusIcon()) {
-				int i1 = potion.getStatusIconIndex();
-				drawTexturedModalRect(lx + 6, ly + 7, 0 + (i1 % 8) * 18,
-						ySizebk + 32 + (i1 / 8) * 18, 18, 18);
-			}
-			String ls = I18n.format(potion.getName());
-			if (potioneffect.getAmplifier() > 0) {
-				ls = (new StringBuilder()).append(ls).append(" ")
-						.append(I18n.format((new StringBuilder())
-								.append("potion.potency.")
-								.append(potioneffect.getAmplifier())
-								.toString())).toString();
-			}
-			mc.fontRenderer.drawString(ls, lx + 10 + 18, ly + 6, 0xffffff);
-			// TODO ここもよく分からん
-			String s1 = Potion.getPotionDurationString(potioneffect, 1);
-			mc.fontRenderer.drawString(s1, lx + 10 + 18, ly + 6 + 10, 0x7f7f7f);
-			ly += lh;
+        /**
+         * 0: Health, 1: Armor, 2: Mode, 3: Free
+         */
+        private static boolean[] renderInfo = new boolean[]{
+                true, false, true, false
+        };
+
+        private static int renderingPart = 0;
+
+        public static int getEnabledCounts() {
+            int count = 0;
+            for (boolean s : renderInfo) {
+                if (s) ++count;
+            }
+            return count;
+        }
+
+        public static void setEnabled(int index, boolean flag) {
+            renderInfo[index] = flag;
+            // 体力だけはtrueを維持
+            renderInfo[0] = true;
+            if (renderingPart == index && !flag) {
+                shiftPart();
+            }
+        }
+
+        public static boolean isEnabled(int index) {
+            try {
+                return renderInfo[index];
+            }
+            catch (IndexOutOfBoundsException exception) {
+                return false;
+            }
+        }
+
+        public static void shiftPart() {
+            while (!isEnabled(++renderingPart)) {
+                if (renderingPart >= renderInfo.length) {
+                    renderingPart = -1;
+                }
+            }
+        }
+
+        public static int getRenderingPart() {
+            return renderingPart;
+        }
+
+        public static void lock() {
+            shiftLock = true;
+        }
+
+        public static void unlock() {
+            shiftLock = false;
+        }
+
+        public static boolean islocked() {
+            return shiftLock;
 		}
 	}
 

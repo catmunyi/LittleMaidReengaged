@@ -1,18 +1,10 @@
 package net.blacklab.lmr.item;
 
-import java.util.List;
-import javax.annotation.Nullable;
-
 import net.blacklab.lmr.LittleMaidReengaged;
 import net.blacklab.lmr.entity.experience.ExperienceUtil;
-//TODO <<<<<<< HEAD
 import net.blacklab.lmr.entity.littlemaid.EntityLittleMaid;
-/*TODO =======
-import net.minecraft.client.util.ITooltipFlag;
->>>>>>> v8.0.1.66-unofficial-1.12.2 */
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -23,11 +15,14 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+import java.util.List;
+
 public class ItemMaidPorter extends Item {
 	public ItemMaidPorter() {
 		setMaxStackSize(1);
-		setUnlocalizedName(LittleMaidReengaged.DOMAIN + ":maidporter");
-		setRegistryName(getUnlocalizedName());
+		setTranslationKey(LittleMaidReengaged.DOMAIN + ":maidporter");
+		setRegistryName(getTranslationKey());
 	}
 
 	@Override

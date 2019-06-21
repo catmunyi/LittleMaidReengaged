@@ -1,16 +1,7 @@
 package net.blacklab.lmr.item;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import net.blacklab.lmr.LittleMaidReengaged;
-//TODO <<<<<<< HEAD
 import net.blacklab.lmr.entity.littlemaid.trigger.ModeTrigger;
-/*TODO =======
-import net.blacklab.lmr.util.TriggerSelect;
-import net.minecraft.client.util.ITooltipFlag;
->>>>>>> v8.0.1.66-unofficial-1.12.2 */
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
@@ -24,6 +15,15 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+import java.util.List;
+
+//TODO <<<<<<< HEAD
+/*TODO =======
+import net.blacklab.lmr.util.TriggerSelect;
+import net.minecraft.client.util.ITooltipFlag;
+>>>>>>> v8.0.1.66-unofficial-1.12.2 */
+
 public class ItemTriggerRegisterKey extends Item {
 
 	public static final String RK_MODE_TAG = LittleMaidReengaged.DOMAIN + ":RK_MODE";
@@ -32,8 +32,8 @@ public class ItemTriggerRegisterKey extends Item {
 	public static final int RK_MAX_COUNT = 32;
 
 	public ItemTriggerRegisterKey() {
-		setUnlocalizedName(LittleMaidReengaged.DOMAIN + ":registerkey");
-		setRegistryName(getUnlocalizedName());
+        setTranslationKey(LittleMaidReengaged.DOMAIN + ":registerkey");
+        setRegistryName(getTranslationKey());
 		setCreativeTab(CreativeTabs.MISC);
 	}
 
@@ -62,7 +62,7 @@ public class ItemTriggerRegisterKey extends Item {
 		if(!worldIn.isRemote)
 			playerIn.sendMessage(new TextComponentTranslation("littleMaidMob.chat.text.changeregistermode", modeString));
 
-		return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStackIn);
+        return new ActionResult<>(EnumActionResult.SUCCESS, itemStackIn);
 	}
 
 	@Override
